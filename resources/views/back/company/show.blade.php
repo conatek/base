@@ -5,7 +5,8 @@
     <div class="page-title-wrapper">
         <div class="page-title-heading">
             <div class="page-title-icon">
-                <i class="pe-7s-culture text-success"></i>
+                {{-- <i class="pe-7s-culture text-success"></i> --}}
+                <i class="metismenu-icon fa fa-building" style="color: #127cb3;"></i>
             </div>
             <div>
                 Información de la Empresa
@@ -31,7 +32,7 @@
 
 {{-- {{ dd($document_type) }} --}}
 
-<company-show 
+<company-show
     :company="{{ $company }}"
     :provinces="{{ $provinces }}"
     :company_type="{{ $company_type }}"

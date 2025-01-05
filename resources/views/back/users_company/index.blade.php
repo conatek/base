@@ -5,7 +5,8 @@
         <div class="page-title-wrapper">
             <div class="page-title-heading">
                 <div class="page-title-icon">
-                    <i class="pe-7s-users text-success"></i>
+                    {{-- <i class="pe-7s-users text-success"></i> --}}
+                    <i class="metismenu-icon fa fa-users" style="color: #127cb3"></i>
                 </div>
                 <div>
                     Listado de Usuarios

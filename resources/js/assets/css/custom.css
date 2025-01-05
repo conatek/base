@@ -83,7 +83,7 @@
     position: absolute;
     border-radius: 50%;
     border: 6px solid white;
-    background-image: linear-gradient(-60deg, #16a085 0%, #f4d03f 100%);
+    background-image: linear-gradient(white, white);
     top: 15px;
     left: 15px;
     transition:.5s;
@@ -92,16 +92,50 @@
     }
 }
 
-/* .img-avatar-2>img {
+.absence > a,
+.provision > a {
     width: 50px;
     height: 50px;
     position: absolute;
     border-radius: 50%;
-    border: 6px solid white;
-    background-image: linear-gradient(-60deg, #16a085 0%, #f4d03f 100%);
+    /* border-radius: 5px; */
+    border: 1px dotted #0dacff;
+    background-image: linear-gradient(white, white);
     top: 160px;
     left: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    /* transition: 0.5s; */
+}
+
+.absence > a {
+    top: 170px;
+    left: 30px;
+}
+
+.provision > a {
+    top: 110px;
+    right: 30px;
+}
+
+/* .absence > a:hover,
+.provision > a:hover {
+    transform: rotate(22deg);
 } */
+
+.absence > a > i {
+    font-size: 35px;
+    color: #127cb3;
+    line-height: 1;
+}
+
+.provision > a > i {
+    font-size: 30px;
+    color: #127cb3;
+    line-height: 1;
+}
 
 .card-profile-text {
     width: 100%;

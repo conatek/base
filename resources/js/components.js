@@ -23,8 +23,18 @@ const components = {
     'collaborator-create': defineAsyncComponent(() => import('./components/collaborators/CollaboratorCreate.vue')),
     'collaborator-show': defineAsyncComponent(() => import('./components/collaborators/CollaboratorShow.vue')),
     'collaborator-edit': defineAsyncComponent(() => import('./components/collaborators/CollaboratorEdit.vue')),
+    'collaborator-absence': defineAsyncComponent(() => import('./components/collaborators/CollaboratorAbsence.vue')),
+    'collaborator-provision': defineAsyncComponent(() => import('./components/collaborators/CollaboratorProvision.vue')),
 
     'user-index': defineAsyncComponent(() => import('./components/users/UserIndex.vue')),
+
+    // MODULOS DE ADMINISTRACION
+    'wellness-index': defineAsyncComponent(() => import('./components/modules/Wellness.vue')),
+    'selection-index': defineAsyncComponent(() => import('./components/modules/Selection.vue')),
+    'absence-index': defineAsyncComponent(() => import('./components/modules/Absence.vue')),
+    'training-index': defineAsyncComponent(() => import('./components/modules/Training.vue')),
+    'performance-index': defineAsyncComponent(() => import('./components/modules/Performance.vue')),
+    'provision-index': defineAsyncComponent(() => import('./components/modules/Provision.vue')),
 
 };
 

@@ -1,10 +1,11 @@
 <template>
     <div>
         <div class="app-page-title">
-            <div v-if="selected_collaborator == null && add_collaborator == false && edit_collaborator == false" class="page-title-wrapper">
+            <div v-if="selected_collaborator == null && add_collaborator == false && edit_collaborator == false && show_collaborator_absence == false && show_collaborator_provision == false" class="page-title-wrapper">
                 <div class="page-title-heading">
                     <div class="page-title-icon">
-                        <i class="pe-7s-users text-success"></i>
+                        <!-- <i class="pe-7s-users text-success"></i> -->
+                        <i class="metismenu-icon fa fa-asterisk" style="color: #127cb3;"></i>
                     </div>
                     <div>
                         Listado de Colaboradores
@@ -17,7 +18,7 @@
                     </button>
                 </div>
             </div>
-            <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == false" class="page-title-wrapper">
+            <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == false && show_collaborator_absence == false && show_collaborator_provision == false" class="page-title-wrapper">
                 <div class="page-title-heading">
                     <div class="page-title-icon">
                         <i class="pe-7s-user text-success"></i>
@@ -33,7 +34,7 @@
                     </button>
                 </div>
             </div>
-            <div v-else-if="selected_collaborator == null && add_collaborator == true && edit_collaborator == false" class="page-title-wrapper">
+            <div v-else-if="selected_collaborator == null && add_collaborator == true && edit_collaborator == false && show_collaborator_absence == false && show_collaborator_provision == false" class="page-title-wrapper">
                 <div class="page-title-heading">
                     <div class="page-title-icon">
                         <i class="pe-7s-user text-success"></i>
@@ -49,13 +50,47 @@
                     </button>
                 </div>
             </div>
-            <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == true" class="page-title-wrapper">
+            <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == true && show_collaborator_absence == false && show_collaborator_provision == false" class="page-title-wrapper">
                 <div class="page-title-heading">
                     <div class="page-title-icon">
                         <i class="pe-7s-user text-success"></i>
                     </div>
                     <div>
                         Editar Colaborador
+                    </div>
+                </div>
+                <div class="page-title-actions">
+                    <button @click="returnToList()" class="btn btn-mh-dark-blue me-3">
+                        <i class="fa fa-arrow-left"></i>
+                        Volver al listado
+                    </button>
+                </div>
+            </div>
+            <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == false && show_collaborator_absence == true && show_collaborator_provision == false" class="page-title-wrapper">
+                <div class="page-title-heading">
+                    <div class="page-title-icon">
+                        <!-- <i class="pe-7s-user text-success"></i> -->
+                        <i class="fa fa-clock" style="color: #127cb3;"></i>
+                    </div>
+                    <div>
+                        Ausentismo de Colaborador {{ selected_collaborator ? `- ${selected_collaborator.name} ${selected_collaborator.first_surname} ${selected_collaborator.second_surname}` : '' }}
+                    </div>
+                </div>
+                <div class="page-title-actions">
+                    <button @click="returnToList()" class="btn btn-mh-dark-blue me-3">
+                        <i class="fa fa-arrow-left"></i>
+                        Volver al listado
+                    </button>
+                </div>
+            </div>
+            <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == false && show_collaborator_absence == false && show_collaborator_provision == true" class="page-title-wrapper">
+                <div class="page-title-heading">
+                    <div class="page-title-icon">
+                        <!-- <i class="pe-7s-user text-success"></i> -->
+                        <i class="fa fa-swatchbook" style="color: #127cb3;"></i>
+                    </div>
+                    <div>
+                        Dotación de Colaborador {{ selected_collaborator ? `- ${selected_collaborator.name} ${selected_collaborator.first_surname} ${selected_collaborator.second_surname}` : '' }}
                     </div>
                 </div>
                 <div class="page-title-actions">
@@ -107,13 +142,19 @@
                         <div v-for="collaborator in paginatedData" :key="collaborator.id" class="col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <div class="card-profile mb-3">
                                 <div class="img-avatar">
-                                    <img v-if="collaborator && collaborator.image_url" :src="collaborator.image_url" :alt="collaborator.name">
+                                    <img v-if="collaborator && collaborator.image_url" :src="collaborator.image_url">
                                     <img v-else :src="'/images/default-profile.jpeg'" :alt="collaborator ? collaborator.name : 'Default profile'">
                                 </div>
-                                <!-- <div class="img-avatar-2">
-                                    <img v-if="collaborator && collaborator.image_url" :src="collaborator.image_url" :alt="collaborator.name">
-                                    <img v-else :src="'/images/default-profile.jpeg'" :alt="collaborator ? collaborator.name : 'Default profile'">
-                                </div> -->
+                                <div class="provision">
+                                    <a @click="showCollaboratorProvision(collaborator.id)">
+                                        <i class="fa fa-swatchbook"></i>
+                                    </a>
+                                </div>
+                                <div class="absence">
+                                    <a @click="showCollaboratorAbsence(collaborator.id)">
+                                        <i class="fa fa-clock"></i>
+                                    </a>
+                                </div>
                                 <div class="card-profile-text">
                                     <div class="portada"></div>
                                     <div class="title-total">
@@ -155,7 +196,7 @@
                         </ul>
                     </nav>
                 </div>
-                <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == false && collaboratorData">
+                <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == false && show_collaborator_absence == false && show_collaborator_provision == false && collaboratorData">
                     <collaborator-show
                         @editCollaborator="editCollaborator"
                         :collaborator="selected_collaborator"
@@ -181,7 +222,7 @@
                         :contractual_documents_types="collaboratorData.contractual_documents_types"
                     ></collaborator-show>
                 </div>
-                <div v-else-if="selected_collaborator == null && add_collaborator == true && edit_collaborator == false && selectsDataCreate">
+                <div v-else-if="selected_collaborator == null && add_collaborator == true && edit_collaborator == false && show_collaborator_absence == false && show_collaborator_provision == false && selectsDataCreate">
                     <collaborator-create
                         :document_types="selectsDataCreate.document_types"
                         :sex_types="selectsDataCreate.sex_types"
@@ -192,7 +233,7 @@
                         :provinces="selectsDataCreate.provinces"
                     ></collaborator-create>
                 </div>
-                <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == true && collaboratorDataEdit">
+                <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == true && show_collaborator_absence == false && show_collaborator_provision == false && collaboratorDataEdit">
                     <collaborator-edit
                         :collaborator="selected_collaborator"
                         :document_types="collaboratorDataEdit.document_types"
@@ -210,6 +251,16 @@
                         :arl_types="collaboratorDataEdit.arl_types"
                         :ccf_types="collaboratorDataEdit.ccf_types"
                     ></collaborator-edit>
+                </div>
+                <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == false && show_collaborator_absence == true && show_collaborator_provision == false">
+                    <collaborator-absence
+                        :collaborator="selected_collaborator"
+                    ></collaborator-absence>
+                </div>
+                <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == false && show_collaborator_absence == false && show_collaborator_provision == true">
+                    <collaborator-provision
+                        :collaborator="selected_collaborator"
+                    ></collaborator-provision>
                 </div>
             <!-- </div>
         </div> -->
@@ -236,6 +287,8 @@ export default {
             selected_collaborator: null,
             add_collaborator: false,
             edit_collaborator: false,
+            show_collaborator_absence: false,
+            show_collaborator_provision: false,
 
             collaboratorData: null,
             collaboratorDataEdit: null,
@@ -288,6 +341,8 @@ export default {
             this.selected_collaborator = null
             this.add_collaborator = false
             this.edit_collaborator = false
+            this.show_collaborator_absence = false
+            this.show_collaborator_provision = false
         },
         getOrigin() {
             const origin = localStorage.getItem('origin');
@@ -350,10 +405,30 @@ export default {
             }
             this.getPageData(this.currentPage);
         },
+        showCollaboratorProvision(collaborator){
+            console.log('Dotación de: ' + collaborator);
+
+            this.selected_collaborator = this.collaborators.find(c => c.id === collaborator)
+            this.add_collaborator = false
+            this.edit_collaborator = false
+            this.show_collaborator_absence = false
+            this.show_collaborator_provision = true
+        },
+        showCollaboratorAbsence(collaborator){
+            console.log('Ausentismo de: ' + collaborator);
+
+            this.selected_collaborator = this.collaborators.find(c => c.id === collaborator)
+            this.add_collaborator = false
+            this.edit_collaborator = false
+            this.show_collaborator_absence = true
+            this.show_collaborator_provision = false
+        },
         getCollaborator(collaborator){
             this.selected_collaborator = this.collaborators.find(c => c.id === collaborator)
             this.add_collaborator = false
             this.edit_collaborator = false
+            this.show_collaborator_absence = false
+            this.show_collaborator_provision = false
 
             axios.get(`/collaborators/${collaborator}`).then(
                 (res) => {
@@ -370,6 +445,8 @@ export default {
             this.selected_collaborator = null
             this.add_collaborator = true
             this.edit_collaborator = false
+            this.show_collaborator_absence = false
+            this.show_collaborator_provision = false
 
             axios.get(`/collaborators/create`).then(
                 (res) => {
@@ -386,6 +463,8 @@ export default {
             this.selected_collaborator = this.collaborators.find(c => c.id === collaborator)
             this.add_collaborator = false
             this.edit_collaborator = true
+            this.show_collaborator_absence = false
+            this.show_collaborator_provision = false
 
             axios.get(`/collaborators/${collaborator}/edit`).then(
                 (res) => {

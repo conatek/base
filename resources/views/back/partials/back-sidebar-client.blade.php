@@ -3,7 +3,6 @@
         <ul class="vertical-nav-menu">
             <li class="{{ request()->is('home') ? 'mm-active' : '' }}">
                 <a href="{{ route('home') }}" class="{{ request()->is('home') ? 'mm-active' : '' }}">
-                    {{-- <i class="metismenu-icon pe-7s-graph2"></i> --}}
                     <i class="metismenu-icon fa fa-chart-line"></i>
                     Panel de Control
                 </a>
@@ -45,43 +44,43 @@
                     <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                 </a>
                 <ul>
-                    <li>
-                        <a href="#">
+                    <li class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('wellness.index') }}" class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
                             Bienestar
                         </a>
                     </li>
 
-                    <li>
-                        <a href="#">
+                    <li class="{{ request()->is('modules/selection*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('selection.index') }}" class="{{ request()->is('modules/selection*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
                             Procesos de Selección
                         </a>
                     </li>
 
-                    <li>
-                        <a href="#">
+                    <li class="{{ request()->is('modules/absence*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('absence.index') }}" class="{{ request()->is('modules/absence*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
                             Ausentismo
                         </a>
                     </li>
 
-                    <li>
-                        <a href="#">
+                    <li class="{{ request()->is('modules/training*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('training.index') }}" class="{{ request()->is('modules/training*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
                             Planes de Formación
                         </a>
                     </li>
 
-                    <li>
-                        <a href="#">
+                    <li class="{{ request()->is('modules/performance*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('performance.index') }}" class="{{ request()->is('modules/performance*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
                             Evaluación de Desempeño
                         </a>
                     </li>
 
-                    <li>
-                        <a href="#">
+                    <li class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('provision.index') }}" class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
                             Dotación
                         </a>

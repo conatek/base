@@ -33,10 +33,12 @@
                     <div class="menu-header-content btn-pane-right">
                         <div class="avatar-icon-wrapper me-2 avatar-icon-xl">
                             <div v-if="collaborator && collaborator.image_url" class="avatar-icon rounded">
-                                <img :src="collaborator.image_url" :alt="collaborator.name">
+                                <!-- <img :src="collaborator.image_url" :alt="collaborator.name"> -->
+                                <img :src="collaborator.image_url">
                             </div>
                             <div v-else class="avatar-icon rounded">
-                                <img :src="'/images/default-profile.jpeg'" :alt="collaborator.name">
+                                <!-- <img :src="'/images/default-profile.jpeg'" :alt="collaborator.name"> -->
+                                <img :src="'/images/default-profile.jpeg'">
                             </div>
                         </div>
                         <div>
