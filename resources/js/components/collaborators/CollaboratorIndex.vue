@@ -158,7 +158,7 @@
                                 <div class="card-profile-text">
                                     <div class="portada"></div>
                                     <div class="title-total">
-                                        <div class="title text-truncate">Cargo del Colaborador</div>
+                                        <div class="title text-truncate">{{ collaborator && collaborator.position ? collaborator.position.name : 'Sin definir' }}</div>
                                         <div class="name-profile text-truncate">{{ collaborator ? collaborator.name : '' }}</div>
                                         <div class="surname-profile text-truncate" style="border-bottom: 1px dotted #127cb3; padding-bottom: 10px; margin-bottom: 10px;">{{ collaborator ? collaborator.first_surname : '' }} {{ collaborator ? collaborator.second_surname : '' }}</div>
                                         <div class="email-profile text-truncate">{{ collaborator ? collaborator.email : '' }}</div>
@@ -255,6 +255,8 @@
                 <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == false && show_collaborator_absence == true && show_collaborator_provision == false">
                     <collaborator-absence
                         :collaborator="selected_collaborator"
+                        :absence_types="absence_types"
+                        :absence_subtypes="absence_subtypes"
                     ></collaborator-absence>
                 </div>
                 <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == false && show_collaborator_absence == false && show_collaborator_provision == true">
@@ -268,6 +270,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 
 export default {
     props: {
@@ -275,6 +279,12 @@ export default {
             default: null,
         },
         collaborators: {
+            default: null,
+        },
+        absence_types: {
+            default: null,
+        },
+        absence_subtypes: {
             default: null,
         },
     },
@@ -302,6 +312,8 @@ export default {
             totalPages: 0,
             search: '',
             filteredCollaborators: [],
+
+            absences: [],
 
             origin: '',
         }
@@ -415,8 +427,6 @@ export default {
             this.show_collaborator_provision = true
         },
         showCollaboratorAbsence(collaborator){
-            console.log('Ausentismo de: ' + collaborator);
-
             this.selected_collaborator = this.collaborators.find(c => c.id === collaborator)
             this.add_collaborator = false
             this.edit_collaborator = false

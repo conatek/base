@@ -6,6 +6,9 @@ use App\Http\Requests\CollaboratorContractCreateRequest;
 use App\Http\Requests\CollaboratorContractEditRequest;
 use App\Http\Requests\CollaboratorCreateRequest;
 use App\Http\Requests\CollaboratorEditRequest;
+use App\Models\Absence;
+use App\Models\AbsenceSubtype;
+use App\Models\AbsenceType;
 use App\Models\AcademicAchievementType;
 use App\Models\AfpType;
 use App\Models\ArlType;
@@ -112,10 +115,10 @@ class CollaboratorController extends Controller
 
         $user = auth()->user();
         $company = Company::where('id', $user->company_id)->first();
-
-        // $user_company_id = auth()->user()->company_id;
-        $collaborators = Collaborator::where('company_id', $company->id)->orderBy('created_at', 'desc')->get();
-        return view('back.collaborators.index', compact('company', 'collaborators'));
+        $collaborators = Collaborator::where('company_id', $company->id)->orderBy('created_at', 'desc')->with('position')->get();
+        $absence_types = AbsenceType::all();
+        $absence_subtypes = AbsenceSubtype::all();
+        return view('back.collaborators.index', compact('company', 'collaborators', 'absence_types', 'absence_subtypes'));
     }
 
     public function create()

@@ -29,4 +29,14 @@ class CollaboratorContract extends Model
         'created_at',
         'updated_at',
     ];
+
+    public function collaborator()
+    {
+        return $this->belongsTo(Collaborator::class);
+    }
+
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
+    }
 }

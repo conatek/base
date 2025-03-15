@@ -48,4 +48,21 @@ class Collaborator extends Model
     {
         return $this->belongsTo(Province::class);
     }
+
+    public function contractInfo()
+    {
+        return $this->hasOne(CollaboratorContract::class);
+    }
+
+    public function position()
+    {
+        return $this->hasOneThrough(
+            Position::class,
+            CollaboratorContract::class,
+            'collaborator_id', // Llave foránea en collaborator_contracts
+            'id', // Llave primaria en positions
+            'id', // Llave primaria en collaborators
+            'position_id' // Llave foránea en collaborator_contracts
+        );
+    }
 }

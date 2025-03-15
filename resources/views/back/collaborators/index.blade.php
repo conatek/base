@@ -35,6 +35,11 @@
 @endphp
 
 
-<collaborator-index :company_id="{{ $company_id }}" :collaborators="{{ $collaborators }}"></collaborator-index>
+<collaborator-index
+    :company_id="{{ $company_id }}"
+    :collaborators="{{ $collaborators }}"
+    :absence_types="{{ collect($absence_types) }}"
+    :absence_subtypes="{{ collect($absence_subtypes) }}"
+></collaborator-index>
 
 @endsection

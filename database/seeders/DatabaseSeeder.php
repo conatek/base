@@ -47,6 +47,9 @@ class DatabaseSeeder extends Seeder
             MedicalExaminationTypeSeeder::class,
             HomeVisitTypeSeeder::class,
             ContractualDocumentTypeSeeder::class,
+            AbsenceTypeSeeder::class,
+            AbsenceSubtypeSeeder::class,
+            DiseaseClassificationSeeder::class,
             CollaboratorSeeder::class,
         ]);
     }

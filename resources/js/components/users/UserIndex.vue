@@ -106,7 +106,7 @@
                             </td>
                         </tr>
                     </tbody>
-                    <tfoot>
+                    <!-- <tfoot>
                         <tr>
                             <th class="text-center">Nombre</th>
                             <th class="text-center">Email</th>
@@ -114,7 +114,7 @@
                             <th class="text-center">Roles</th>
                             <th class="text-end">Acciones</th>
                         </tr>
-                    </tfoot>
+                    </tfoot> -->
                 </table>
             </div>
         </div>

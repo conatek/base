@@ -13,19 +13,20 @@ return new class extends Migration
             $table->unsignedBigInteger('collaborator_id');
             $table->boolean('is_extension')->default(0);
             $table->unsignedBigInteger('parent_absence_id')->nullable();
-            $table->unsignedBigInteger('contingency_type_id');
-            $table->unsignedBigInteger('classification_id');
+            $table->unsignedBigInteger('absence_type_id');
+            $table->string('absence_subtype')->nullable();
+            $table->string('disease_classification_code')->nullable();
             $table->string('description');
             $table->date('start_date');
             $table->date('end_date');
-            $table->integer('days_quantity');
-            $table->integer('hours_quantity');
-            $table->unsignedBigInteger('absence_segment_id');
+            $table->decimal('hours', 6, 2);
+            $table->decimal('days', 6, 2);
+            $table->string('support_file_public_id')->nullable();
+            $table->string('support_file_url')->nullable();
+            $table->text('observations')->nullable();
 
             $table->foreign('collaborator_id')->references('id')->on('collaborators');
-            $table->foreign('contingency_type_id')->references('id')->on('contingencies');
-            $table->foreign('classification_id')->references('id')->on('classifications');
-            $table->foreign('absence_segment_id')->references('id')->on('absence_segments');
+            $table->foreign('absence_type_id')->references('id')->on('absence_types');
 
             $table->timestamps();
         });

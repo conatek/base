@@ -23,4 +23,21 @@ class Position extends Model
     {
         return $this->belongsTo(Area::class);
     }
+
+    public function contracts()
+    {
+        return $this->hasMany(CollaboratorContract::class);
+    }
+
+    public function collaborators()
+    {
+        return $this->hasManyThrough(
+            Collaborator::class,
+            CollaboratorContract::class,
+            'position_id', // Llave foránea en collaborator_contracts
+            'id', // Llave primaria en collaborators
+            'id', // Llave primaria en positions
+            'collaborator_id' // Llave foránea en collaborator_contracts
+        );
+    }
 }

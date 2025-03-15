@@ -71,6 +71,7 @@ Route::group(['middleware' => 'auth'], function() {
 
     // AREAS DATA
     Route::get('/areas-data/{company_id}', [AreaController::class, 'getAreas']);
+    Route::get('/areas-data/{campus_id}/campus', [AreaController::class, 'getAreasByCampus']);
     Route::get('/areas', [AreaController::class, 'index'])->name('areas.index');
     Route::get('/areas/create', [AreaController::class, 'create'])->name('areas.create');
     Route::post('/areas', [AreaController::class, 'store'])->name('areas.store');
@@ -166,5 +167,15 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/modules/training', [TrainingController::class, 'index'])->name('training.index');
     Route::get('/modules/performance', [PerformanceController::class, 'index'])->name('performance.index');
     Route::get('/modules/provision', [ProvisionController::class, 'index'])->name('provision.index');
+
+    // ABSENCE DATA
+    Route::get('/absences', [AbsenceController::class, 'getAbsences']);
+    Route::get('/absences/area/{area_id}', [AbsenceController::class, 'getAbsencesByArea']);
+    Route::get('/absences/classification/{code}', [AbsenceController::class, 'getDiseaseClassificationByCode']);
+    Route::get('/absences/{collaborator_id}', [AbsenceController::class, 'getAbsencesByCollaborator']);
+    Route::post('/absences/{collaborator_id}', [AbsenceController::class, 'store']);
+    Route::put('/absences/{absence}', [AbsenceController::class, 'update']);
+    Route::put('/absences/{collaborator_id}/{absence_id}', [AbsenceController::class, 'update']);
+    Route::delete('/absences/{collaborator_id}/{absence}/destroy', [AbsenceController::class, 'destroy']);
 
 });

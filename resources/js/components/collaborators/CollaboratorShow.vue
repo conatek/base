@@ -381,7 +381,7 @@
                                 </div>
                                 <div class="data-pair">
                                     <div class="box-label lb-36">
-                                        <p class="">Email corp.:</p>
+                                        <p class="">Email corporativo:</p>
                                     </div>
                                     <div class="box-value vl-36">
                                         <p v-if="contractual_information && contractual_information.corporate_email" class="">{{ contractual_information.corporate_email }}</p>
@@ -389,7 +389,7 @@
                                 </div>
                                 <div class="data-pair">
                                     <div class="box-label lb-37">
-                                        <p class="">Celular corp.:</p>
+                                        <p class="">Celular corporativo:</p>
                                     </div>
                                     <div class="box-value vl-37">
                                         <p v-if="contractual_information && contractual_information.corporate_cellphone" class="">{{ contractual_information.corporate_cellphone }}</p>

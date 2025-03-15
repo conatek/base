@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Eps extends Model
 {
     use HasFactory;
+
+    protected $table = 'eps_types';
 }

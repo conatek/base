@@ -34,9 +34,19 @@ class AreaController extends Controller
 
             array_push($areas_data, $data);
         }
-        
-        
+
+
         $results['areas'] = $areas_data;
+
+        return $results;
+    }
+
+    public function getAreasByCampus($campus_id) {
+        $results = [];
+        $user_company_id = auth()->user()->company_id;
+        $areas = Area::where('company_id', $user_company_id)->where('campus_id', $campus_id)->get();
+
+        $results['areas'] = $areas;
 
         return $results;
     }
@@ -131,7 +141,7 @@ class AreaController extends Controller
             $area = Area::where('id', $area_data_id)->first();
 
             $area->delete();
-            
+
             return response()->json([
                 'message'=>'Área eliminada exitosamente!',
                 'area'=>$area,

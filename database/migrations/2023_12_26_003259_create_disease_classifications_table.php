@@ -6,26 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        Schema::create('contingencies', function (Blueprint $table) {
+        Schema::create('disease_classifications', function (Blueprint $table) {
             $table->id();
+            $table->string('cie_code');
+            $table->string('description');
+            $table->string('group');
+            $table->string('segment');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::dropIfExists('contingencies');
+        Schema::dropIfExists('disease_classifications');
     }
 };

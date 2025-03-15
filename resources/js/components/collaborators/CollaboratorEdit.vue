@@ -592,6 +592,11 @@ export default {
         this.loadInitialData()
         this.getContractualInformation(this.collaborator.id)
     },
+    watch: {
+        position_id: function(newPositionId) {
+            this.salary = this.position_types.find(position => position.id === newPositionId)?.estimated_salary || '';
+        }
+    },
     methods: {
         loadInitialData() {
             this.document_province_id = this.collaborator.document_province_id
