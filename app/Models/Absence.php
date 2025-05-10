@@ -49,4 +49,9 @@ class Absence extends Model
         return $this->hasOne(CollaboratorContract::class, 'collaborator_id', 'collaborator_id');
     }
 
+    public function absenceStatus()
+    {
+        return $this->hasOne(AbsenceStatus::class, 'absence_id', 'id');
+    }
+
 }

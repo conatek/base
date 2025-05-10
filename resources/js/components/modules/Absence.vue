@@ -15,27 +15,27 @@
         </div>
 
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-4 mt-2">
                 <button @click="changeView('absence_indicators')" class="btn-icon-vertical btn-transition btn btn-mh-dark-blue w-100"
                     :class="{ active: absence_indicators }">
                     <i class="fa fa-chart-bar btn-icon-wrapper"></i>
                     <span class="badge bg-primary badge-dot badge-dot-sm badge-dot-inside"></span>Indicadores de Ausentismo
                 </button>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 mt-2">
                 <button @click="changeView('disability_control')" class="btn-icon-vertical btn-transition btn btn-mh-dark-blue w-100"
                     :class="{ active: disability_control }">
                     <i class="fa fa-lungs-virus btn-icon-wrapper"></i>
                     <span class="badge bg-primary badge-dot badge-dot-sm badge-dot-inside"></span>Control de Incapacidades
                 </button>
             </div>
-            <div class="col-md-4">
+            <!-- <div class="col-md-4">
                 <button @click="changeView('eps_payments')" class="btn-icon-vertical btn-transition btn btn-mh-dark-blue w-100"
                     :class="{ active: eps_payments }">
                     <i class="fa fa-money-bill btn-icon-wrapper"></i>
                     <span class="badge bg-primary badge-dot badge-dot-sm badge-dot-inside"></span>Relaciones de Pago EPS
                 </button>
-            </div>
+            </div> -->
         </div>
 
         <hr>
@@ -256,28 +256,19 @@
                                     <td class="text-center">{{ absenceChain.total_days }} días</td>
 
                                     <td class="text-end">
-                                        <!-- <button @click="showAbsenceChain(absenceChain)"
-                                                type="button"
-                                                class="me-2 btn-icon btn btn-sm btn-success"
-                                                data-bs-toggle="modal" data-bs-target=".absence-chain-detail-modal">
-                                            <i class="fa fa-eye"></i> Mostrar
-                                        </button> -->
-                                        <button @click="showAbsenceChainDetail(absenceChain)"
-                                                type="button"
-                                                class="me-2 btn-icon btn btn-sm btn-success">
-                                            <i class="fa fa-eye"></i> Mostrar Cadena
-                                        </button>
-                                        <!-- <button @click="editAbsenceChain(absenceChain)"
-                                                type="button"
-                                                class="me-2 btn-icon btn btn-sm btn-primary"
-                                                data-bs-toggle="modal" data-bs-target=".absence-chain-edit-modal">
-                                            <i class="fa fa-edit"></i> Editar
-                                        </button> -->
-                                        <!-- <button @click="showDeleteAlert(absence.id)"
-                                                type="button"
-                                                class="btn-icon btn btn-sm btn-danger">
-                                            <i class="fa fa-trash"></i> Eliminar
-                                        </button> -->
+                                        <div class="d-flex flex-row align-items-center justify-content-end gap-1">
+                                            <!-- <button @click="showPayments(absence)"
+                                                    type="button"
+                                                    class="btn btn-sm btn-warning"
+                                                    style="color: white;">
+                                                <i class="fa fa-dollar-sign"></i> Pagos EPS
+                                            </button> -->
+                                            <button @click="showAbsenceChainDetail(absenceChain)"
+                                                    type="button"
+                                                    class="btn-icon btn btn-sm btn-success">
+                                                <i class="fa fa-eye"></i> Mostrar Cadena
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -295,7 +286,6 @@
                                 <tr>
                                     <th class="text-center">ID</th>
                                     <th class="text-center">Clasificación</th>
-                                    <!-- <th class="text-center">Descripción</th> -->
                                     <th class="text-center">Inicio</th>
                                     <th class="text-center">Finalización</th>
                                     <th class="text-center">Duración</th>
@@ -307,27 +297,25 @@
                                 <tr v-for="absence in selected_absence_chain.absences_in_chain">
                                     <td class="text-center">{{ absence.id }}</td>
                                     <td class="text-center">{{ absence.disease_classification_code }} - {{ absence.description }}</td>
-                                    <!-- <td class="text-center">{{ absence.description }}</td> -->
                                     <td class="text-center">{{ absence.start_date }}</td>
                                     <td class="text-center">{{ absence.end_date }}</td>
                                     <td class="text-center">{{ absence.days }} días</td>
                                     <td class="text-center">
-                                        <span class="badge bg-success" style="min-width: 100px;">Rechazado</span>
+                                        <span class="badge bg-success" style="min-width: 100px;">{{ absence.absence_status.absence_status_type.type }}</span>
                                     </td>
-
-
                                     <td class="text-end">
-                                        <button @click="showDisabilityDetail(absence)"
-                                                type="button"
-                                                class="me-2 btn-icon btn btn-sm btn-success">
-                                            <i class="fa fa-eye"></i> Ver Detalle
-                                        </button>
-                                        <button @click="editDisability(absence)"
-                                                type="button"
-                                                class="me-2 btn-icon btn btn-sm btn-primary"
-                                                data-bs-toggle="modal" data-bs-target=".absence-chain-edit-modal">
-                                            <i class="fa fa-edit"></i> Editar
-                                        </button>
+                                        <div class="d-flex flex-row align-items-center justify-content-end gap-1">
+                                            <button @click="showDisabilityDetail(absence)"
+                                                    type="button"
+                                                    class="btn btn-sm btn-success">
+                                                <i class="fa fa-eye"></i> Ver Detalle
+                                            </button>
+                                            <button @click="editDisability(absence)"
+                                                    type="button"
+                                                    class="btn btn-sm btn-primary">
+                                                <i class="fa fa-edit"></i> Editar
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -336,9 +324,9 @@
                 </div>
             </div>
 
-            <div v-if="!absence_indicators && !disability_control && eps_payments" class="col-md-12">
+            <!-- <div v-if="!absence_indicators && !disability_control && eps_payments" class="col-md-12">
                 <p>Relación de Pagos EPS</p>
-            </div>
+            </div> -->
         </div>
 
         <div class="modal fade responsible-payment-detail-modal"
@@ -399,7 +387,7 @@
             </div>
         </div>
 
-        <div class="modal fade absence-chain-detail-modal"
+        <!-- <div class="modal fade absence-chain-detail-modal"
             tabindex="-1"
             role="dialog"
             aria-labelledby="myLargeModalLabel"
@@ -407,7 +395,7 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Detalle de Incapacidad</h5>
+                        <h5 class="modal-title">Detalle de Incapacidad</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                         </button>
                     </div>
@@ -459,9 +447,141 @@
                     </div>
                 </div>
             </div>
+        </div> -->
+
+        <!-- <div class="modal fade absence-payments-modal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="myLargeModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Pagos EPS</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        </button>
+                    </div>
+                    <div class="modal-body container">
+                        <div class="data-grid">
+                            <div class="label">Colaborador:</div>
+                            <div class="value">Prueba</div>
+
+                            <div class="label">Colaborador:</div>
+                            <div class="value">Prueba</div>
+                        </div>
+
+                        <table style="width: 100%;" id="dt_disability_detail" class="table table-cntk table-hover table-bordered display">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">ID</th>
+                                    <th class="text-center">Clasificación</th>
+                                    <th class="text-center">Estado</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="absence in selected_absence_chain.absences_in_chain">
+                                    <td class="text-center">{{ absence.id }}</td>
+                                    <td class="text-center">{{ absence.disease_classification_code }} - {{ absence.description }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-success" style="min-width: 100px;">{{ absence.absence_status.absence_status_type.type }}</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-flex flex-row align-items-center justify-content-end gap-1">
+                                            <button @click="showDisabilityDetail(absence)"
+                                                    type="button"
+                                                    class="btn btn-sm btn-success">
+                                                <i class="fa fa-eye"></i> Descargar Soporte
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" @click="updateAbsenceStatus">Guardar Cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+        <div class="modal fade absence-detail-modal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="myLargeModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detalle Incapacidad</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        </button>
+                    </div>
+                    <div v-if="selectedAbsence" class="modal-body container">
+                    <!-- <div class="modal-body container"> -->
+                        <div class="data-grid">
+                            <div class="label">ID:</div>
+                            <div class="value">{{ selectedAbsence.id }}</div>
+                            <!-- <div class="value">{{ collaborator.name }} {{ collaborator.first_surname }} {{ collaborator.second_surname }}</div> -->
+
+                            <div class="label">Clasificación:</div>
+                            <div class="value">{{ selectedAbsence.disease_classification_code }} - {{ selectedAbsence.description }}</div>
+
+                            <div class="label">Fecha de Inicio:</div>
+                            <div class="value">{{ selectedAbsence.start_date }}</div>
+
+                            <div class="label">Fecha de Finalización:</div>
+                            <div class="value">{{ selectedAbsence.end_date }}</div>
+
+                            <div class="label">Duración:</div>
+                            <div class="value">{{ selectedAbsence.days }} días</div>
+                        </div>
+
+                        <hr>
+
+                        <div class="data-grid">
+                            <div class="label">Estado:</div>
+                            <div class="value">{{ selectedAbsence.absence_status.absence_status_type.type }}</div>
+
+                            <div class="label">Valor Autorizado:</div>
+                            <div class="value">{{ selectedAbsence.absence_status.authorized_value }}</div>
+
+                            <div class="label">Valor Pagado:</div>
+                            <div class="value">{{ selectedAbsence.absence_status.paid_value }}</div>
+
+                            <div class="label">Días Pagados:</div>
+                            <div class="value">{{ selectedAbsence.absence_status.paid_days }}</div>
+
+                            <div class="label">Fecha de Pago:</div>
+                            <div class="value">{{ selectedAbsence.absence_status.payment_date }}</div>
+
+                            <div class="label">Observaciones:</div>
+                            <div class="value">{{ selectedAbsence.absence_status.observations }}</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            v-if="selectedAbsence && selectedAbsence.absence_status && selectedAbsence.absence_status.support_url"
+                            @click="downloadSupportFile(selectedAbsence.id)"
+                            type="button"
+                            class="btn btn-warning"
+                            title="Descargar archivo actual"
+                            style="border: 1px solid #ced4da;"
+                        >
+                            <i class="fa fa-download"></i>
+                            Descargar Soporte de Pago
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <!-- <button type="button" class="btn btn-primary" @click="updateAbsenceStatus">Guardar Cambios</button> -->
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="modal fade absence-chain-edit-modal"
+        <div v-if="selectedAbsence" class="modal fade absence-chain-edit-modal"
             tabindex="-1"
             role="dialog"
             aria-labelledby="myLargeModalLabel"
@@ -477,9 +597,19 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-6 col-lg-6">
                                 <div class="position-relative mb-3">
-                                    <label for="support_file" class="form-label">Soporte</label>
+                                    <label for="support_file" class="form-label">Soporte de Pago</label>
                                     <div class="input-group">
-                                        <input @change="onChangeSupportFile" type="file" name="support_file" id="support_file" class="form-control">
+                                        <input @change="changeSupportFile" ref="support_file" type="file" name="support_file" id="support_file" class="form-control">
+                                        <button
+                                            v-if="selectedAbsence && selectedAbsence.absence_status && selectedAbsence.absence_status.support_url"
+                                            @click="downloadSupportFile(selectedAbsence.id)"
+                                            type="button"
+                                            class="btn btn-warning"
+                                            title="Descargar archivo actual"
+                                            style="border: 1px solid #ced4da;"
+                                        >
+                                            <i class="fa fa-download"></i>
+                                        </button>
                                     </div>
                                     <span v-if="errors && errors.support_file" class="error text-danger" for="support_file">{{ errors.support_file[0] }}</span>
                                 </div>
@@ -487,11 +617,9 @@
                             <div class="col-sm-12 col-md-6 col-lg-6">
                                 <div class="position-relative mb-3">
                                     <label for="status" class="form-label">Estado</label>
-                                    <select v-model="absenceChainStatus" name="status" class="form-select"  id="status">
+                                    <select v-model="absence_status_type_id" name="status" class="form-select"  id="status">
                                         <option value="" disabled selected hidden>Seleccionar Estado</option>
-                                        <option value="1">No registra</option>
-                                        <option value="2">Pagado</option>
-                                        <option value="3">Rechazado</option>
+                                        <option v-for="status in absence_status_types" :value="status.id">{{ status.type }}</option>
                                     </select>
                                     <span v-if="errors && errors.status" class="error text-danger" for="status">{{ errors.status[0] }}</span>
                                 </div>
@@ -539,6 +667,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" @click="updateAbsenceStatus">Guardar Cambios</button>
                     </div>
                 </div>
             </div>
@@ -590,6 +719,9 @@ export default {
         absence_subtypes: {
             default: null,
         },
+        absence_status_types: {
+            default: null,
+        },
     },
     data() {
         return {
@@ -637,13 +769,23 @@ export default {
             ],
             selectedAbsenceType: null,
 
-            absence_indicators: false,
-            disability_control: true,
+            absence_indicators: true,
+            disability_control: false,
             eps_payments: false,
 
             selected_absence_chain: null,
             show_absence_chain_detail: false,
-            absenceChainStatus: '',
+
+            selectedAbsence: null,
+
+            absence_status_id: '',
+            absence_status_type_id: '',
+            authorized_value: '',
+            paid_value: '',
+            paid_days: '',
+            payment_date: '',
+            observations: '',
+            support_file: null,
 
             errors: null,
         };
@@ -766,6 +908,9 @@ export default {
                     (absence) => absence.campus_id === this.campus_id && absence.area_id === this.area_id
                 );
             }
+        },
+        changeSupportFile(e) {
+            this.support_file = e.target.files[0]
         },
         cleanFilters() {
             console.log('Limpiando filtros');
@@ -1164,6 +1309,8 @@ export default {
 
                 const absenceChain = getAbsenceChain(absence);
 
+                // console.log(absenceChain);
+
                 // Marcar todas las ausencias en la cadena como procesadas
                 absenceChain.forEach(a => processedIds.add(a.id));
 
@@ -1203,7 +1350,8 @@ export default {
                         description: a.description,
                         start_date: a.start_date,
                         end_date: a.end_date,
-                        days: Math.round(a.days)
+                        days: Math.round(a.days),
+                        absence_status: a.absence_status,
                     }))
                 };
 
@@ -1241,17 +1389,117 @@ export default {
                 disabilityDetailDatatable();
             });
         },
-        showDisabilityDetail(absence) {
-            const modal = document.querySelector('.absence-detail-modal');
-            document.body.appendChild(modal);
-            modal.style.zIndex = '1050';
-
+        showPayments(absence) {
             this.selected_absence = absence;
+
+            this.$nextTick(() => {
+                const modal = document.querySelector('.absence-payments-modal');
+
+                if (!modal) return;
+
+                // Mueve el modal al final del body (clave)
+                document.body.appendChild(modal);
+
+                // Muestra el modal con Bootstrap
+                const modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+                modalInstance.show();
+            });
+        },
+        showDisabilityDetail(absence) {
+            // console.log('Ausencia seleccionada:', absence);
+            this.selectedAbsence = absence;
+            // console.log(this.selected_absence);
+
+            this.$nextTick(() => {
+                const modal = document.querySelector('.absence-detail-modal');
+
+                if (!modal) return;
+
+                // Mueve el modal al final del body (clave)
+                document.body.appendChild(modal);
+
+                // Muestra el modal con Bootstrap
+                const modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+                modalInstance.show();
+            });
         },
         editDisability(absence) {
+            this.selectedAbsence = absence;
+
+            if (this.selectedAbsence && this.selectedAbsence.absence_status) {
+                this.absence_status_id = this.selectedAbsence.absence_status.id ?? '';
+                this.absence_status_type_id = this.selectedAbsence.absence_status.absence_status_type_id ?? '';
+                this.authorized_value = this.selectedAbsence.absence_status.authorized_value ?? '';
+                this.paid_value = this.selectedAbsence.absence_status.paid_value ?? '';
+                this.paid_days = this.selectedAbsence.absence_status.paid_days ?? '';
+                this.payment_date = this.selectedAbsence.absence_status.payment_date ?? '';
+                this.observations = this.selectedAbsence.absence_status.observations ?? '';
+                this.support_file = null
+            } else {
+                this.absence_status_id = '';
+                this.absence_status_type_id = '';
+                this.authorized_value = '';
+                this.paid_value = '';
+                this.paid_days = '';
+                this.payment_date = '';
+                this.observations = '';
+                this.support_file = null
+            }
+
+            this.$nextTick(() => {
+                const modal = document.querySelector('.absence-chain-edit-modal');
+
+                if (!modal) return;
+
+                // Mueve el modal al final del body (clave)
+                document.body.appendChild(modal);
+
+                // Muestra el modal con Bootstrap
+                const modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+                modalInstance.show();
+            });
+        },
+        updateAbsenceStatus() {
             const modal = document.querySelector('.absence-chain-edit-modal');
-            document.body.appendChild(modal);
-            modal.style.zIndex = '1050';
+
+            let fd = new FormData()
+
+            fd.append('absence_id', this.selectedAbsence.id)
+            fd.append('absence_status_type_id', this.absence_status_type_id)
+            fd.append('authorized_value', this.authorized_value)
+            fd.append('paid_value', this.paid_value)
+            fd.append('paid_days', this.paid_days)
+            fd.append('payment_date', this.payment_date)
+            fd.append('observations', this.observations)
+            fd.append('support_file', this.support_file)
+            fd.append('_method', 'PUT')
+
+            axios.post(`/absence-status/${this.absence_status_id}/update`, fd)
+                .then((response) => {
+                    this.getAbsences();
+                    this.show_absence_chain_detail = false;
+
+                    modal.style.display = 'none';
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                    document.body.classList.remove('modal-open');
+                    document.body.style = '';
+
+                    $('.absence-chain-edit-modal').modal('hide');
+                    this.$refs.support_file.value = '';
+                })
+                .catch(error => {
+                    console.error('Error al actualizar la ausencia:', error);
+                    this.errors = error.response.data.errors;
+                });
+        },
+        downloadSupportFile(absence_id) {
+            axios.get(`/absence-status/${absence_id}/download`)
+            .then(response => {
+                window.open(response.data.support_download_url, '_blank');
+            })
+            .catch(e => {
+                console.error('Error:', e);
+            })
         },
         numberFormat(number) {
             try {

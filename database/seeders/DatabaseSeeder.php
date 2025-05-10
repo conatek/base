@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -50,6 +51,7 @@ class DatabaseSeeder extends Seeder
             AbsenceTypeSeeder::class,
             AbsenceSubtypeSeeder::class,
             DiseaseClassificationSeeder::class,
+            AbsenceStatusTypesSeeder::class,
             CollaboratorSeeder::class,
         ]);
     }

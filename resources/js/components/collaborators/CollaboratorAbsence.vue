@@ -446,7 +446,8 @@
             </div>
         </div>
 
-        <div v-if="isLoading == false" class="main-card mb-3 card">
+        <!-- <div v-if="isLoading == false" class="main-card mb-3 card"> -->
+        <div class="main-card mb-3 card">
             <div class="card-body table-responsive">
                 <table style="width: 100%;" id="dt_absences" class="table table-cntk table-hover table-bordered">
                     <thead>
@@ -546,6 +547,11 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button v-if="selected_absence && selected_absence.support_file_url"
+                            @click="downloadSupportFile(selected_absence.id)"
+                            type="button" class="btn btn-primary"
+                            data-bs-dismiss="modal"
+                        ><i class="fa fa-download"></i> Descargar Soporte Incapacidad</button>
                     </div>
                 </div>
             </div>
@@ -860,202 +866,80 @@ export default {
 
                 this.monthlyAbsencesByClassification = absencesBySubtype;
             } else {
+                // console.log(absenceWithDiseaseClassificationCode);
+                // absenceWithDiseaseClassificationCode.forEach(absence => {
+                //     if (absence.absence_type_id === absenceTypeId) {
+
+                //         console.log(absence);
+                //         console.log(absence.segment);
+
+                //         const startDate = new Date(`${absence.start_date}T00:00:00`);
+                //         const endDate = new Date(`${absence.end_date}T00:00:00`);
+                //         const segment = absence.segment.segment;
+
+                //         if (segment && (segment == 'INFECCIOSAS/ DE LA VOZ' || segment == 'DE LA VOZ')) {
+                //             segment = 'DE LA VOZ';
+                //         }
+
+                //         while (startDate <= endDate) {
+                //             if (
+                //                 startDate.getMonth() + 1 === month &&
+                //                 startDate.getFullYear() === year
+                //             ) {
+                //                 if (!absencesBySegment[segment]) {
+                //                     absencesBySegment[segment] = 0;
+                //                 }
+                //                 absencesBySegment[segment] += 1;
+                //             }
+                //             startDate.setDate(startDate.getDate() + 1);
+                //         }
+                //     }
+                // });
+
+                // this.monthlyAbsencesByClassification = absencesBySegment;
+
+                console.log(absenceWithDiseaseClassificationCode);
                 absenceWithDiseaseClassificationCode.forEach(absence => {
                     if (absence.absence_type_id === absenceTypeId) {
+                        console.log(absence);
 
+                        // Verificamos si absence.segment existe antes de acceder a sus propiedades
                         const startDate = new Date(`${absence.start_date}T00:00:00`);
                         const endDate = new Date(`${absence.end_date}T00:00:00`);
-                        const segment = absence.segment.segment;
 
-                        if (segment && (segment == 'INFECCIOSAS/ DE LA VOZ' || segment == 'DE LA VOZ')) {
-                            segment = 'DE LA VOZ';
+                        // Usamos let en lugar de const para poder modificar la variable
+                        let segmentValue = 'SIN CLASIFICAR'; // Valor por defecto
+
+                        // Verificamos si absence.segment existe y si tiene la propiedad segment
+                        if (absence.segment && absence.segment.segment) {
+                            console.log(absence.segment);
+                            segmentValue = absence.segment.segment;
+
+                            // Si el segmento es uno de estos valores específicos, lo cambiamos a 'DE LA VOZ'
+                            if (segmentValue === 'INFECCIOSAS/ DE LA VOZ' || segmentValue === 'DE LA VOZ') {
+                                segmentValue = 'DE LA VOZ';
+                            }
                         }
 
-                        while (startDate <= endDate) {
+                        // Usamos una copia de startDate para iterar para no modificar la original
+                        const currentDate = new Date(startDate);
+
+                        while (currentDate <= endDate) {
                             if (
-                                startDate.getMonth() + 1 === month &&
-                                startDate.getFullYear() === year
+                                currentDate.getMonth() + 1 === month &&
+                                currentDate.getFullYear() === year
                             ) {
-                                if (!absencesBySegment[segment]) {
-                                    absencesBySegment[segment] = 0;
+                                if (!absencesBySegment[segmentValue]) {
+                                    absencesBySegment[segmentValue] = 0;
                                 }
-                                absencesBySegment[segment] += 1;
+                                absencesBySegment[segmentValue] += 1;
                             }
-                            startDate.setDate(startDate.getDate() + 1);
+                            currentDate.setDate(currentDate.getDate() + 1);
                         }
                     }
                 });
-
-                this.monthlyAbsencesByClassification = absencesBySegment;
             }
         },
-        // calculateMonthlyAbsencesByResponsible(month, year) {
-        //     const absencesByResponsible = {
-        //         company: 0,
-        //         eps: 0,
-        //         arl: 0
-        //     };
-
-        //     const paymentsByResponsible = {
-        //         company: 0,
-        //         eps: 0,
-        //         arl: 0
-        //     };
-
-        //     const isDateInMonth = (date) => {
-        //         const checkDate = new Date(date);
-        //         return checkDate.getMonth() + 1 === month &&
-        //             checkDate.getFullYear() === year;
-        //     };
-
-        //     const calculateDailySalary = (salary) => {
-        //         return salary / 30;
-        //     };
-
-        //     const getAbsenceChain = (absence) => {
-        //         const chain = [absence];
-
-        //         if (![1, 2, 3, 4, 5].includes(absence.absence_type_id)) {
-        //             return chain;
-        //         }
-
-        //         let currentAbsence = absence;
-        //         while (true) {
-        //             const extension = this.absences.find(a =>
-        //                 a.parent_absence_id === currentAbsence.id &&
-        //                 new Date(a.start_date).getTime() ===
-        //                 new Date(currentAbsence.end_date).getTime() + 86400000
-        //             );
-
-        //             if (!extension) break;
-        //             chain.push(extension);
-        //             currentAbsence = extension;
-        //         }
-
-        //         return chain;
-        //     };
-
-        //     const processedIds = new Set();
-
-        //     this.absences.forEach(absence => {
-        //         if (processedIds.has(absence.id)) return;
-        //         if (absence.parent_absence_id) return;
-
-        //         const absenceChain = getAbsenceChain(absence);
-        //         absenceChain.forEach(a => processedIds.add(a.id));
-
-        //         const dailySalary = calculateDailySalary(absence.collaborator_contract.salary);
-
-        //         // Para el caso 2 (tipos 6, 7, 8), todo va a la empresa
-        //         if ([6, 7, 8].includes(absence.absence_type_id)) {
-        //             const startDate = new Date(`${absence.start_date}T00:00:00`);
-        //             const endDate = new Date(`${absence.end_date}T00:00:00`);
-        //             let currentDate = new Date(startDate);
-
-        //             while (currentDate <= endDate) {
-        //                 if (isDateInMonth(currentDate)) {
-        //                     absencesByResponsible.company += 1;
-        //                     paymentsByResponsible.company += dailySalary;
-        //                 }
-        //                 currentDate.setDate(currentDate.getDate() + 1);
-        //             }
-        //             return;
-        //         }
-
-        //         // Para el caso 1 (tipos 1, 2, 3, 4, 5)
-        //         let totalDaysBeforeMonth = 0;
-        //         let daysInCurrentMonth = [];
-        //         const firstDayOfMonth = new Date(year, month - 1, 1);
-
-        //         // Recopilamos todos los días de ausencia cronológicamente
-        //         let allAbsenceDays = [];
-        //         absenceChain.forEach(a => {
-        //             const startDate = new Date(`${a.start_date}T00:00:00`);
-        //             const endDate = new Date(`${a.end_date}T00:00:00`);
-        //             let currentDate = new Date(startDate);
-
-        //             while (currentDate <= endDate) {
-        //                 if (currentDate < firstDayOfMonth) {
-        //                     totalDaysBeforeMonth++;
-        //                 } else if (isDateInMonth(currentDate)) {
-        //                     daysInCurrentMonth.push(new Date(currentDate));
-        //                 }
-        //                 allAbsenceDays.push(new Date(currentDate));
-        //                 currentDate.setDate(currentDate.getDate() + 1);
-        //             }
-        //         });
-
-        //         const totalDaysInMonth = daysInCurrentMonth.length;
-        //         const totalPaymentForMonth = dailySalary * totalDaysInMonth;
-
-        //         if (absence.absence_type_id === 3) {
-        //             // Si es tipo 3, todo va a la ARL
-        //             absencesByResponsible.arl += totalDaysInMonth;
-        //             paymentsByResponsible.arl += totalPaymentForMonth;
-        //         } else if (absence.absence_type_id === 5) {
-        //             // Si es tipo 5, todo va a la EPS
-        //             absencesByResponsible.eps += totalDaysInMonth;
-        //             paymentsByResponsible.eps += totalPaymentForMonth;
-        //         } else if ([1, 2, 4].includes(absence.absence_type_id)) {
-        //             const totalAbsenceDays = allAbsenceDays.length;
-
-        //             // Calculamos cuántos de los primeros 2 días caen en el mes actual
-        //             const remainingCompanyDays = Math.max(0, 2 - totalDaysBeforeMonth);
-        //             const daysForCompany = Math.min(remainingCompanyDays, totalDaysInMonth);
-        //             const daysForEPS = totalDaysInMonth - daysForCompany;
-
-        //             // Asignamos los días
-        //             absencesByResponsible.company += daysForCompany;
-        //             absencesByResponsible.eps += daysForEPS;
-
-        //             if (totalAbsenceDays <= 2) {
-        //                 // Si la ausencia total es de 2 días o menos, todo el pago va a la empresa
-        //                 paymentsByResponsible.company += totalPaymentForMonth;
-        //             } else {
-        //                 // Si quedan días de company en el mes actual
-        //                 if (daysForCompany > 0) {
-        //                     const companyPayment = dailySalary * daysForCompany;
-        //                     paymentsByResponsible.company += companyPayment;
-
-        //                     // Para los días restantes aplicamos la distribución porcentual
-        //                     const remainingPayment = dailySalary * daysForEPS;
-        //                     paymentsByResponsible.eps += remainingPayment * 0.666667;
-        //                     paymentsByResponsible.company += remainingPayment * 0.333333;
-        //                 } else {
-        //                     // Si todos los días del mes son para EPS, aplicamos la distribución porcentual al total
-        //                     paymentsByResponsible.eps += totalPaymentForMonth * 0.666667;
-        //                     paymentsByResponsible.company += totalPaymentForMonth * 0.333333;
-        //                 }
-        //             }
-        //         }
-        //     });
-
-        //     // Redondear los valores de pago
-        //     for (let key in paymentsByResponsible) {
-        //         paymentsByResponsible[key] = Math.round(paymentsByResponsible[key]);
-        //     }
-
-        //     this.monthlyAbsencesByResponsible = absencesByResponsible;
-        //     this.monthlyPaymentsByResponsible = paymentsByResponsible;
-        // },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         isDateInMonth(date, month, year) {
             const checkDate = new Date(date);
             return checkDate.getMonth() + 1 === month &&
@@ -1268,13 +1152,6 @@ export default {
 
             this.monthlyPaymentsByResponsible = paymentsByResponsible;
         },
-
-
-
-
-
-
-
         onChangeSupportFile(e) {
             this.support_file = e.target.files[0]
         },
@@ -1387,7 +1264,7 @@ export default {
             }
 
             formData.append('absence_type_id', this.absence_type_id);
-            formData.append('absence_subtype', this.absence_subtype);
+            formData.append('absence_subtype', this.absence_subtype == null ? '' : this.absence_subtype);
             formData.append('disease_classification_code', this.disease_classification_code);
             formData.append('description', this.description);
             formData.append('start_date', this.start_date);
@@ -1395,7 +1272,7 @@ export default {
             formData.append('hours', this.hours);
             formData.append('days', this.days);
             formData.append('is_extension', this.is_extension);
-            formData.append('parent_absence_id', this.parent_absence_id);
+            formData.append('parent_absence_id', this.parent_absence_id == null ? '' : this.parent_absence_id);
             formData.append('observations', this.observations);
             formData.append('_method', 'PUT')
 
@@ -1585,7 +1462,17 @@ export default {
             } else {
                 this.disease_classification = [];
             }
-        }
+        },
+        downloadSupportFile(absence_id) {
+            // console.log(absence_id);
+            axios.get(`/absence/${absence_id}/download`)
+            .then(response => {
+                window.open(response.data.support_download_url, '_blank');
+            })
+            .catch(e => {
+                console.error('Error:', e);
+            })
+        },
     },
 };
 </script>

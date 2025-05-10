@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use App\Models\Eps;
+use App\Models\Campus;
 use App\Models\Absence;
+use App\Models\AbsenceStatus;
 use App\Models\AbsenceType;
 use Illuminate\Http\Request;
 use App\Models\AbsenceSubtype;
-use App\Models\Campus;
-use App\Models\DiseaseClassification;
-use App\Models\Eps;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use Exception;
 use Illuminate\Validation\Rule;
+use App\Models\AbsenceStatusType;
+use App\Models\DiseaseClassification;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\DB;
 
 class AbsenceController extends Controller
 {
@@ -21,13 +24,14 @@ class AbsenceController extends Controller
         $campuses = Campus::all();
         $absence_types = AbsenceType::all();
         $absence_subtypes = AbsenceSubtype::all();
+        $absence_status_types = AbsenceStatusType::all();
 
-        return view('back.modules.absence.index', compact('eps', 'campuses', 'absence_types', 'absence_subtypes'));
+        return view('back.modules.absence.index', compact('eps', 'campuses', 'absence_types', 'absence_subtypes', 'absence_status_types'));
     }
 
     public function getAbsences()
     {
-        $company_id = auth()->user()->company_id;
+        $company_id = auth()->user()->company_id ?? null;
 
         $absences = Absence::from('absences as ab')
             ->join('collaborators as c', 'c.id', '=', 'ab.collaborator_id')
@@ -42,7 +46,9 @@ class AbsenceController extends Controller
                 'collaborator',
                 'collaboratorContract',
                 'absenceType',
-                'segment'
+                'segment',
+                'absenceStatus',
+                'absenceStatus.absenceStatusType',
             ])
             ->get();
 
@@ -69,34 +75,6 @@ class AbsenceController extends Controller
 
     public function store(Request $request)
     {
-        // $request->validate([
-        //     'absence_type_id' => 'required',
-        //     'description' => 'required',
-        //     'start_date' => 'required|date|before_or_equal:end_date|after_or_equal:today',
-        //     'end_date' => 'required|date|after_or_equal:start_date',
-        //     'disease_classification_id' => 'required',
-        //     'hours' => 'required',
-        //     'days' => 'required',
-        // ]);
-
-        // if (in_array($request->absence_type_id, [6, 7, 8])) {
-        //     $request->validate([
-        //         'absence_subtype' => 'required',
-        //     ]);
-        // } else {
-        //     $request->validate([
-        //         'disease_classification_code' => 'required',
-        //     ]);
-        // }
-
-        // if ($request->is_extension) {
-        //     $request->validate([
-        //         'parent_absence_id' => 'required',
-        //     ]);
-        // }
-
-        // dd($request->is_extension);
-
         $rules = [
             'absence_type_id' => 'required',
             'description' => 'required|string|max:255',
@@ -220,13 +198,22 @@ class AbsenceController extends Controller
                 );
             }
 
-            Absence::create($data);
+            $absenceCreated = Absence::create($data);
+
+            $absenceStatus = new AbsenceStatus([
+                'absence_id' => $absenceCreated->id,
+                'absence_status_type_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $absenceStatus->save();
 
             $absences = Absence::where('collaborator_id', $request->collaborator_id)->orderBy('id', 'desc')->with('absenceType')->get();
 
             return response()->json([
                 'message'=>'Ausencia registrada exitosamente!',
-                'absence'=>$absences
+                'absences'=>$absences
             ]);
         } catch(Exception $e) {
             return response()->json([
@@ -242,7 +229,9 @@ class AbsenceController extends Controller
         $rules = [
             'absence_type_id' => 'required',
             'description' => 'required|string|max:255',
-            'start_date' => 'required|date|before_or_equal:end_date|after_or_equal:today',
+            // 'start_date' => 'required|date|before_or_equal:end_date|after_or_equal:today',
+            'start_date' => 'required|date',
+            // 'end_date' => 'required|date|after_or_equal:start_date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'hours' => 'required|numeric|min:0',
             'days' => 'required|numeric|min:0',
@@ -280,8 +269,8 @@ class AbsenceController extends Controller
 
             'start_date.required' => 'La fecha de inicio es requerida.',
             'start_date.date' => 'La fecha de inicio debe ser una fecha válida.',
-            'start_date.before_or_equal' => 'La fecha de inicio debe ser igual o anterior a la fecha de finalización.',
-            'start_date.after_or_equal' => 'La fecha de inicio debe ser igual o posterior a hoy.',
+            // 'start_date.before_or_equal' => 'La fecha de inicio debe ser igual o anterior a la fecha de finalización.',
+            // 'start_date.after_or_equal' => 'La fecha de inicio debe ser igual o posterior a hoy.',
 
             'end_date.required' => 'La fecha de finalización es requerida.',
             'end_date.date' => 'La fecha de finalización debe ser una fecha válida.',
@@ -325,7 +314,7 @@ class AbsenceController extends Controller
             $data = array(
                 'collaborator_id' => $request->collaborator_id,
                 'is_extension' => $is_extension,
-                'parent_absence_id' => $request->parent_absence_id,
+                'parent_absence_id' => $request->parent_absence_id ?? null,
                 'absence_type_id' => $request->absence_type_id,
                 'absence_subtype' => $request->absence_subtype,
                 'disease_classification_code' => $request->disease_classification_code,
@@ -358,13 +347,15 @@ class AbsenceController extends Controller
                 $data['support_file_url'] = $url;
             }
 
+            // dd($data);
+
             $absence->update($data);
 
             $absences = Absence::where('collaborator_id', $collaborator_id)->orderBy('id', 'desc')->with('absenceType')->get();
 
             return response()->json([
                 'message'=>'Ausencia actualizada exitosamente!',
-                'absence'=>$absences
+                'absences'=>$absences
             ]);
         } catch(Exception $e) {
             return response()->json([
@@ -390,6 +381,23 @@ class AbsenceController extends Controller
             return response()->json([
                 'message'=>'Registro eliminado exitosamente!',
                 'absences'=>$absences
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function downloadAbsenceSupport($absence_id) {
+        try {
+            $absence = Absence::where('id', $absence_id)->first();
+            // dd($absence);
+
+            $support_download_url = $absence->support_file_url;
+
+            return response()->json([
+                'support_download_url' => $support_download_url
             ]);
         } catch (Exception $e) {
             return response()->json([

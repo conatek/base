@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AbsenceController;
+use App\Http\Controllers\AbsenceStatusController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserCompanyController;
 use App\Http\Controllers\CollaboratorController;
@@ -177,5 +178,10 @@ Route::group(['middleware' => 'auth'], function() {
     Route::put('/absences/{absence}', [AbsenceController::class, 'update']);
     Route::put('/absences/{collaborator_id}/{absence_id}', [AbsenceController::class, 'update']);
     Route::delete('/absences/{collaborator_id}/{absence}/destroy', [AbsenceController::class, 'destroy']);
+    Route::get('/absence/{absence_id}/download', [AbsenceController::class, 'downloadAbsenceSupport']);
+
+    // ABSENCE STATUS
+    Route::put('/absence-status/{absence_status_id}/update', [AbsenceStatusController::class, 'update']);
+    Route::get('/absence-status/{absence_id}/download', [AbsenceStatusController::class, 'downloadAbsenceSupport']);
 
 });

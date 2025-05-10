@@ -32,5 +32,9 @@ export default defineConfig({
                 'node_modules/@fortawesome/vue-fontawesome',
             ],
         }
-      }
+      },
+    //   server: {
+    //     host: 'localhost',
+    //     port: 5173
+    //   }
 });
