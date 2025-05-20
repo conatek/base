@@ -2,6 +2,15 @@
 
 @section('content')
 
-<selection-index></selection-index>
+<selection-index
+    :requisition_types ="{{ $requisition_types }}"
+    :collaborators ="{{ $collaborators }}"
+    :campuses ="{{ $campuses }}"
+    :areas ="{{ $areas }}"
+    :positions ="{{ $positions }}"
+    :reasons ="{{ $reasons }}"
+    :statuses ="{{ $statuses }}"
+    :sources ="{{ $sources }}"
+></selection-index>
 
 @endsection

@@ -44,13 +44,6 @@
                     <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                 </a>
                 <ul>
-                    <li class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
-                        <a href="{{ route('wellness.index') }}" class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
-                            <i class="metismenu-icon fa fa-toolbox"></i>
-                            Bienestar
-                        </a>
-                    </li>
-
                     <li class="{{ request()->is('modules/selection*') ? 'mm-active' : '' }}">
                         <a href="{{ route('selection.index') }}" class="{{ request()->is('modules/selection*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
@@ -62,6 +55,13 @@
                         <a href="{{ route('absence.index') }}" class="{{ request()->is('modules/absence*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
                             Ausentismo
+                        </a>
+                    </li>
+
+                    <li class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('provision.index') }}" class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
+                            <i class="metismenu-icon fa fa-toolbox"></i>
+                            Dotación
                         </a>
                     </li>
 
@@ -79,10 +79,10 @@
                         </a>
                     </li>
 
-                    <li class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
-                        <a href="{{ route('provision.index') }}" class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
+                    <li class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('wellness.index') }}" class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
-                            Dotación
+                            Bienestar
                         </a>
                     </li>
                 </ul>

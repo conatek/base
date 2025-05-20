@@ -52,7 +52,14 @@ class DatabaseSeeder extends Seeder
             AbsenceSubtypeSeeder::class,
             DiseaseClassificationSeeder::class,
             AbsenceStatusTypesSeeder::class,
+            VacancyReasonSeeder::class,
+            VacancyStatusSeeder::class,
+            SelectionSourceSeeder::class,
+            CollaboratorRequisitionTypeSeeder::class,
             CollaboratorSeeder::class,
+            CampusSeeder::class,
+            AreaSeeder::class,
+            PositionSeeder::class,
         ]);
     }
 }

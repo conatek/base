@@ -28,13 +28,25 @@ const components = {
 
     'user-index': defineAsyncComponent(() => import('./components/users/UserIndex.vue')),
 
-    // MODULOS DE ADMINISTRACION
-    'wellness-index': defineAsyncComponent(() => import('./components/modules/Wellness.vue')),
-    'selection-index': defineAsyncComponent(() => import('./components/modules/Selection.vue')),
+    // MODULOS DE ADMINISTRACION - SELECCION
+    'selection-index': defineAsyncComponent(() => import('./components/modules/selection/Selection.vue')),
+    'collaborator-requisition-create': defineAsyncComponent(() => import('./components/modules/selection/CollaboratorRequisitionCreate.vue')),
+
+    // MODULOS DE ADMINISTRACION - AUSENTISMO
     'absence-index': defineAsyncComponent(() => import('./components/modules/Absence.vue')),
-    'training-index': defineAsyncComponent(() => import('./components/modules/Training.vue')),
-    'performance-index': defineAsyncComponent(() => import('./components/modules/Performance.vue')),
+
+    // MODULOS DE ADMINISTRACION - DOTACION
     'provision-index': defineAsyncComponent(() => import('./components/modules/Provision.vue')),
+
+    // MODULOS DE ADMINISTRACION - PLANES DE FORMACION
+    'training-index': defineAsyncComponent(() => import('./components/modules/Training.vue')),
+
+    // MODULOS DE ADMINISTRACION - EVALUACION DE DESEMPEÑO
+    'performance-index': defineAsyncComponent(() => import('./components/modules/Performance.vue')),
+
+    // MODULOS DE ADMINISTRACION - BIENESTAR
+    'wellness-index': defineAsyncComponent(() => import('./components/modules/Wellness.vue')),
+
 
 };
 
