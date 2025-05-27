@@ -4,7 +4,7 @@
             <div v-if="selected_company == null && add_company == false && edit_company == false && load_collaborators == false" class="page-title-wrapper">
                 <div class="page-title-heading">
                     <div class="page-title-icon">
-                        <i class="pe-7s-culture text-success"></i>
+                        <i class="fa fa-building" style="color: #127cb3;"></i>
                     </div>
                     <div>
                         Listado de Empresas

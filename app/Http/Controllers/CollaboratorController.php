@@ -111,7 +111,7 @@ class CollaboratorController extends Controller
 
     public function index()
     {
-        abort_if(Gate::denies('collaborator_index'), 403);
+        // abort_if(Gate::denies('collaborator_index'), 403);
 
         $user = auth()->user();
         $company = Company::where('id', $user->company_id)->first();

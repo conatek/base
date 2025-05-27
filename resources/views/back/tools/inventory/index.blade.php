@@ -1,5 +1,7 @@
 @extends('back.layouts.app')
 
 @section('content')
-    <roles-index></roles-index>
+
+<inventory-index></inventory-index>
+
 @endsection
