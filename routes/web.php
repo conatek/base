@@ -9,6 +9,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\CampusController;
+use App\Http\Controllers\CardsController;
 use App\Http\Controllers\CollaboratorAcademicAchievementController;
 use App\Http\Controllers\CollaboratorDocumentController;
 use App\Http\Controllers\CollaboratorFamilyController;
@@ -16,6 +17,8 @@ use App\Http\Controllers\CollaboratorHomeVisitController;
 use App\Http\Controllers\CollaboratorMedicalExaminationController;
 use App\Http\Controllers\CompaniesController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\PerformanceController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
@@ -33,6 +36,7 @@ Route::get('/', function () {
 Route::group(['middleware' => 'auth'], function() {
     Route::get('/home', [HomeController::class, 'index_master'])->name('home');
 
+    Route::get('/users-data/{company_id}', [UserController::class, 'getUsers']);
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
@@ -120,6 +124,8 @@ Route::group(['middleware' => 'auth'], function() {
     // ROLES AND PERMISSIONS
     Route::resource('permissions', PermissionController::class);
     Route::resource('roles', RoleController::class);
+    Route::get('/get-roles-and-permissions', [RoleController::class, 'getRolesAndPermissionsData']);
+    Route::post('/toggle-permission', [RoleController::class, 'togglePermission']);
 
     // PROVINCES AND CITIES
     Route::post('/get-cities', [ProvinceController::class, 'getCities'])->name('get_cities');
@@ -183,5 +189,11 @@ Route::group(['middleware' => 'auth'], function() {
     // ABSENCE STATUS
     Route::put('/absence-status/{absence_status_id}/update', [AbsenceStatusController::class, 'update']);
     Route::get('/absence-status/{absence_id}/download', [AbsenceStatusController::class, 'downloadAbsenceSupport']);
+
+    // TOOLS
+    Route::get('/tools/overtime', [OvertimeController::class, 'index'])->name('overtime.index');
+    Route::get('/tools/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+    Route::get('/tools/cards', [CardsController::class, 'index'])->name('cards.index');
+
 
 });

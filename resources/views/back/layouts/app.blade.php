@@ -8,7 +8,6 @@
             <div class="app-container app-theme-green body-tabs-shadow fixed-header fixed-sidebar">
                 @include('back.partials.back-header')
                 @include('back.partials.back-ui-theme-settings')
-                {{-- @include('back.partials.back-main') --}}
 
                 <div class="app-main">
                     <div class="app-sidebar sidebar-shadow">
@@ -43,11 +42,8 @@
                                 </button>
                             </span>
                         </div>
-                        @canany(['home_master', 'home_super'])
-                            @include('back.partials.back-sidebar')
-                        @else
-                            @include('back.partials.back-sidebar-client')
-                        @endcanany
+
+                        @include('back.partials.back-sidebar')
 
                     </div>
 
@@ -63,7 +59,6 @@
             </div>
         </div>
         @include('back.partials.back-drawer-wrapper')
-
 
         <div class="app-drawer-overlay d-none animated fadeIn"></div>
 

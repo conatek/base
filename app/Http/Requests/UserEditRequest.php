@@ -21,12 +21,14 @@ class UserEditRequest extends FormRequest
                 'email' => 'required|email|unique:users,email,' . $user->id,
                 'password' => 'sometimes|min:8',
                 'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|dimensions:max_width=200,max_height=200|max:100',
+                'roles' => 'required|array|min:1',
             ];
         } else {
             return [
                 'name' => 'required',
                 'email' => 'required|email|unique:users,email,' . $user->id,
                 'password' => 'sometimes|min:8',
+                'roles' => 'required|array|min:1',
             ];
         }
     }
@@ -44,6 +46,9 @@ class UserEditRequest extends FormRequest
             'image.dimensions' => 'Las dimensiones maximas de imagen son 200 x 200',
             'image.mimes' => 'Formato de imagen no admitido (usar jpeg, jpg, png).',
             'image.max' => 'El archivo excede el tamaño permitido (100KB).',
+            'roles.required' => 'Debe seleccionar al menos un rol.',
+            'roles.array' => 'Los roles deben ser un arreglo.',
+            'roles.min' => 'Debe seleccionar al menos un rol.',
         ];
     }
 }

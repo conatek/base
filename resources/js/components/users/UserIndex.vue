@@ -4,7 +4,7 @@
             <div v-if="selected_user == null && add_user == false && edit_user == false" class="page-title-wrapper">
                 <div class="page-title-heading">
                     <div class="page-title-icon">
-                        <i class="pe-7s-users text-success"></i>
+                        <i class="fa fa-users" style="color: rgb(18, 124, 179)"></i>
                     </div>
                     <div>
                         Listado de Usuarios
@@ -20,7 +20,7 @@
             <div v-else-if="selected_user == null && add_user == true && edit_user == false" class="page-title-wrapper">
                 <div class="page-title-heading">
                     <div class="page-title-icon">
-                        <i class="pe-7s-users text-success"></i>
+                        <i class="fa fa-user-plus" style="color: rgb(18, 124, 179)"></i>
                     </div>
                     <div>
                         Agregar Usuario
@@ -80,7 +80,6 @@
                         <tr>
                             <th class="text-center">Nombre</th>
                             <th class="text-center">Email</th>
-                            <th class="text-center">Empresa</th>
                             <th class="text-center">Roles</th>
                             <th class="text-end">Acciones</th>
                         </tr>
@@ -89,32 +88,31 @@
                         <tr v-for="(user, index) in users" :key="user.id">
                             <td>{{ user.name }}</td>
                             <td>{{ user.email }}</td>
-                            <td>{{ user.company.company_name }}</td>
                             <td class="text-center">
                                 <div v-for="role in user.roles" :key="role.id">
                                     <span v-if="role" class="badge bg-success" style="min-width: 100px;">{{ role.name }}</span>
                                     <span v-else class="badge bg-danger" style="min-width: 100px;">Sin rol</span>
                                 </div>
                             </td>
-                            <td class="align-middle text-end">
-                                <button v-if="user" @click="editUser(user.id)" class="me-2 btn-icon btn btn-sm btn-primary">
+                            <td class="text-end">
+                                <template v-if="user && canEdit(user)">
+                                    <button @click="editUser(user.id)" class="btn-icon btn btn-sm btn-primary me-2">
                                     <i class="fa fa-edit"></i> Editar
-                                </button>
-                                <button v-if="user" @click="showDeleteAlert(user.id, index)" class="btn-icon btn btn-sm btn-danger">
-                                    <i class="fa fa-trash"></i> Eliminar
-                                </button>
+                                    </button>
+
+                                    <button @click="showDeleteAlert(user.id, index)" class="btn-icon btn btn-sm btn-danger">
+                                        <i class="fa fa-trash"></i> Eliminar
+                                    </button>
+                                </template>
+
+                                <template v-else>
+                                    <span class="text-muted small" style="min-height: 38px; line-height: 1.5;">
+                                        Sin permisos
+                                    </span>
+                                </template>
                             </td>
                         </tr>
                     </tbody>
-                    <!-- <tfoot>
-                        <tr>
-                            <th class="text-center">Nombre</th>
-                            <th class="text-center">Email</th>
-                            <th class="text-center">Empresa</th>
-                            <th class="text-center">Roles</th>
-                            <th class="text-end">Acciones</th>
-                        </tr>
-                    </tfoot> -->
                 </table>
             </div>
         </div>
@@ -141,16 +139,6 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="position-relative mb-3">
-                                <label for="company_id" class="form-label">Empresa*</label>
-                                <select v-if="companies.length > 0" v-model="company_id" name="company_id" class="form-control"  id="company_id">
-                                    <option value="" disabled selected hidden>Selecciona la empresa</option>
-                                    <option v-for="company in companies" :value="company.id">{{ company.company_name }}</option>
-                                </select>
-                                <span v-if="errors && errors.company_id" class="error text-danger" for="company_id">{{ errors.company_id[0] }}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="position-relative mb-3">
                                 <label for="image" class="form-label">Imagen</label>
                                 <div class="input-group">
                                     <input @change="onChangeImage" type="file" name="image" id="image" class="form-control">
@@ -158,8 +146,6 @@
                                 <span v-if="errors && errors.image" class="error text-danger" for="image">{{ errors.image[0] }}</span>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6">
                             <div class="position-relative mb-3">
                                 <label for="password" class="form-label">Contraseña</label>
@@ -172,17 +158,17 @@
                     <hr>
                     <p>Asignar Roles</p>
                     <div v-if="roles" class="row">
-                        <div v-for="role in roles" :key="role.id" class="col-lg-3 col-md-4 col-sm-6 py-1">
+                        <div v-for="role in filteredRoles" :key="role.id" class="col-lg-3 col-md-4 col-sm-6 py-1">
                             <div class="form-group clearfix">
                                 <div class="icheck-primary d-inline">
-                                    <!-- <p>{{ role.name }}</p> -->
                                     <input type="checkbox" :id="'checkbox_' + role.name"
-                                        :value="role.id" v-model="selected_roles">
+                                        :value="role.name" v-model="selected_roles">
                                     <label :for="'checkbox_' + role.name">{{ role.name }}</label>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <span v-if="errors && errors.roles" class="error text-danger" for="roles">{{ errors.roles[0] }}</span>
                 </form>
             </div>
         </div>
@@ -204,7 +190,7 @@
                         <div>
                             <h5 class="menu-header-title text-center">{{ userData.name }}</h5>
                             <h6 class="menu-header-subtitle text-center">{{ userData.email }}</h6>
-                            <h6 class="menu-header-subtitle text-center">{{ selected_user.company.company_name }}</h6>
+                            <!-- <h6 class="menu-header-subtitle text-center">{{ selected_user.company.company_name }}</h6> -->
                         </div>
                     </div>
                 </div>
@@ -251,17 +237,17 @@
                         <hr>
                         <p>Asignar Roles</p>
                         <div v-if="roles" class="row">
-                            <div v-for="role in roles" :key="role.id" class="col-lg-3 col-md-4 col-sm-6 py-1">
+                            <div v-for="role in filteredRoles" :key="role.id" class="col-lg-3 col-md-4 col-sm-6 py-1">
                                 <div class="form-group clearfix">
                                     <div class="icheck-primary d-inline">
-                                        <!-- <p>{{ role.name }}</p> -->
                                         <input type="checkbox" :id="'checkbox_' + role.name"
-                                            :value="role.id" v-model="selected_roles">
+                                            :value="role.name" v-model="selected_roles">
                                         <label :for="'checkbox_' + role.name">{{ role.name }}</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <span v-if="errors && errors.roles" class="error text-danger" for="roles">{{ errors.roles[0] }}</span>
                     </form>
                 </div>
             </div>
@@ -275,10 +261,13 @@ import { usersDatatable } from '../../assets/js/tables.js';
 
 export default {
     props: {
-        companies: {
+        current_user_id: {
             default: null,
         },
-        users: {
+        current_user_roles: {
+            default: null,
+        },
+        company_id: {
             default: null,
         },
         roles: {
@@ -287,15 +276,20 @@ export default {
     },
     data() {
         return {
+            users: [],
+
             selected_user: null,
             add_user: false,
             edit_user: false,
 
             userData: null,
-            // company_id: '',
 
             selected_roles: [],
-            company_id: '',
+            rolePriority: {
+                'Master': 1,
+                'Super': 2,
+                'Admin': 3
+            },
             name: '',
             email: '',
             image: null,
@@ -313,14 +307,46 @@ export default {
     },
     mounted() {
         this.getOrigin()
-        usersDatatable();
+
+        this.getUsers();
+        // usersDatatable();
+    },
+    computed: {
+        filteredRoles() {
+            // Orden de jerarquía: de mayor a menor
+            const hierarchy = ['Master', 'Super', 'Admin'];
+
+            // Encontrar el rol de mayor jerarquía que el usuario tenga
+            const userRole = hierarchy.find(role => this.current_user_roles.includes(role));
+
+            // Si el usuario no tiene ningún rol válido, devolver []
+            if (!userRole) {
+                return [];
+            }
+
+            let exclude = [];
+
+            switch (userRole) {
+                case 'Super':
+                    exclude = ['Master', 'Super'];
+                    break;
+                case 'Admin':
+                    exclude = ['Master', 'Super', 'Admin'];
+                    break;
+                // Master no excluye nada
+                default:
+                    exclude = [];
+            }
+
+            return this.roles.filter(role => !exclude.includes(role.name));
+        }
     },
     watch: {
         userData: {
             immediate: true,
             handler(newUserData) {
                 if (newUserData?.roles) {
-                    this.selected_roles = newUserData.roles.map(role => role.id);
+                    this.selected_roles = newUserData.roles.map(role => role.name);
                 }
             }
         }
@@ -381,12 +407,26 @@ export default {
         onChangeImage(e) {
             this.image = e.target.files[0]
         },
+        getUsers() {
+            axios.get(`/users-data/${this.company_id}`).then(
+                (res) => {
+                    this.users = res.data.users;
+
+                    usersDatatable();
+
+                    this.errors = null;
+                }).catch(
+                (error) => {
+                    if(error && error.response && error.response.data && error.response.data.errors) {
+                        this.errors = error.response.data.errors
+                    }
+                })
+        },
         addUser() {
             this.selected_user = null;
             this.add_user = true;
             this.edit_user = false;
 
-            this.company_id = '';
             this.name = '';
             this.email = '';
             this.image = null;
@@ -406,11 +446,6 @@ export default {
                 fd.append(`roles[${index}]`, role);
             });
 
-            // console.log('Este es el FD:');
-            // for (let [key, value] of fd.entries()) {
-            //     console.log(`${key}: ${value}`);
-            // }
-
             axios.post('/users', fd).then(
                 (res) => {
                     localStorage.setItem('origin', 'created');
@@ -421,7 +456,13 @@ export default {
 
                     this.getMessage(res.data.message)
 
-                    window.location.href = '/users'
+                    this.getUsers();
+
+                    this.selected_user = null
+                    this.add_user = false
+                    this.edit_user = false
+
+                    // window.location.href = '/users'
                     this.errors = null
                 }).catch(
                 (error) => {
@@ -430,12 +471,27 @@ export default {
                     }
                 })
         },
+        canEdit(user) {
+            // No puede editarse a sí mismo
+            if (user.id === this.current_user_id) return false;
+
+            // Si el usuario listado no tiene roles, permite editar
+            if (!user.roles || user.roles.length === 0) return true;
+
+            // Obtener el rol más poderoso del usuario actual
+            const currentRoleLevel = Math.min(...this.current_user_roles.map(r => this.rolePriority[r] || 99));
+
+            // Obtener el rol más poderoso del usuario listado
+            const targetRoleLevel = Math.min(...user.roles.map(r => this.rolePriority[r.name] || 99));
+
+            // Solo puede editar usuarios con rol igual o menor jerarquía (número mayor o igual)
+            return currentRoleLevel < targetRoleLevel;
+        },
         editUser(user) {
             this.selected_user = this.users.find(u => u.id === user);
             this.add_user = false;
             this.edit_user = true;
 
-            this.company_id = this.selected_user.company_id;
             this.name = this.selected_user.name;
             this.email = this.selected_user.email;
 
@@ -475,10 +531,16 @@ export default {
                     this.successfully_updated_message = true
                     this.successfully_deleted_message = false
 
-                    url = `/users`
-                    window.location.href = url
+                    // url = `/users`
+                    // window.location.href = url
 
                     this.getMessage(res.data.message)
+
+                    this.getUsers();
+
+                    this.selected_user = null
+                    this.add_user = false
+                    this.edit_user = false
 
                     this.errors = null
                 }).catch(

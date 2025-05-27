@@ -20,6 +20,7 @@ class UserCreateRequest extends FormRequest
                 'company_id' => 'required',
                 'password' => 'required|min:8',
                 'image' => 'sometimes|image|mimes:jpeg,png,jpg|dimensions:max_width=200,max_height=200|max:100',
+                'roles' => 'required|array|min:1',
             ];
         } else {
             return [
@@ -27,6 +28,7 @@ class UserCreateRequest extends FormRequest
                 'email' => 'required|email|unique:users',
                 'company_id' => 'required',
                 'password' => 'required|min:8',
+                'roles' => 'required|array|min:1',
             ];
         }
     }
@@ -45,6 +47,9 @@ class UserCreateRequest extends FormRequest
             'image.image' => 'El archivo debe ser una imagen.',
             'image.mimes' => 'Formato de imagen no admitido (usar jpeg, jpg, png).',
             'image.max' => 'El archivo excede el tamaño permitido (100KB).',
+            'roles.required' => 'Debe seleccionar al menos un rol.',
+            'roles.array' => 'Los roles deben ser un arreglo.',
+            'roles.min' => 'Debe seleccionar al menos un rol.',
         ];
     }
 }

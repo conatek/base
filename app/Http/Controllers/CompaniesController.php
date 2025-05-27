@@ -30,7 +30,7 @@ class CompaniesController extends Controller
 
     public function index()
     {
-        abort_if(Gate::denies('company_index'), 403, 'ACCESO DENEGADO');
+        // abort_if(Gate::denies('company_index'), 403, 'ACCESO DENEGADO');
 
         $companies = Company::orderBy('created_at', 'desc')
             ->orderBy('updated_at', 'desc')
@@ -41,7 +41,7 @@ class CompaniesController extends Controller
 
     public function create()
     {
-        abort_if(Gate::denies('company_create'), 403);
+        // abort_if(Gate::denies('company_create'), 403);
 
         $result = [];
 
@@ -125,7 +125,7 @@ class CompaniesController extends Controller
 
     public function show(Company $company)
     {
-        abort_if(Gate::denies('company_show'), 403);
+        // abort_if(Gate::denies('company_show'), 403);
 
         $result = [];
 
@@ -147,7 +147,7 @@ class CompaniesController extends Controller
 
     public function edit(Company $company)
     {
-        abort_if(Gate::denies('company_edit'), 403);
+        // abort_if(Gate::denies('company_edit'), 403);
 
         $result = [];
 
@@ -222,7 +222,7 @@ class CompaniesController extends Controller
 
     public function destroy($id)
     {
-        abort_if(Gate::denies('company_destroy'), 403);
+        // abort_if(Gate::denies('company_destroy'), 403);
 
         $company = Company::find($id);
 

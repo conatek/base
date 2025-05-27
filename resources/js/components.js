@@ -4,6 +4,9 @@ const components = {
     'hello-component': defineAsyncComponent(() => import('./components/Hello.vue')),
     'world-component': defineAsyncComponent(() => import('./components/World.vue')),
 
+    'roles-index': defineAsyncComponent(() => import('./components/roles/RolesIndex.vue')),
+    'permissions-index': defineAsyncComponent(() => import('./components/permissions/PermissionsIndex.vue')),
+
     'campus-create': defineAsyncComponent(() => import('./components/campus/CampusCreate.vue')),
     'campus-edit': defineAsyncComponent(() => import('./components/campus/CampusEdit.vue')),
 
@@ -35,6 +38,11 @@ const components = {
     'training-index': defineAsyncComponent(() => import('./components/modules/Training.vue')),
     'performance-index': defineAsyncComponent(() => import('./components/modules/Performance.vue')),
     'provision-index': defineAsyncComponent(() => import('./components/modules/Provision.vue')),
+
+    // HERRAMIENTAS
+    'overtime-index': defineAsyncComponent(() => import('./components/tools/Overtime.vue')),
+    'inventory-index': defineAsyncComponent(() => import('./components/tools/Inventory.vue')),
+    'cards-index': defineAsyncComponent(() => import('./components/tools/Cards.vue')),
 
 };
 

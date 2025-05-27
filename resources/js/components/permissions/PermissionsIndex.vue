@@ -1,38 +1,5 @@
-@extends('back.layouts.app')
-
-@section('content')
-    <div class="app-page-title">
-        <div class="page-title-wrapper">
-            <div class="page-title-heading">
-                <div class="page-title-icon">
-                    <i class="pe-7s-key text-success"></i>
-                </div>
-                <div>
-                    Listado de Permisos
-                </div>
-            </div>
-            <div class="page-title-actions">
-                @can('permission_create')
-                <a href="{{ route('permissions.create') }}" type="button" class="btn-shadow me-3 btn btn-info">
-                    <i class="fa fa-plus"></i>
-                    Agregar
-                </a>
-                @endcan
-            </div>
-        </div>
-    </div>
-
-    @if (session('success'))
-        <div class="mbg-3 alert alert-success alert-dismissible fade show" role="alert">
-        <span class="pe-2">
-            <i class="fa fa-star"></i>
-            {{-- <i class="pe-7s-star"></i> --}}
-        </span>
-            {{ session('success') }}
-        </div>
-    @endif
-
-    {{-- <div class="main-card mb-3 card">
+<template>
+    <div class="main-card mb-3 card">
         <div class="card-body">
             <table style="width: 100%;" id="dt_users" class="table table-cntk table-hover table-bordered">
                 <thead>
@@ -43,7 +10,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach ($permissions as $permission)
+                <!-- @foreach ($permissions as $permission)
                     <tr>
                         <td>{{ $permission->id }}</td>
                         <td>{{ $permission->name }}</td>
@@ -71,7 +38,7 @@
                             @endcan
                         </td>
                     </tr>
-                @endforeach
+                @endforeach -->
                 </tbody>
                 <tfoot>
                 <tr>
@@ -82,7 +49,29 @@
                 </tfoot>
             </table>
         </div>
-    </div> --}}
+    </div>
+</template>
 
-    <permissions-index></permissions-index>
-@endsection
+<script>
+export default {
+    name: 'PermissionsIndex',
+
+    data() {
+        return {
+            // Definir datos reactivos aquí
+        };
+    },
+    methods: {
+        // Definir métodos aquí
+    },
+    created() {
+        // Código a ejecutar cuando el componente es creado
+    }
+};
+</script>
+
+<style scoped>
+.permissions-index {
+    /* Estilos del componente */
+}
+</style>

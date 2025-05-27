@@ -15,14 +15,46 @@ use Exception;
 
 class UserController extends Controller
 {
+    public function getUsers() {
+        $results = [];
+
+        $user = auth()->user();
+
+        $company_id = $user->company_id;
+        $users = User::where('company_id', $company_id)->with(['roles'])->get();
+        $users_data = [];
+
+        // dd($users->roles);
+
+        foreach ($users as $user) {
+            $data = [];
+
+            $data['id'] = $user->id;
+            $data['name'] = $user->name;
+            $data['email'] = $user->email;
+
+            array_push($users_data, $data);
+        }
+
+        // $results['users'] = $users_data;
+        $results['users'] = $users;
+
+        return $results;
+    }
+
     public function index()
     {
-        abort_if(Gate::denies('user_index'), 403);
-        $companies = Company::select('id', 'company_name')->get();
-        $users = User::with(['company', 'roles'])->get();
+        // abort_if(Gate::denies('user_index'), 403);
+        $current_user_id = auth()->user()->id;
+        $current_user_roles = auth()->user()->roles->pluck('name')->toArray();
+        $company_id = auth()->user()->company_id;
+        // $users = User::where('company_id', $company_id)->with(['company', 'roles'])->get();
         $roles = Role::all();
 
-        return view('back.users.index', compact('users', 'roles', 'companies'));
+
+        // return view('back.users.index', compact('current_user_roles', 'company_id', 'users', 'roles'));
+        return view('back.users.index', compact('current_user_id', 'current_user_roles', 'company_id', 'roles'));
+
     }
 
     public function create()
@@ -74,11 +106,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        abort_if(Gate::denies('user_edit'), 403);
-        // $companies = Company::all()->pluck('name', 'id');
-        // $roles = Role::all()->pluck('name', 'id');
-        // $user->load('roles');
-        // return view('back.users.edit', compact('user', 'companies', 'roles'));
+        // abort_if(Gate::denies('user_edit'), 403);
 
         $result = [];
 
