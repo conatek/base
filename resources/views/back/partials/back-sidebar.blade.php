@@ -120,28 +120,28 @@
             <hr>
 
             <li>
-                <a href="#">
+                <a href="#" class="{{ request()->is('tools*') ? 'mm-active' : '' }}">
                     <i class="metismenu-icon fa fa-toolbox"></i>
                     Herramientas
                     <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                 </a>
                 <ul>
-                    <li>
-                        <a href="{{ route('overtime.index') }}">
+                    <li class="{{ request()->is('tools/overtime*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('overtime.index') }}" class="{{ request()->is('tools/overtime*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
                             Control Horas Extras
                         </a>
                     </li>
 
-                    <li>
-                        <a href="{{ route('inventory.index') }}">
+                    <li class="{{ request()->is('tools/inventory*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('inventory.index') }}" class="{{ request()->is('tools/inventory*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon"></i>
                             Inventario
                         </a>
                     </li>
 
-                    <li>
-                        <a href="{{ route('cards.index') }}">
+                    <li class="{{ request()->is('tools/cards*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('cards.index') }}" class="{{ request()->is('tools/cards*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon"></i>
                             Tarjetas
                         </a>

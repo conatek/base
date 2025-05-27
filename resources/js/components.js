@@ -50,9 +50,13 @@ const components = {
     // MODULOS DE ADMINISTRACION - BIENESTAR
     'wellness-index': defineAsyncComponent(() => import('./components/modules/Wellness.vue')),
 
-    // HERRAMIENTAS
+    // HERRAMIENTAS - GESTTION DE HORAS EXTRAS
     'overtime-index': defineAsyncComponent(() => import('./components/tools/Overtime.vue')),
+
+    // HERRAMIENTAS - GESTION DE INVENTARIO
     'inventory-index': defineAsyncComponent(() => import('./components/tools/Inventory.vue')),
+
+    // HERRAMIENTAS - GESTION DE TARJETAS
     'cards-index': defineAsyncComponent(() => import('./components/tools/Cards.vue')),
 
 };
