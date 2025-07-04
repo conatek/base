@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RoleCreateRequest;
 use App\Http\Requests\RoleEditRequest;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Permission;
@@ -29,10 +30,18 @@ class RoleController extends Controller
         return $results;
     }
 
+    public function getRolesData() {
+        $results = [];
+
+        $roles = Role::all();
+
+        $results['roles'] = $roles;
+
+        return $results;
+    }
+
     public function togglePermission(Request $request)
     {
-        // dd($request->all());
-
         $role = Role::where('name', $request->role)->firstOrFail();
         $permission = Permission::where('name', $request->permission)->firstOrFail();
 
@@ -53,20 +62,46 @@ class RoleController extends Controller
         return view('back.roles.index');
     }
 
-    public function create()
+    // public function create()
+    // {
+    //     abort_if(Gate::denies('role_create'), 403);
+    //     $permissions = Permission::all()->pluck('name', 'id');
+    //     return view('back.roles.create', compact('permissions'));
+    // }
+
+    // public function store(RoleCreateRequest $request)
+    // {
+    //     $role = Role::create($request->only('name'));
+
+    //     $role->syncPermissions($request->input('permissions', []));
+
+    //     return redirect()->route('roles.index')->with('success', 'Rol creado correctamente!.');
+    // }
+
+    // public function store(RoleCreateRequest $request)
+    public function store(Request $request)
     {
-        abort_if(Gate::denies('role_create'), 403);
-        $permissions = Permission::all()->pluck('name', 'id');
-        return view('back.roles.create', compact('permissions'));
-    }
+        // Las validaciones se realizan en RoleCreateRequest
 
-    public function store(RoleCreateRequest $request)
-    {
-        $role = Role::create($request->only('name'));
+        try{
+            $data = array(
+                'name' => $request->name,
+                'guard_name' => $request->guard_name,
+            );
 
-        $role->syncPermissions($request->input('permissions', []));
+            Role::create($data);
 
-        return redirect()->route('roles.index')->with('success', 'Rol creado correctamente!.');
+            $roles = Role::all();
+
+            return response()->json([
+                'message'=>'Role creado exitosamente!',
+                'roles'=>$roles,
+            ]);
+        } catch(Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 
     public function show(Role $role)

@@ -1,5 +1,5 @@
 @extends('back.layouts.app')
 
 @section('content')
-    <roles-index></roles-index>
+    <access-manager></access-manager>
 @endsection

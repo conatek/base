@@ -4,8 +4,10 @@ const components = {
     'hello-component': defineAsyncComponent(() => import('./components/Hello.vue')),
     'world-component': defineAsyncComponent(() => import('./components/World.vue')),
 
+    'access-manager': defineAsyncComponent(() => import('./components/access/AccessManager.vue')),
     'roles-index': defineAsyncComponent(() => import('./components/roles/RolesIndex.vue')),
     'permissions-index': defineAsyncComponent(() => import('./components/permissions/PermissionsIndex.vue')),
+    'modules-index': defineAsyncComponent(() => import('./components/modules/ModulesIndex.vue')),
 
     'campus-create': defineAsyncComponent(() => import('./components/campus/CampusCreate.vue')),
     'campus-edit': defineAsyncComponent(() => import('./components/campus/CampusEdit.vue')),

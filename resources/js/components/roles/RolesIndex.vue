@@ -1,154 +1,273 @@
 <template>
     <div>
-        <div class="app-page-title">
-            <div class="page-title-wrapper">
-                <div class="page-title-heading">
-                    <div class="page-title-icon">
-                        <i class="fa fa-key" style="color: #127cb3;"></i>
-                    </div>
-                    <div>
-                        Matriz de Roles y Permisos
-                    </div>
-                </div>
-                <div class="page-title-actions">
-                    <a type="button" class="btn btn-mh-dark-blue me-3">
-                        <i class="fa fa-plus"></i>
-                        Agregar Módulo
-                    </a>
+        <button @click="addRole" type="button" class="mb-2 btn btn-mh-dark-blue mb-3"><i class="fa fa-plus"></i>  Agregar rol</button>
 
-                    <a type="button" class="btn btn-mh-dark-blue me-3">
-                        <i class="fa fa-plus"></i>
-                        Agregar Rol
-                    </a>
-
-                    <a type="button" class="btn btn-mh-dark-blue me-3">
-                        <i class="fa fa-plus"></i>
-                        Agregar Permiso
-                    </a>
-                </div>
-
-                <!-- <div class="page-title-actions">
-                    <button @click="addCollaborator()" class="btn btn-mh-dark-blue me-3">
-                        <i class="fa fa-plus"></i>
-                        Agregar
-                    </button>
-                </div> -->
-            </div>
-        </div>
         <div class="main-card mb-3 card">
-            <div class="card-body table-container">
-                <table style="width: 100%;" class="table table-cntk table-hover table-bordered sticky-table">
-                    <thead>
-                        <tr>
-                            <th style="text-align: center;">Módulo / Permiso</th>
-                            <th v-for="role in roles" :key="role.id" style="text-align: center;">{{ role.name }}</th>
-                            <th style="text-align: right;">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <template v-for="(permissions, module) in permissionsByModule" :key="module">
-                            <tr>
-                                <td :colspan="roles.length + 2" style="background: #eee;">
-                                    <strong>{{ module }}</strong>
-                                </td>
-                            </tr>
-                            <tr v-for="permission in permissions" :key="permission.id">
-                                <td>{{ permission.display_name }}</td>
-                                <td v-for="role in roles" :key="role.id" class="text-center">
-                                    <input
-                                        type="checkbox"
-                                        :name="`permissions[${role.id}][${permission.id}]`"
-                                        :checked="isPermissionAssigned(permission.name, role.name)"
-                                        @change="togglePermission(permission.name, role.name)"
-                                    />
-                                </td>
-                                <td class="td-actions" style="text-align: right;">
-                                    <a :href="`/permissions/${permission.id}`" class="mb-2 me-2 btn-icon btn btn-sm btn-success">
-                                        <i class="pe-7s-look btn-icon-wrapper"></i>Mostrar
-                                    </a>
-                                    <a :href="`/permissions/${permission.id}/edit`" class="mb-2 me-2 btn-icon btn btn-sm btn-primary">
-                                        <i class="pe-7s-pen btn-icon-wrapper"></i>Editar
-                                    </a>
-                                    <form :action="`/permissions/${permission.id}`" method="POST" style="display: inline;">
-                                        <button class="mb-2 me-2 btn-icon btn btn-sm btn-danger" type="submit">
-                                            <i class="pe-7s-trash btn-icon-wrapper"></i>Eliminar
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table id="dt_roles" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Tipo de autenticación</th>
+                                    <th style="text-align: right;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in roles">
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.guard_name }}</td>
+                                    <td style="text-align: right;">
+                                        <a class="btn btn-sm btn-primary mx-1 my-1" @click="editRole(item, index)" style="width: 80px;"><font-awesome-icon :icon="['fas', 'pen-to-square']" /> Editar</a>
+                                        <a class="btn btn-sm btn-danger mx-1 my-1" @click="deleteRole(item, index)" style="width: 80px;"><font-awesome-icon :icon="['fas', 'trash-can']" /> Eliminar</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div v-if="add_role == true && edit_role == false" class="col-md-6">
+                        <form @submit.prevent="storeRole" enctype="multipart/form-data">
+                            <div class="card-hover-shadow card-border mb-3 card frame-information-card">
+                                <div class="card-header">
+                                    Agregar Rol
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="position-relative mb-3">
+                                                <label for="name" class="form-label">Nombre*</label>
+                                                <input v-model="name" name="name" id="name" type="text" class="form-control" placeholder="Ingrese nombre de rol">
+                                                <span v-if="errors_roles && errors_roles.name" class="error text-danger" for="name">{{ errors_roles.name[0] }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="position-relative mb-3">
+                                                <label for="guard_name_id" class="form-label">Tipo de autenticación*</label>
+                                                <select v-model="guard_name_id" class="form-control" name="guard_name_id" id="guard_name_id">
+                                                    <option value="" disabled selected hidden>Seleccionar Tipo Autenticación</option>
+                                                    <option v-for="guard_name in guard_name_types" :value="guard_name.id">{{ guard_name.name }}</option>
+                                                </select>
+                                                <span v-if="errors_roles && errors_roles.guard_name_id" class="error text-danger" for="guard_name_id">{{ errors_roles.guard_name_id[0] }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                        </template>
-                    </tbody>
-                </table>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </form>
+                    </div>
+                    <div v-if="add_role == false && edit_role == true" class="col-md-6">
+                        <div class="card-hover-shadow card-border mb-3 card frame-information-card">
+                            <div class="card-header">
+                                Editar Rol
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="position-relative mb-3">
+                                            <label for="name" class="form-label">Nombre*</label>
+                                            <input v-model="name" name="name" id="name" type="text" class="form-control" placeholder="Ingrese nombre de rol">
+                                            <span v-if="errors_roles && errors_roles.name" class="error text-danger" for="name">{{ errors_roles.name[0] }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="position-relative mb-3">
+                                            <label for="guard_name_id" class="form-label">Tipo de autenticación*</label>
+                                            <select v-model="guard_name_id" class="form-control" name="guard_name_id" id="guard_name_id">
+                                                <option value="" disabled selected hidden>Seleccionar Tipo Autenticación</option>
+                                                <option v-for="guard_name in guard_name_types" :value="guard_name.id">{{ guard_name.name }}</option>
+                                            </select>
+                                            <span v-if="errors_roles && errors_roles.guard_name_id" class="error text-danger" for="guard_name_id">{{ errors_roles.guard_name_id[0] }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+
+import { rolesDatatable } from '../../assets/js/tables.js';
+
 export default {
     name: 'Roles',
     data() {
         return {
-            permissions: null,
-            roles: null,
-            rolePermissionsMap: null,
+            name: '',
+            guard_name_id: '',
+            roles: [],
+            guard_name_types: [
+                { id: 'web', name: 'Web' },
+                { id: 'api', name: 'API' },
+            ],
+
+            add_role: false,
+            edit_role: false,
+            selected_role: null,
+
+            errors_roles: null,
         };
     },
     mounted() {
-        this.getRolesAndPermissions();
+        this.getRoles();
     },
-    computed: {
-        permissionsByModule() {
-            return this.permissions || {};
-        }
+    watch: {
+        roles: {
+            handler() {
+                this.$nextTick(() => {
+                    rolesDatatable();
+                });
+            },
+        },
     },
     methods: {
-        getRolesAndPermissions() {
-            axios.get(`/get-roles-and-permissions`).then(
+        getRoles() {
+            axios.get(`/get-roles`).then(
                 (res) => {
-                    this.permissions = res.data.permissions
                     this.roles = res.data.roles
-                    this.rolePermissionsMap = res.data.rolePermissionsMap
 
-                    this.errors = null
+                    this.errors_roles = null
                 }).catch(
                 (error) => {
                     if(error && error.response && error.response.data && error.response.data.errors) {
-                        this.errors = error.response.data.errors
+                        this.errors_roles = error.response.data.errors
                     }
                 })
         },
-        isPermissionAssigned(permissionName, roleName) {
-            return this.rolePermissionsMap[roleName]?.includes(permissionName);
+        addRole() {
+            this.resetForm();
+            this.add_role = true;
+            this.edit_role = false;
         },
-        togglePermission(permissionName, roleName) {
-            let fd = new FormData()
+        editRole(role) {
+            this.add_role = false;
+            this.edit_role = true;
 
-            fd.append('permission', permissionName)
-            fd.append('role', roleName)
+            this.name = role.name;
+            this.guard_name_id = role.guard_name;
 
+            this.selected_role = role;
+        },
+        storeRole() {
+            const formData = new FormData();
+
+            formData.append('name', this.name);
+            formData.append('guard_name', this.guard_name_id);
+
+            axios.post(`/roles`, formData)
+                .then((response) => {
+                    this.add_role = false;
+                    this.edit_role = false;
+                    this.resetForm();
+
+                    if ($.fn.dataTable.isDataTable('#dt_roles')) {
+                        $('#dt_roles').DataTable().clear().destroy();
+                    }
+
+                    this.roles = response.data.roles;
+
+                    // this.getRoles();
+
+                    this.errors_roles = null;
+                })
+                .catch(error => {
+                    this.errors_roles = error.response.data.errors;
+                });
+        },
+        showRole(role) {
+            const modal = document.querySelector('.role-detail-modal');
+            document.body.appendChild(modal);
+            modal.style.zIndex = '1050';
+
+            this.selected_role = role;
+        },
+        updateRole() {
+            const formData = new FormData();
+
+            formData.append('name', this.name);
+            formData.append('guard_name_id', this.guard_name_id);
+            formData.append('_method', 'PUT');
+
+            axios
+                .post(`/roles/${this.selected_role.id}`, formData)
+                .then((response) => {
+                    this.roles = response.data.roles;
+
+                    this.add_role = false;
+                    this.edit_role = false;
+                    this.resetForm();
+
+                    this.getRoles();
+
+                    this.errors_roles = null;
+                })
+                .catch((error) => {
+                    this.errors_roles = error.response.data.errors;
+                });
+        },
+        deleteRole(id){
             let url = ''
-            axios.post('/toggle-permission', fd).then(
+            axios.delete(`/roles/${id}`).then(
                 (res) => {
-                    console.log(res.data);
+                    this.roles = res.data.roles;
 
-                    this.errors = null
+                    this.add_role = false;
+                    this.edit_role = false;
+                    this.resetForm();
+
+                    this.getRoles();
+
+                    this.errors_roles = null
                 }).catch(
                 (error) => {
                     if(error && error.response && error.response.data && error.response.data.errors) {
-                        console.log(error.response.data.errors)
-                        this.errors = error.response.data.errors
+                        this.errors_roles = error.response.data.errors
                     }
                 })
+        },
+        resetForm() {
+            this.name = '';
+            this.guard_name_id = '';
+            this.errors_roles = null;
         },
     },
-    created() {
-        // Código a ejecutar cuando el componente es creado
-    }
 };
 </script>
 
 <style scoped>
     @import './../../assets/css/custom.css';
+
+    .data-grid {
+        display: grid;
+        /* grid-template-columns: 1fr 2fr; */
+        grid-template-columns: 30% 70%;
+        /* grid-template-rows: repeat(12, auto); */
+        gap: 10px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        margin: 20px;
+        align-items: center;
+    }
+
+    .label {
+        font-weight: bold;
+        text-align: left;
+        padding-right: 10px;
+    }
+
+    .value {
+        text-align: left;
+        color: #333;
+        background-color: #f9f9f9;
+        border: 1px dotted #ccc;
+        padding: 5px;
+        border-radius: 4px;
+    }
 </style>

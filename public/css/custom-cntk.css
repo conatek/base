@@ -23,8 +23,8 @@ table.dataTable .td-actions {
     background: #ffffff; }
 
 .app-theme-green .app-sidebar {
-    /* background: #12b338; */
-    background: linear-gradient(to bottom, #12b338 60%, white 100%);
+    background: #12b338;
+    /* background: linear-gradient(to bottom, #12b338 60%, white 100%); */
 }
 
 .app-theme-green .app-page-title {

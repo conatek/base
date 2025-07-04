@@ -209,4 +209,37 @@ function disabilityDetailDatatable() {
     });
 }
 
-export { contractsDatatable, birthdaysDatatable, usersDatatable, absencesDatatable, disabilitiesDatatable, disabilityDetailDatatable };
+function rolesDatatable() {
+    let table = $('#dt_roles');
+
+    if ($.fn.DataTable.isDataTable(table)) {
+        table.DataTable().destroy();
+    }
+
+    table.DataTable({
+        responsive: true,
+        lengthChange: true,
+        autoWidth: false,
+        searching: true,
+        ordering: false,
+        paging: true,
+        pageLength: 5,
+        lengthMenu: [5, 10, 25, 50, 100],
+        language: {
+            zeroRecords: "No se encontraron resultados",
+            search: "Buscar:",
+            lengthMenu: "Mostrar _MENU_ registros",
+            paginate: {
+                first: "Primero",
+                last: "Último",
+                next: "Siguiente",
+                previous: "Anterior"
+            },
+            info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            infoEmpty: "Mostrando 0 a 0 de 0 registros",
+            infoFiltered: "(filtrado de _MAX_ registros en total)"
+        }
+    });
+}
+
+export { contractsDatatable, birthdaysDatatable, usersDatatable, absencesDatatable, disabilitiesDatatable, disabilityDetailDatatable, rolesDatatable };

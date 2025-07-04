@@ -1,6 +1,8 @@
 <div class="scrollbar-sidebar">
     <div class="app-sidebar__inner">
         <ul class="vertical-nav-menu">
+            <li class="app-sidebar__heading" style="color: white !important;">Gestión de Empresa</li>
+
             {{-- @can('home_master') --}}
                 <li class="{{ request()->is('home') ? 'mm-active' : '' }}">
                     <a href="{{ route('home') }}" class="{{ request()->is('home') ? 'mm-active' : '' }}">
@@ -36,13 +38,6 @@
                 </a>
             </li>
 
-            {{-- <li class="{{ request()->is('users-company*') ? 'mm-active' : '' }}">
-                <a href="{{ route('users_company.index') }}" class="{{ request()->is('users-company*') ? 'mm-active' : '' }}">
-                    <i class="metismenu-icon fa fa-users"></i>
-                    Usuarios Empresa
-                </a>
-            </li> --}}
-
             {{-- @can('user_index') --}}
             <li class="{{ request()->is('users*') ? 'mm-active' : '' }}">
                 <a href="{{ route('users.index') }}" class="{{ request()->is('users*') ? 'mm-active' : '' }}">
@@ -52,7 +47,9 @@
             </li>
             {{-- @endcan --}}
 
-            <hr>
+            <hr style="color: #fff;">
+
+            <li class="app-sidebar__heading" style="color: white !important;">Gestión de Empleados</li>
 
             <li class="{{ request()->is('collaborators*') ? 'mm-active' : '' }}">
                 <a href="{{ route('collaborators.index') }}" class="{{ request()->is('collaborators*') ? 'mm-active' : '' }}">
@@ -72,13 +69,6 @@
                     <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                 </a>
                 <ul>
-                    <li class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
-                        <a href="{{ route('wellness.index') }}" class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
-                            <i class="metismenu-icon fa fa-toolbox"></i>
-                            Bienestar
-                        </a>
-                    </li>
-
                     <li class="{{ request()->is('modules/selection*') ? 'mm-active' : '' }}">
                         <a href="{{ route('selection.index') }}" class="{{ request()->is('modules/selection*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
@@ -90,6 +80,13 @@
                         <a href="{{ route('absence.index') }}" class="{{ request()->is('modules/absence*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
                             Ausentismo
+                        </a>
+                    </li>
+
+                    <li class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('provision.index') }}" class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
+                            <i class="metismenu-icon fa fa-toolbox"></i>
+                            Dotación
                         </a>
                     </li>
 
@@ -107,17 +104,19 @@
                         </a>
                     </li>
 
-                    <li class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
-                        <a href="{{ route('provision.index') }}" class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
+                    <li class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('wellness.index') }}" class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
-                            Dotación
+                            Bienestar
                         </a>
                     </li>
                 </ul>
             </li>
             {{-- @endcan --}}
 
-            <hr>
+            <hr style="color: #fff;">
+
+            <li class="app-sidebar__heading" style="color: white !important;">Herramientas Complementarias</li>
 
             <li>
                 <a href="#" class="{{ request()->is('tools*') ? 'mm-active' : '' }}">
@@ -169,7 +168,7 @@
                 </li> --}}
             {{-- @endcan --}}
 
-            @can('cms_index')
+            {{-- @can('cms_index') --}}
 {{--            <li class="app-sidebar__heading">Roles Y Permisos</li>--}}
             <li class="{{ request()->is('cms*') ? 'mm-active' : '' }}">
                 <a href="#">
@@ -194,7 +193,7 @@
                     </li>
                 </ul>
             </li>
-            @endcan
+            {{-- @endcan --}}
         </ul>
     </div>
 </div>

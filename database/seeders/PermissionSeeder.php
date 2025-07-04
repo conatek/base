@@ -74,7 +74,6 @@ class PermissionSeeder extends Seeder
         foreach ($permissions as $permission) {
             Permission::create([
                 'name' => $permission['name'],
-                'company_id' => 1,
                 'module' => $permission['module'],
                 'display_name' => $permission['display_name'],
                 'guard_name' => 'web',

@@ -89,16 +89,6 @@
             </li>
             @endcan
 
-            {{-- @can('user_company_index') --}}
-            <li class="{{ request()->is('users-company*') ? 'mm-active' : '' }}">
-                <a href="{{ route('users_company.index') }}" class="{{ request()->is('users-company*') ? 'mm-active' : '' }}">
-                    {{-- <i class="metismenu-icon pe-7s-users"></i> --}}
-                    <i class="metismenu-icon fa fa-users"></i>
-                    Usuarios
-                </a>
-            </li>
-            {{-- @endcan --}}
-
             <hr>
 
             <li>
