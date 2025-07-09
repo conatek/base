@@ -18,6 +18,7 @@ use App\Http\Controllers\CollaboratorMedicalExaminationController;
 use App\Http\Controllers\CompaniesController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\PerformanceController;
 use App\Http\Controllers\PermissionController;
@@ -188,5 +189,9 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/tools/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::get('/tools/cards', [CardsController::class, 'index'])->name('cards.index');
 
-
+    // MODULES DATA
+    Route::get('/get-modules', [ModuleController::class, 'getModulesData']);
+    Route::post('/modules', [ModuleController::class, 'store'])->name('modules.store');
+    Route::put('/modules/{module}', [ModuleController::class, 'update'])->name('modules.update');
+    Route::delete('/modules/{module}', [ModuleController::class, 'destroy'])->name('modules.destroy');
 });

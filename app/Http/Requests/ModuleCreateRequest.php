@@ -4,14 +4,12 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RoleCreateRequest extends FormRequest
+class ModuleCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -19,13 +17,13 @@ class RoleCreateRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules()
     {
         return [
-            'name' => 'required|unique:roles',
-            'guard_name' => 'required',
+            'name' => 'required|unique:modules',
+            'display_name' => 'required',
         ];
     }
 
@@ -38,8 +36,8 @@ class RoleCreateRequest extends FormRequest
     {
         return [
             'name.required' => 'El nombre es requerido.',
-            'name.unique' => 'El rol ya está registrado.',
-            'guard_name.required' => 'El tipo de autenticación es requerido.',
+            'name.unique' => 'El módulo ya está registrado.',
+            'display_name.required' => 'El nombre a mostrar es requerido.',
         ];
     }
 }

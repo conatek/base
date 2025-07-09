@@ -26,6 +26,7 @@ class RoleEditRequest extends FormRequest
         $role = $this->route('role');
         return [
             'name' => 'required|unique:roles,name,' . $role->id,
+            'guard_name' => 'required',
         ];
     }
 
@@ -37,8 +38,9 @@ class RoleEditRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'El campo nombre es requerido.',
+            'name.required' => 'El nombre es requerido.',
             'name.unique' => 'El rol ya está registrado.',
+            'guard_name.required' => 'El tipo de autenticación es requerido.',
         ];
     }
 }

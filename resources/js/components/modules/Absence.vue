@@ -1038,7 +1038,7 @@ export default {
 
                         const startDate = new Date(`${absence.start_date}T00:00:00`);
                         const endDate = new Date(`${absence.end_date}T00:00:00`);
-                        const segment = absence.segment.segment;
+                        let segment = absence.segment.segment;
 
                         if (segment && (segment == 'INFECCIOSAS/ DE LA VOZ' || segment == 'DE LA VOZ')) {
                             segment = 'DE LA VOZ';

@@ -10,7 +10,9 @@ return new class extends Migration
     {
         Schema::table('permissions', function (Blueprint $table) {
             $table->string('display_name')->nullable()->after('name');
-            $table->string('module')->nullable()->after('display_name');
+            $table->unsignedBigInteger('module_id')->nullable()->after('display_name');
+
+            $table->foreign('module_id')->references('id')->on('modules')->onDelete('cascade');
         });
     }
 
@@ -18,7 +20,8 @@ return new class extends Migration
     {
         Schema::table('permissions', function (Blueprint $table) {
             $table->dropColumn('display_name');
-            $table->dropColumn('module');
+            $table->dropForeign(['module_id']);
+            $table->dropColumn('module_id');
         });
     }
 };

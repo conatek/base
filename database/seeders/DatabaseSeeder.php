@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             ProvinceSeeder::class,
             CitySeeder::class,
             CompanySeeder::class,
+            ModuleSeeder::class,
             PermissionSeeder::class,
             RoleSeeder::class,
             RoleHasPermissionSeeder::class,

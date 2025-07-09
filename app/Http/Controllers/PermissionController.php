@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PermissionCreateRequest;
 use App\Http\Requests\PermissionEditRequest;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Permission;
@@ -17,43 +18,76 @@ class PermissionController extends Controller
         return view('back.permissions.index', compact('permissions'));
     }
 
-    public function create()
-    {
-        abort_if(Gate::denies('permission_create'), 403);
-        return view('back.permissions.create');
-    }
-
-
     public function store(PermissionCreateRequest $request)
     {
-        Permission::create($request->only('name'));
+        // Las validaciones se realizan en PermissionCreateRequest
 
-        return redirect()->route('permissions.index')->with('success', 'Permiso creado correctamente!.');
-    }
+        try{
+            $data = array(
+                'name' => $request->name,
+                'display_name' => $request->display_name,
+                'module_id' => $request->module_id,
+                'guard_name' => $request->guard_name,
+            );
 
-    public function show(Permission $permission)
-    {
-        abort_if(Gate::denies('permission_show'), 403);
-        return view('back.permissions.show', compact('permission'));
-    }
+            Permission::create($data);
 
-    public function edit(Permission $permission)
-    {
-        abort_if(Gate::denies('permission_edit'), 403);
-        return view('back.permissions.edit', compact('permission'));
+            $permissions = Permission::all();
+
+            return response()->json([
+                'success' => true,
+                'message'=>'Permiso creado exitosamente!',
+                'permissions'=>$permissions,
+            ]);
+        } catch(Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 
     public function update(PermissionEditRequest $request, Permission $permission)
     {
-        $permission->update($request->only('name'));
+        // Las validaciones se realizan en PermissionEditRequest
 
-        return redirect()->route('permissions.index')->with('success', 'El permiso ha sido actualizado correctamente!');
+        $data = array(
+            'name' => $request->name,
+            'display_name' => $request->display_name,
+            'module_id' => $request->module_id,
+            'guard_name' => $request->guard_name,
+        );
+
+        $permission->update($data);
+
+        $permissions = Permission::all();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permiso actualizado correctamente!',
+            'permissions' => $permissions,
+        ]);
     }
 
-    public function destroy(Permission $permission)
+    public function destroy($id)
     {
-        abort_if(Gate::denies('permission_destroy'), 403);
+        // abort_if(Gate::denies('role_destroy'), 403);
+        $permission = Permission::findOrFail($id);
+
+        // Verificar si el permiso está asignado a un rol
+        if ($permission->roles()->count() > 0) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede eliminar el permiso porque está asignado a un rol.',
+            ]);
+        }
+
         $permission->delete();
-        return back()->with('success', 'Permiso eliminado correctamente!.');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permiso eliminado correctamente!',
+        ]);
     }
 }

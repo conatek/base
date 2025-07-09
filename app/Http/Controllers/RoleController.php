@@ -7,7 +7,7 @@ use App\Http\Requests\RoleEditRequest;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Spatie\Permission\Models\Permission;
+use App\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
@@ -16,7 +16,9 @@ class RoleController extends Controller
         $results = [];
 
         $roles = Role::all();
-        $permissions = Permission::all()->groupBy('module');
+        $permissions = Permission::with('module')->get()->groupBy(function ($permission) {
+            return $permission->module->display_name ?? 'Sin módulo';
+        });
 
         $rolePermissionsMap = [];
         foreach ($roles as $role) {
@@ -62,24 +64,7 @@ class RoleController extends Controller
         return view('back.roles.index');
     }
 
-    // public function create()
-    // {
-    //     abort_if(Gate::denies('role_create'), 403);
-    //     $permissions = Permission::all()->pluck('name', 'id');
-    //     return view('back.roles.create', compact('permissions'));
-    // }
-
-    // public function store(RoleCreateRequest $request)
-    // {
-    //     $role = Role::create($request->only('name'));
-
-    //     $role->syncPermissions($request->input('permissions', []));
-
-    //     return redirect()->route('roles.index')->with('success', 'Rol creado correctamente!.');
-    // }
-
-    // public function store(RoleCreateRequest $request)
-    public function store(Request $request)
+    public function store(RoleCreateRequest $request)
     {
         // Las validaciones se realizan en RoleCreateRequest
 
@@ -94,44 +79,61 @@ class RoleController extends Controller
             $roles = Role::all();
 
             return response()->json([
+                'success' => true,
                 'message'=>'Role creado exitosamente!',
                 'roles'=>$roles,
             ]);
         } catch(Exception $e) {
             return response()->json([
+                'success' => false,
                 'message' => $e->getMessage()
             ]);
         }
     }
 
-    public function show(Role $role)
-    {
-        // abort_if(Gate::denies('role_show'), 403);
-        $role->load('permissions');
-        return view('back.roles.show', compact('role'));
-    }
-
-    public function edit(Role $role)
-    {
-        // abort_if(Gate::denies('role_edit'), 403);
-        $permissions = Permission::all()->pluck('name', 'id');
-        $role->load('permissions');
-        return view('back.roles.edit', compact('role', 'permissions'));
-    }
-
     public function update(RoleEditRequest $request, Role $role)
     {
-        $role->update($request->only('name'));
+        $data = array(
+            'name' => $request->name,
+            'guard_name' => $request->guard_name,
+        );
 
-        $role->syncPermissions($request->input('permissions', []));
+        $role->update($data);
 
-        return redirect()->route('roles.index')->with('success', 'El rol ha sido actualizado correctamente!');
+        $roles = Role::all();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Rol actualizado correctamente!',
+            'roles' => $roles,
+        ]);
     }
 
-    public function destroy(Role $role)
+    // public function destroy(Role $role)
+    public function destroy($id)
     {
-        abort_if(Gate::denies('role_destroy'), 403);
+        // abort_if(Gate::denies('role_destroy'), 403);
+        $role = Role::findOrFail($id);
+
+        // Verificar si el rol tiene usuarios asignados
+        if ($role->users()->count() > 0) {
+            $roles = Role::all();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede eliminar el rol porque tiene usuarios asignados.',
+                'roles' => $roles,
+            ]);
+        }
+
         $role->delete();
-        return back()->with('success', 'Rol eliminado correctamente!.');
+
+        $roles = Role::all();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Rol eliminado correctamente!',
+            'roles' => $roles,
+        ]);
     }
 }

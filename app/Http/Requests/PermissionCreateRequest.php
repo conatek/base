@@ -25,6 +25,9 @@ class PermissionCreateRequest extends FormRequest
     {
         return [
             'name' => 'required|unique:permissions',
+            'display_name' => 'required',
+            'guard_name' => 'required',
+            'module_id' => 'required',
         ];
     }
 
@@ -36,8 +39,11 @@ class PermissionCreateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'El campo nombre es requerido.',
+            'name.required' => 'El nombre es requerido.',
             'name.unique' => 'El permiso ya está registrado.',
+            'display_name.required' => 'El nombre a mostrar es requerido.',
+            'guard_name.required' => 'El tipo de autenticación es requerido.',
+            'module_id.required' => 'El módulo es requerido.',
         ];
     }
 }

@@ -2831,5 +2831,6 @@ export default {
 
 <style scoped>
     @import './../../assets/css/collaborator_show.css';
+    @import './../../assets/css/message.css';
     @import './../../assets/css/custom.css';
 </style>

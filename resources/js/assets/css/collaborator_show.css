@@ -236,22 +236,3 @@ tr.selected {
 .wrapper-data .box.box2 .delete-data {
     cursor: pointer
 }
-
-.message-success {
-    width: 100%;
-    background: #D8FFDC;
-    border-radius: 4px;
-    padding: 10px;
-}
-
-.message-success .content {
-    align-items: flex-start;
-    justify-content: center;
-    border-left: 5px solid #00660A;
-}
-
-.message-success .content p {
-    font-size: 16px;
-    line-height: 16px;
-}
-
