@@ -38,6 +38,7 @@ use App\Models\SocialStratum;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -57,7 +58,8 @@ class CollaboratorController extends Controller
     public function getCollaborators() {
         $results = [];
 
-        $user = auth()->user();
+        // $user = auth()->user();
+        $user = Auth::user();
 
         $user_company_id = $user->company_id;
         $collaborators = Collaborator::where('company_id', $user_company_id)->get();
@@ -113,7 +115,7 @@ class CollaboratorController extends Controller
     {
         // abort_if(Gate::denies('collaborator_index'), 403);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $company = Company::where('id', $user->company_id)->first();
         $collaborators = Collaborator::where('company_id', $company->id)->orderBy('created_at', 'desc')->with('position')->get();
         $absence_types = AbsenceType::all();
@@ -125,10 +127,10 @@ class CollaboratorController extends Controller
     {
         $result = [];
 
-        $user = auth()->user();
+        $user = Auth::user();
         $company = Company::where('id', $user->company_id)->first();
 
-        abort_if(Gate::denies('collaborator_create'), 403);
+        // abort_if(Gate::denies('collaborator_create'), 403);
 
         $document_types = DocumentType::all();
         $sex_types = SexType::all();
@@ -158,7 +160,7 @@ class CollaboratorController extends Controller
         // Las validaciones se realizan en CollaboratorCreateRequest
 
         try{
-            $company_id = auth()->user()->company_id;
+            $company_id = Auth::user()->company_id;
 
             if($request->hasFile('image')) {
                 $file = request()->file('image');
@@ -240,7 +242,7 @@ class CollaboratorController extends Controller
     public function storeContractualInformation(CollaboratorContractCreateRequest $request, $id) {
         // Las validaciones se realizan en CollaboratorContractCreateRequest
 
-        $user = auth()->user();
+        $user = Auth::user();
         $company = Company::where('id', $user->company_id)->first();
 
         $data = array(
@@ -274,19 +276,19 @@ class CollaboratorController extends Controller
     {
         $result = [];
 
-        $user = auth()->user();
+        $user = Auth::user();
 
-        if (request()->ajax()) {
-            if($user->company_id != $collaborator->company_id) {
-                abort(403, 'No autorizado');
-            }
-        } else {
-            abort(403, 'No autorizado');
-        }
+        // if (request()->ajax()) {
+        //     if($user->company_id != $collaborator->company_id) {
+        //         abort(403, 'No autorizado');
+        //     }
+        // } else {
+        //     abort(403, 'No autorizado');
+        // }
 
         $company = Company::where('id', $collaborator->company_id)->first();
 
-        abort_if(Gate::denies('collaborator_show'), 403);
+        // abort_if(Gate::denies('collaborator_show'), 403);
 
         $document_type = DocumentType::where('id', $collaborator->document_type_id)->first();
         $document_province = Province::where('id', $collaborator->document_province_id)->first();
@@ -384,10 +386,10 @@ class CollaboratorController extends Controller
     {
         $result = [];
 
-        $user = auth()->user();
+        $user = Auth::user();
         $company = Company::where('id', $user->company_id)->first();
 
-        abort_if(Gate::denies('collaborator_edit'), 403);
+        // abort_if(Gate::denies('collaborator_edit'), 403);
 
         $document_types = DocumentType::all();
         $sex_types = SexType::all();
@@ -453,7 +455,7 @@ class CollaboratorController extends Controller
         // Las validaciones se realizan en CollaboratorEditRequest
 
         try {
-            $company_id = auth()->user()->company_id;
+            $company_id = Auth::user()->company_id;
 
             $data = array(
                 'company_id' => $company_id,
@@ -560,7 +562,7 @@ class CollaboratorController extends Controller
 
     public function destroy(Collaborator $collaborator)
     {
-        abort_if(Gate::denies('collaborator_destroy'), 403);
+        // abort_if(Gate::denies('collaborator_destroy'), 403);
 
         try {
             if(isset($collaborator['image_public_id'])) {

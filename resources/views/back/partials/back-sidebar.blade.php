@@ -1,122 +1,162 @@
 <div class="scrollbar-sidebar">
     <div class="app-sidebar__inner">
         <ul class="vertical-nav-menu">
+            @can('block_company')
             <li class="app-sidebar__heading" style="color: white !important;">Gestión de Empresa</li>
 
-            {{-- @can('home_master') --}}
+                @can('home_index')
                 <li class="{{ request()->is('home') ? 'mm-active' : '' }}">
                     <a href="{{ route('home') }}" class="{{ request()->is('home') ? 'mm-active' : '' }}">
                         <i class="metismenu-icon fa fa-chart-line"></i>
                         Panel de Control
                     </a>
                 </li>
-            {{-- @endcan --}}
+                @endcan
 
-            {{-- @can('company_index') --}}
-            <li class="{{ request()->is('companies*') ? 'mm-active' : '' }}">
-                <a href="{{ route('companies.index') }}" class="{{ request()->is('companies*') ? 'mm-active' : '' }}">
-                    <i class="metismenu-icon fa fa-building"></i>
-                    Empresas
-                </a>
-            </li>
-            {{-- @endcan --}}
+                @can('companies_index')
+                <li class="{{ request()->is('companies*') ? 'mm-active' : '' }}">
+                    <a href="{{ route('companies.index') }}" class="{{ request()->is('companies*') ? 'mm-active' : '' }}">
+                        <i class="metismenu-icon fa fa-building"></i>
+                        Empresas
+                    </a>
+                </li>
+                @endcan
 
-            {{-- @can('role_index') --}}
-            <li class="{{ request()->is('roles*') ? 'mm-active' : '' }}">
-                <a href="{{ route('roles.index') }}" class="{{ request()->is('roles*') ? 'mm-active' : '' }}">
-                    <i class="metismenu-icon fa fa-key"></i>
-                    Roles y Permisos
-                </a>
-            </li>
-            {{-- @endcan --}}
+                @can('roles_index')
+                <li class="{{ request()->is('roles*') ? 'mm-active' : '' }}">
+                    <a href="{{ route('roles.index') }}" class="{{ request()->is('roles*') ? 'mm-active' : '' }}">
+                        <i class="metismenu-icon fa fa-key"></i>
+                        Roles y Permisos
+                    </a>
+                </li>
+                @endcan
 
-            <li class="{{ request()->is('company*') ? 'mm-active' : '' }}">
-                <a href="{{ route('company.show') }}" class="{{ request()->is('company*') ? 'mm-active' : '' }}">
-                    {{-- <i class="metismenu-icon pe-7s-culture"></i> --}}
-                    <i class="metismenu-icon fa fa-sitemap"></i>
-                    Organización
-                </a>
-            </li>
+                @can('users_index')
+                <li class="{{ request()->is('users*') ? 'mm-active' : '' }}">
+                    <a href="{{ route('users.index') }}" class="{{ request()->is('users*') ? 'mm-active' : '' }}">
+                        <i class="metismenu-icon fa fa-users"></i>
+                        Usuarios
+                    </a>
+                </li>
+                @endcan
 
-            {{-- @can('user_index') --}}
-            <li class="{{ request()->is('users*') ? 'mm-active' : '' }}">
-                <a href="{{ route('users.index') }}" class="{{ request()->is('users*') ? 'mm-active' : '' }}">
-                    <i class="metismenu-icon fa fa-users"></i>
-                    Usuarios
-                </a>
-            </li>
-            {{-- @endcan --}}
+                @can('company_index')
+                <li class="{{ request()->is('company*') ? 'mm-active' : '' }}">
+                    <a href="{{ route('company.show') }}" class="{{ request()->is('company*') ? 'mm-active' : '' }}">
+                        <i class="metismenu-icon fa fa-sitemap"></i>
+                        Organización
+                    </a>
+                </li>
+                @endcan
 
             <hr style="color: #fff;">
 
-            <li class="app-sidebar__heading" style="color: white !important;">Gestión de Empleados</li>
+            @endcan
 
-            <li class="{{ request()->is('collaborators*') ? 'mm-active' : '' }}">
-                <a href="{{ route('collaborators.index') }}" class="{{ request()->is('collaborators*') ? 'mm-active' : '' }}">
-                    {{-- <i class="metismenu-icon pe-7s-science"></i> --}}
-                    <i class="metismenu-icon fa fa-asterisk"></i>
-                    {{-- <font-awesome-icon :icon="['fas', 'users-viewfinder']" /> --}}
-                    Maestro
-                </a>
-            </li>
+            @can('block_collaborators')
+            <li class="app-sidebar__heading" style="color: white !important;">Gestión de Colaboradores</li>
 
-            {{-- @can(['area_index']) --}}
+                <li class="{{ request()->is('collaborators*') ? 'mm-active' : '' }}">
+                    <a href="{{ route('collaborators.index') }}" class="{{ request()->is('collaborators*') ? 'mm-active' : '' }}">
+                        <i class="metismenu-icon fa fa-asterisk"></i>
+                        Maestro
+                    </a>
+                </li>
+
+                {{-- @can(['area_index']) --}}
+                <li>
+                    <a href="#" class="{{ request()->is('modules*') ? 'mm-active' : '' }}">
+                        <i class="metismenu-icon fa fa-cube"></i>
+                        Módulos
+                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                    </a>
+                    <ul>
+                        <li class="{{ request()->is('modules/selection*') ? 'mm-active' : '' }}">
+                            <a href="{{ route('selection.index') }}" class="{{ request()->is('modules/selection*') ? 'mm-active' : '' }}">
+                                <i class="metismenu-icon fa fa-toolbox"></i>
+                                Procesos de Selección
+                            </a>
+                        </li>
+
+                        <li class="{{ request()->is('modules/absence*') ? 'mm-active' : '' }}">
+                            <a href="{{ route('absence.index') }}" class="{{ request()->is('modules/absence*') ? 'mm-active' : '' }}">
+                                <i class="metismenu-icon fa fa-toolbox"></i>
+                                Ausentismo
+                            </a>
+                        </li>
+
+                        <li class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
+                            <a href="{{ route('provision.index') }}" class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
+                                <i class="metismenu-icon fa fa-toolbox"></i>
+                                Dotación
+                            </a>
+                        </li>
+
+                        <li class="{{ request()->is('modules/training*') ? 'mm-active' : '' }}">
+                            <a href="{{ route('training.index') }}" class="{{ request()->is('modules/training*') ? 'mm-active' : '' }}">
+                                <i class="metismenu-icon fa fa-toolbox"></i>
+                                Planes de Formación
+                            </a>
+                        </li>
+
+                        <li class="{{ request()->is('modules/performance*') ? 'mm-active' : '' }}">
+                            <a href="{{ route('performance.index') }}" class="{{ request()->is('modules/performance*') ? 'mm-active' : '' }}">
+                                <i class="metismenu-icon fa fa-toolbox"></i>
+                                Evaluación de Desempeño
+                            </a>
+                        </li>
+
+                        <li class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
+                            <a href="{{ route('wellness.index') }}" class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
+                                <i class="metismenu-icon fa fa-toolbox"></i>
+                                Bienestar
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+            <hr style="color: #fff;">
+            @endcan
+
+
+            @can('block_self_management')
+            <li class="app-sidebar__heading" style="color: white !important;">Autogestión</li>
+
             <li>
-            {{-- <li class="{{ request()->is('modules*') ? 'mm-active' : '' }}"> --}}
-                <a href="#" class="{{ request()->is('modules*') ? 'mm-active' : '' }}">
-                    <i class="metismenu-icon fa fa-cube"></i>
-                    Módulos
+                <a href="#" class="{{ request()->is('tools*') ? 'mm-active' : '' }}">
+                    <i class="metismenu-icon fa fa-hand-point-up"></i>
+                    Solicitudes
                     <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                 </a>
                 <ul>
-                    <li class="{{ request()->is('modules/selection*') ? 'mm-active' : '' }}">
-                        <a href="{{ route('selection.index') }}" class="{{ request()->is('modules/selection*') ? 'mm-active' : '' }}">
+                    <li class="{{ request()->is('tools/overtime*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('overtime.index') }}" class="{{ request()->is('tools/overtime*') ? 'mm-active' : '' }}">
                             <i class="metismenu-icon fa fa-toolbox"></i>
-                            Procesos de Selección
+                            Certificados
                         </a>
                     </li>
 
-                    <li class="{{ request()->is('modules/absence*') ? 'mm-active' : '' }}">
-                        <a href="{{ route('absence.index') }}" class="{{ request()->is('modules/absence*') ? 'mm-active' : '' }}">
-                            <i class="metismenu-icon fa fa-toolbox"></i>
-                            Ausentismo
+                    <li class="{{ request()->is('tools/inventory*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('inventory.index') }}" class="{{ request()->is('tools/inventory*') ? 'mm-active' : '' }}">
+                            <i class="metismenu-icon"></i>
+                            Vacaciones
                         </a>
                     </li>
 
-                    <li class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
-                        <a href="{{ route('provision.index') }}" class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
-                            <i class="metismenu-icon fa fa-toolbox"></i>
-                            Dotación
-                        </a>
-                    </li>
-
-                    <li class="{{ request()->is('modules/training*') ? 'mm-active' : '' }}">
-                        <a href="{{ route('training.index') }}" class="{{ request()->is('modules/training*') ? 'mm-active' : '' }}">
-                            <i class="metismenu-icon fa fa-toolbox"></i>
-                            Planes de Formación
-                        </a>
-                    </li>
-
-                    <li class="{{ request()->is('modules/performance*') ? 'mm-active' : '' }}">
-                        <a href="{{ route('performance.index') }}" class="{{ request()->is('modules/performance*') ? 'mm-active' : '' }}">
-                            <i class="metismenu-icon fa fa-toolbox"></i>
-                            Evaluación de Desempeño
-                        </a>
-                    </li>
-
-                    <li class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
-                        <a href="{{ route('wellness.index') }}" class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
-                            <i class="metismenu-icon fa fa-toolbox"></i>
-                            Bienestar
+                    <li class="{{ request()->is('tools/cards*') ? 'mm-active' : '' }}">
+                        <a href="{{ route('cards.index') }}" class="{{ request()->is('tools/cards*') ? 'mm-active' : '' }}">
+                            <i class="metismenu-icon"></i>
+                            Permisos
                         </a>
                     </li>
                 </ul>
             </li>
-            {{-- @endcan --}}
+            @endcan
 
+            @can('block_utilities')
             <hr style="color: #fff;">
 
-            <li class="app-sidebar__heading" style="color: white !important;">Herramientas Complementarias</li>
+            <li class="app-sidebar__heading" style="color: white !important;">Utilidades</li>
 
             <li>
                 <a href="#" class="{{ request()->is('tools*') ? 'mm-active' : '' }}">
@@ -148,28 +188,7 @@
                 </ul>
             </li>
 
-            {{-- @can('user_index') --}}
-            {{-- <li class="{{ request()->is('users*') ? 'mm-active' : '' }}">
-                <a href="{{ route('users.index') }}" class="{{ request()->is('users*') ? 'mm-active' : '' }}">
-                    <i class="metismenu-icon pe-7s-users"></i>
-                    Usuarios
-                </a>
-            </li> --}}
-            {{-- @endcan --}}
-
-
-
-            {{-- @can('permission_index') --}}
-                {{-- <li class="{{ request()->is('permissions*') ? 'mm-active' : '' }}">
-                    <a href="{{ route('permissions.index') }}" class="{{ request()->is('permissions*') ? 'mm-active' : '' }}">
-                        <i class="metismenu-icon pe-7s-key"></i>
-                        Permisos
-                    </a>
-                </li> --}}
-            {{-- @endcan --}}
-
             {{-- @can('cms_index') --}}
-{{--            <li class="app-sidebar__heading">Roles Y Permisos</li>--}}
             <li class="{{ request()->is('cms*') ? 'mm-active' : '' }}">
                 <a href="#">
                     <i class="metismenu-icon pe-7s-news-paper"></i>
@@ -178,14 +197,12 @@
                 </a>
                 <ul>
                     <li>
-{{--                        <a href="{{ route('cms.index') }}" class="{{ request()->is('companies') ? 'mm-active' : '' }}">--}}
                         <a href="#">
                             <i class="metismenu-icon"></i>
                             Listado
                         </a>
                     </li>
                     <li>
-{{--                        <a href="{{ route('cms.create') }}" class="{{ request()->is('companies/create') ? 'mm-active' : '' }}">--}}
                         <a href="#">
                             <i class="metismenu-icon"></i>
                             Agregar
@@ -193,7 +210,7 @@
                     </li>
                 </ul>
             </li>
-            {{-- @endcan --}}
+            @endcan
         </ul>
     </div>
 </div>

@@ -26,6 +26,8 @@ class CompaniesController extends Controller
             }
             return $next($request);
         })->except(['index']);
+
+        $this->middleware('can:companies_index')->only(['index']);
     }
 
     public function index()

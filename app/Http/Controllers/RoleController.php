@@ -12,6 +12,19 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
+    public function __construct()
+    {
+        // Aplicamos el middleware AJAX solo a métodos específicos
+        $this->middleware(function ($request, $next) {
+            if (!request()->ajax()) {
+                abort(403, 'Acceso denegado');
+            }
+            return $next($request);
+        })->except(['index']);
+
+        $this->middleware('can:roles_index')->only(['index']);
+    }
+
     public function getRolesAndPermissionsData() {
         $results = [];
 

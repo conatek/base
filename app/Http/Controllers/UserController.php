@@ -15,6 +15,19 @@ use Exception;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        // Aplicamos el middleware AJAX solo a métodos específicos
+        $this->middleware(function ($request, $next) {
+            if (!request()->ajax()) {
+                abort(403, 'Acceso denegado');
+            }
+            return $next($request);
+        })->except(['index']);
+
+        $this->middleware('can:users_index')->only(['index']);
+    }
+
     public function getUsers() {
         $results = [];
 

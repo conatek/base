@@ -16,64 +16,309 @@ class RoleHasPermissionSeeder extends Seeder
      */
     public function run()
     {
-        // Master [1]
-        $master_permissions = Permission::all()->filter(function($permission) {
-            return $permission->name != 'home_super' &&
-                $permission->name != 'home_admin' &&
-                $permission->name != 'home_generic';
-        });
+        // ============================
+        // Asignación de permisos por rol: MASTER
+        // ============================
+        $master_permissions = Permission::all();
         Role::findOrFail(1)->permissions()->sync($master_permissions->pluck('id'));
 
-        // Super [2]
-        $super_permissions = Permission::all()->filter(function ($permission) {
-            return $permission->name != 'home_master' &&
-                $permission->name != 'home_admin' &&
-                $permission->name != 'home_generic' &&
-                substr($permission->name, 0,5) != 'role_' &&
-                substr($permission->name, 0,11) != 'permission_';
+        // ============================
+        // Asignación de permisos por rol: SUPER
+        // ============================
+        $superRole = Role::findOrFail(2);
+
+        $excludedSuperPermissions = [
+            'roles_index',
+            'roles_create',
+            'roles_show',
+            'roles_edit',
+            'roles_destroy',
+            'permissions_index',
+            'permissions_create',
+            'permissions_show',
+            'permissions_edit',
+            'permissions_destroy',
+        ];
+
+        $superPermissions = Permission::all()->filter(function ($permission) use ($excludedSuperPermissions) {
+            if (in_array($permission->name, $excludedSuperPermissions)) {
+                return false;
+            }
+
+            return true;
         });
-        Role::findOrFail(2)->permissions()->sync($super_permissions);
 
-        // Admin [3]
-        $admin_permissions = Permission::all()->filter(function ($permission) {
-            return $permission->name != 'home_master' &&
-                $permission->name != 'home_super' &&
-                $permission->name != 'home_generic' &&
-                substr($permission->name, 0,5) != 'role_' &&
-                substr($permission->name, 0,11) != 'permission_' &&
-                $permission->name != 'user_index' &&
-                $permission->name != 'user_create' &&
-                $permission->name != 'user_show' &&
-                $permission->name != 'user_edit' &&
-                $permission->name != 'user_destroy';
+        $superRole->permissions()->sync($superPermissions->pluck('id'));
+
+        // ============================
+        // Asignación de permisos por rol: ADMIN
+        // ============================
+        $adminRole = Role::findOrFail(3);
+
+        $excludedAdminPermissions = [
+            'companies_index',
+            'companies_create',
+            'companies_show',
+            'companies_edit',
+            'companies_destroy',
+            'roles_index',
+            'roles_create',
+            'roles_show',
+            'roles_edit',
+            'roles_destroy',
+            'permissions_index',
+            'permissions_create',
+            'permissions_show',
+            'permissions_edit',
+            'permissions_destroy',
+        ];
+
+        $adminPermissions = Permission::all()->filter(function ($permission) use ($excludedAdminPermissions) {
+            if (in_array($permission->name, $excludedAdminPermissions)) {
+                return false;
+            }
+
+            return true;
         });
-        Role::findOrFail(3)->permissions()->sync($admin_permissions);
 
-        // Editor [4]
-        $editor_permissions = $admin_permissions;
-        Role::findOrFail(4)->permissions()->sync($editor_permissions);
+        $adminRole->permissions()->sync($adminPermissions->pluck('id'));
 
-        // Analyst [5]
-        $analyst_permissions = $admin_permissions;
-        Role::findOrFail(5)->permissions()->sync($analyst_permissions);
+        // ============================
+        // Asignación de permisos por rol: ANALYST
+        // ============================
+        $analystRole = Role::findOrFail(4);
 
-        // Collaborator [6]
-        $collaborator_permissions = $admin_permissions;
-        Role::findOrFail(6)->permissions()->sync($collaborator_permissions);
+        $excludedAnalystPermissions = [
+            'companies_index',
+            'companies_create',
+            'companies_show',
+            'companies_edit',
+            'companies_destroy',
+            'roles_index',
+            'roles_create',
+            'roles_show',
+            'roles_edit',
+            'roles_destroy',
+            'permissions_index',
+            'permissions_create',
+            'permissions_show',
+            'permissions_edit',
+            'permissions_destroy',
+            'users_index',
+            'users_create',
+            'users_show',
+            'users_edit',
+            'users_destroy',
+            'company_index',
+            'campus_index',
+            'campus_create',
+            'campus_show',
+            'campus_edit',
+            'campus_destroy',
+            'areas_index',
+            'areas_create',
+            'areas_show',
+            'areas_edit',
+            'areas_destroy',
+            'positions_index',
+            'positions_create',
+            'positions_show',
+            'positions_edit',
+            'positions_destroy',
+        ];
 
-        // Guest [7]
-        $guest_permissions = Permission::all()->filter(function ($permission) {
-            return $permission->name != 'home_master' &&
-                $permission->name != 'home_super' &&
-                $permission->name != 'home_admin' &&
-                substr($permission->name, 0,5) != 'role_' &&
-                substr($permission->name, 0,11) != 'permission_' &&
-                substr($permission->name, 0,5) != 'user_' &&
-                substr($permission->name, 0,8) != 'company_' &&
-                substr($permission->name, 0,5) != 'area_' &&
-                substr($permission->name, 0,9) != 'position_' &&
-                substr($permission->name, 0,7) != 'campus_';
+        $analystPermissions = Permission::all()->filter(function ($permission) use ($excludedAnalystPermissions) {
+            if (in_array($permission->name, $excludedAnalystPermissions)) {
+                return false;
+            }
+
+            return true;
         });
-        Role::findOrFail(7)->permissions()->sync($guest_permissions);
+
+        $analystRole->permissions()->sync($analystPermissions->pluck('id'));
+
+        // ============================
+        // Asignación de permisos por rol: COLLABORATOR
+        // ============================
+        $collaboratorRole = Role::findOrFail(5);
+
+        $excludedCollaboratorPermissions = [
+            'block_collaborators',
+            'block_utilities',
+            'companies_index',
+            'companies_create',
+            'companies_show',
+            'companies_edit',
+            'companies_destroy',
+            'roles_index',
+            'roles_create',
+            'roles_show',
+            'roles_edit',
+            'roles_destroy',
+            'permissions_index',
+            'permissions_create',
+            'permissions_show',
+            'permissions_edit',
+            'permissions_destroy',
+            'users_index',
+            'users_create',
+            'users_show',
+            'users_edit',
+            'users_destroy',
+            'company_index',
+            'campus_index',
+            'campus_create',
+            'campus_show',
+            'campus_edit',
+            'campus_destroy',
+            'areas_index',
+            'areas_create',
+            'areas_show',
+            'areas_edit',
+            'areas_destroy',
+            'positions_index',
+            'positions_create',
+            'positions_show',
+            'positions_edit',
+            'positions_destroy',
+            'collaborators_index',
+            'collaborators_create',
+            'collaborators_show',
+            'collaborators_edit',
+            'collaborators_destroy',
+        ];
+
+        $collaboratorPermissions = Permission::all()->filter(function ($permission) use ($excludedCollaboratorPermissions) {
+            if (in_array($permission->name, $excludedCollaboratorPermissions)) {
+                return false;
+            }
+
+            return true;
+        });
+
+        $collaboratorRole->permissions()->sync($collaboratorPermissions->pluck('id'));
+
+        // ============================
+        // Asignación de permisos por rol: REQUESTER
+        // ============================
+        $requesterRole = Role::findOrFail(6);
+
+        $excludedRequesterPermissions = [
+            'block_collaborators',
+            'block_utilities',
+            'companies_index',
+            'companies_create',
+            'companies_show',
+            'companies_edit',
+            'companies_destroy',
+            'roles_index',
+            'roles_create',
+            'roles_show',
+            'roles_edit',
+            'roles_destroy',
+            'permissions_index',
+            'permissions_create',
+            'permissions_show',
+            'permissions_edit',
+            'permissions_destroy',
+            'users_index',
+            'users_create',
+            'users_show',
+            'users_edit',
+            'users_destroy',
+            'company_index',
+            'campus_index',
+            'campus_create',
+            'campus_show',
+            'campus_edit',
+            'campus_destroy',
+            'areas_index',
+            'areas_create',
+            'areas_show',
+            'areas_edit',
+            'areas_destroy',
+            'positions_index',
+            'positions_create',
+            'positions_show',
+            'positions_edit',
+            'positions_destroy',
+            'collaborators_index',
+            'collaborators_create',
+            'collaborators_show',
+            'collaborators_edit',
+            'collaborators_destroy',
+        ];
+
+        $requesterPermissions = Permission::all()->filter(function ($permission) use ($excludedRequesterPermissions) {
+            if (in_array($permission->name, $excludedRequesterPermissions)) {
+                return false;
+            }
+
+            return true;
+        });
+
+        $requesterRole->permissions()->sync($requesterPermissions->pluck('id'));
+
+        // ============================
+        // Asignación de permisos por rol: APPROVER
+        // ============================
+        $approverRole = Role::findOrFail(7);
+
+        $excludedApproverPermissions = [
+            'block_collaborators',
+            'block_utilities',
+            'companies_index',
+            'companies_create',
+            'companies_show',
+            'companies_edit',
+            'companies_destroy',
+            'roles_index',
+            'roles_create',
+            'roles_show',
+            'roles_edit',
+            'roles_destroy',
+            'permissions_index',
+            'permissions_create',
+            'permissions_show',
+            'permissions_edit',
+            'permissions_destroy',
+            'users_index',
+            'users_create',
+            'users_show',
+            'users_edit',
+            'users_destroy',
+            'company_index',
+            'campus_index',
+            'campus_create',
+            'campus_show',
+            'campus_edit',
+            'campus_destroy',
+            'areas_index',
+            'areas_create',
+            'areas_show',
+            'areas_edit',
+            'areas_destroy',
+            'positions_index',
+            'positions_create',
+            'positions_show',
+            'positions_edit',
+            'positions_destroy',
+            'collaborators_index',
+            'collaborators_create',
+            'collaborators_show',
+            'collaborators_edit',
+            'collaborators_destroy',
+        ];
+
+        $approverPermissions = Permission::all()->filter(function ($permission) use ($excludedApproverPermissions) {
+            if (in_array($permission->name, $excludedApproverPermissions)) {
+                return false;
+            }
+
+            return true;
+        });
+
+        $approverRole->permissions()->sync($approverPermissions->pluck('id'));
     }
 }
+

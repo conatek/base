@@ -1,8 +1,15 @@
 import { defineAsyncComponent } from 'vue';
 
 const components = {
-    'hello-component': defineAsyncComponent(() => import('./components/Hello.vue')),
-    'world-component': defineAsyncComponent(() => import('./components/World.vue')),
+    'home': defineAsyncComponent(() => import('./components/home/Home.vue')),
+    'master-home': defineAsyncComponent(() => import('./components/home/MasterHome.vue')),
+    'super-home': defineAsyncComponent(() => import('./components/home/SuperHome.vue')),
+    'admin-home': defineAsyncComponent(() => import('./components/home/AdminHome.vue')),
+    'default-home': defineAsyncComponent(() => import('./components/home/DefaultHome.vue')),
+
+    'sociodemographic-profile': defineAsyncComponent(() => import('./components/company/SociodemographicProfile.vue')),
+    'alerts': defineAsyncComponent(() => import('./components/company/Alerts.vue')),
+    'indicators': defineAsyncComponent(() => import('./components/company/Indicators.vue')),
 
     'access-manager': defineAsyncComponent(() => import('./components/access/AccessManager.vue')),
     'roles-index': defineAsyncComponent(() => import('./components/roles/RolesIndex.vue')),
@@ -18,11 +25,6 @@ const components = {
     'company-detail': defineAsyncComponent(() => import('./components/company/CompanyDetail.vue')),
     'company-edit': defineAsyncComponent(() => import('./components/company/CompanyEdit.vue')),
     'company-collaborators': defineAsyncComponent(() => import('./components/company/CompanyCollaborators.vue')),
-
-    'control-panel': defineAsyncComponent(() => import('./components/company/ControlPanel.vue')),
-    'sociodemographic-profile': defineAsyncComponent(() => import('./components/company/SociodemographicProfile.vue')),
-    'alerts': defineAsyncComponent(() => import('./components/company/Alerts.vue')),
-    'indicators': defineAsyncComponent(() => import('./components/company/Indicators.vue')),
 
     'collaborator-index': defineAsyncComponent(() => import('./components/collaborators/CollaboratorIndex.vue')),
     'collaborator-create': defineAsyncComponent(() => import('./components/collaborators/CollaboratorCreate.vue')),

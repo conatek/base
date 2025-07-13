@@ -839,7 +839,8 @@
                         </div>
                         <div class="widget-content-left  ms-3 header-user-info">
                             <div class="widget-heading"> {{ auth()->user()->name }}</div>
-                            <div class="widget-subheading"> Rol: ADMINISTRADOR</div>
+                            {{-- <div class="widget-subheading"> Rol: ADMINISTRADOR</div> --}}
+                            <div class="widget-subheading"> ROLES: {{ auth()->user()->roles->pluck('name')->map(fn($value) => Str::upper($value))->join(', ') }}</div>
                         </div>
 
                         {{-- <div class="widget-content-right header-user-info ms-3">

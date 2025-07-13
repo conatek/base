@@ -1,5 +1,17 @@
 <template>
     <div>
+        <div class="app-page-title">
+            <div class="page-title-wrapper">
+                <div class="page-title-heading">
+                    <div class="page-title-icon">
+                        <i class="metismenu-icon fa fa-chart-line" style="color: #127cb3;"></i>
+                    </div>
+                    <div>
+                        Panel de Control
+                    </div>
+                </div>
+            </div>
+        </div>
         <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
             <li class="nav-item">
                 <a @click="changeTab(0)" role="tab" class="nav-link active" id="tab-0"
@@ -28,34 +40,37 @@
                 <alerts :company_id="company_id"></alerts>
             </div>
             <div v-else-if="selected_tab == 2" class="tab-pane tabs-animation fade"  :class="selected_tab == 2 ? 'show active' : ''" id="tab-content-2" role="tabpanel">
-                <indicators :company_id="company_id"></indicators> 
+                <indicators :company_id="company_id"></indicators>
             </div>
         </div>
     </div>
-        
 </template>
 
 <script>
 export default {
+    name: 'Home',
     props: {
-        company_id: { default: null, },
+        company_id: {
+            type: Number,
+            default: null
+        }
     },
     data() {
         return {
             selected_tab: 0,
-        }
+        };
     },
-    mounted () {
+    mounted() {
         this.changeTab(0);
     },
     methods: {
-        changeTab(tab) {
-            this.selected_tab = tab;
+        changeTab(tabIndex) {
+            this.selected_tab = tabIndex;
         }
-    }
-}
+    },
+};
 </script>
 
 <style scoped>
-/*  */
+/* estilos del componente */
 </style>

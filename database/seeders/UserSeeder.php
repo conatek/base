@@ -47,14 +47,6 @@ class UserSeeder extends Seeder
         ]);
         $user_admin_test_conatek->assignRole('Admin');
 
-        $user_editor_test_conatek = User::create([
-            'company_id' => 1,
-            'name' => 'Test Editor',
-            'email' => 'editor@test.com',
-            'password' => bcrypt('29405014'),
-        ]);
-        $user_editor_test_conatek->assignRole('Editor');
-
         $user_analyst_test_conatek = User::create([
             'company_id' => 1,
             'name' => 'Test Analyst',
@@ -71,13 +63,21 @@ class UserSeeder extends Seeder
         ]);
         $user_collaborator_test_conatek->assignRole('Collaborator');
 
-        $user_guest_test_conatek = User::create([
+        $user_requester_test_conatek = User::create([
             'company_id' => 1,
-            'name' => 'Test Guest',
-            'email' => 'guest@test.com',
+            'name' => 'Test Requester',
+            'email' => 'requester@test.com',
             'password' => bcrypt('29405014'),
         ]);
-        $user_guest_test_conatek->assignRole('Guest');
+        $user_requester_test_conatek->assignRole('Requester');
+
+        $user_approver_test_conatek = User::create([
+            'company_id' => 1,
+            'name' => 'Test Approver',
+            'email' => 'approver@test.com',
+            'password' => bcrypt('29405014'),
+        ]);
+        $user_approver_test_conatek->assignRole('Approver');
 
         $user_admin_guest_test_mh = User::create([
             'company_id' => 2,

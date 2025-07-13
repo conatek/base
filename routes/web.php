@@ -35,7 +35,7 @@ Route::get('/', function () {
 })->name('start');
 
 Route::group(['middleware' => 'auth'], function() {
-    Route::get('/home', [HomeController::class, 'index_master'])->name('home');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     Route::get('/users-data/{company_id}', [UserController::class, 'getUsers']);
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

@@ -29,6 +29,8 @@ class CompanyController extends Controller
             }
             return $next($request);
         })->except(['companyShow']);
+
+        $this->middleware('can:company_index')->only(['companyShow']);
     }
 
     public function companyShow()
