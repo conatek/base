@@ -12,7 +12,7 @@ import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import 'vue-good-table-next/dist/vue-good-table-next.css';
 
-import './assets/css/collaborators_show.css';
+import './assets/css/collaborator_show.css';
 import './assets/css/company_detail.css';
 import './assets/css/company_show.css';
 import './assets/css/custom-permissions-table.css';
