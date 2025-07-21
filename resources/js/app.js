@@ -12,6 +12,15 @@ import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import 'vue-good-table-next/dist/vue-good-table-next.css';
 
+import './assets/css/collaborators_show.css';
+import './assets/css/company_detail.css';
+import './assets/css/company_show.css';
+import './assets/css/custom-permissions-table.css';
+import './assets/css/custom-vue-good-tables.css';
+import './assets/css/custom.css';
+import './assets/css/message.css';
+import './assets/css/sociodemographic_profile.css';
+
 const app = createApp({});
 
 app.use(VueSweetalert2);
