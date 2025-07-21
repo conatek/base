@@ -146,7 +146,8 @@
                                     <img v-else :src="'/images/default-profile.jpeg'" :alt="collaborator ? collaborator.name : 'Default profile'">
                                 </div>
                                 <div class="provision">
-                                    <a @click="showCollaboratorProvision(collaborator.id)">
+                                    <!-- <a @click="showCollaboratorProvision(collaborator.id)"> -->
+                                    <a>
                                         <i class="fa fa-swatchbook"></i>
                                     </a>
                                 </div>
@@ -158,7 +159,7 @@
                                 <div class="card-profile-text">
                                     <div class="portada"></div>
                                     <div class="title-total">
-                                        <div class="title text-truncate">{{ collaborator && collaborator.position ? collaborator.position.name : 'Sin definir' }}</div>
+                                        <div class="title text-truncate">{{ collaborator && collaborator.position ? collaborator.position.name : 'Cargo sin definir' }}</div>
                                         <div class="name-profile text-truncate">{{ collaborator ? collaborator.name : '' }}</div>
                                         <div class="surname-profile text-truncate" style="border-bottom: 1px dotted #127cb3; padding-bottom: 10px; margin-bottom: 10px;">{{ collaborator ? collaborator.first_surname : '' }} {{ collaborator ? collaborator.second_surname : '' }}</div>
                                         <div class="email-profile text-truncate">{{ collaborator ? collaborator.email : '' }}</div>

@@ -160,7 +160,8 @@
     background-position: bottom center;
     background-size: cover; */
     /* background: linear-gradient(0deg, #fff, #ff4600); */
-    background: linear-gradient(0deg, #fff, #0dacff);
+    /* background: linear-gradient(0deg, #fff, #0dacff); */
+    background: linear-gradient(270deg, #fff, #bee6fe);
 }
 
 .actions>button {

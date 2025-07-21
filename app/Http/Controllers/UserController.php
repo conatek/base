@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Role;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -31,7 +32,7 @@ class UserController extends Controller
     public function getUsers() {
         $results = [];
 
-        $user = auth()->user();
+        $user = Auth::user();
 
         $company_id = $user->company_id;
         $users = User::where('company_id', $company_id)->with(['roles'])->get();
@@ -55,12 +56,25 @@ class UserController extends Controller
         return $results;
     }
 
+    public function getUserAdmin($company_id)
+    {
+        $user = User::where('company_id', $company_id)->with('roles')->whereHas('roles', function($query) {
+            $query->where('name', 'admin');
+        })->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'No se encontró un administrador para esta empresa.'], 404);
+        }
+
+        return response()->json(['user_admin' => $user]);
+    }
+
     public function index()
     {
         // abort_if(Gate::denies('user_index'), 403);
-        $current_user_id = auth()->user()->id;
-        $current_user_roles = auth()->user()->roles->pluck('name')->toArray();
-        $company_id = auth()->user()->company_id;
+        $current_user_id = Auth::user()->id;
+        $current_user_roles = Auth::user()->roles->pluck('name')->toArray();
+        $company_id = Auth::user()->company_id;
         // $users = User::where('company_id', $company_id)->with(['company', 'roles'])->get();
         $roles = Role::all();
 
@@ -79,8 +93,11 @@ class UserController extends Controller
     }
 
     public function store(UserCreateRequest $request)
+    // public function store(Request $request)
     {
         // Las validaciones se realizan en UserCreateRequest
+
+        // dd($request->get('image'));
 
         if($request->hasFile('image')) {
             $file = request()->file('image');

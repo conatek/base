@@ -5,9 +5,9 @@
             <span class="d-block">Bienvenid@,</span>
             <span>Inicia sesión en tu cuenta.</span>
         </h4>
-        <h6 class="mt-3">¿Sin cuenta?
+        {{-- <h6 class="mt-3">¿Sin cuenta?
             <a href="{{ route('register') }}" class="text-primary">Regístrate ahora</a>
-        </h6>
+        </h6> --}}
         <div class="divider row"></div>
         <div>
             <form method="POST" action="{{ route('login') }}">
@@ -17,14 +17,14 @@
                     <div class="col-md-6">
                         <div class="position-relative mb-3">
                             <label for="email" class="form-label">Correo electrónico</label>
-                            <input  name="email" 
-                                    id="email" 
-                                    placeholder="Correo electronico..." 
-                                    type="email" 
-                                    class="form-control @error('email') is-invalid @enderror" 
-                                    value="{{ old('email') }}" 
+                            <input  name="email"
+                                    id="email"
+                                    placeholder="Correo electronico..."
+                                    type="email"
+                                    class="form-control @error('email') is-invalid @enderror"
+                                    value="{{ old('email') }}"
                                     required autocomplete="email" autofocus>
-                            
+
                             @error('email')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -52,11 +52,11 @@
                 <div class="divider row"></div>
                 <div class="d-flex align-items-center">
                     <div class="ms-auto">
-                        @if (Route::has('password.request'))
+                        {{-- @if (Route::has('password.request'))
                             <a class="btn btn-link" href="{{ route('password.request') }}">
                                 Recuperar contraseña
                             </a>
-                        @endif
+                        @endif --}}
                         <a href="{{ route('start') }}" class="btn btn-dark btn-lg">Inicio</a>
                         <button type="submit" class="btn btn-primary btn-lg">Ingresar</button>
                     </div>

@@ -15,7 +15,8 @@ class UserEditRequest extends FormRequest
     {
         $user = $this->route('user');
 
-        if($this->request->get('image') != "null"){
+        // if($this->request->get('image') != "null"){
+        if($this->request->get('image') != null){
             return [
                 'name' => 'required',
                 'email' => 'required|email|unique:users,email,' . $user->id,

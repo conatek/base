@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="app-page-title">
-            <div v-if="selected_company == null && add_company == false && edit_company == false && load_collaborators == false" class="page-title-wrapper">
+            <div v-if="selected_company == null && add_company == false && edit_company == false && load_collaborators == false && add_user_admin == false && edit_user_admin == false" class="page-title-wrapper">
                 <div class="page-title-heading">
                     <div class="page-title-icon">
                         <i class="fa fa-building" style="color: #127cb3;"></i>
@@ -17,7 +17,7 @@
                     </button>
                 </div>
             </div>
-            <div v-else-if="selected_company != null && add_company == false && edit_company == false && load_collaborators == false" class="page-title-wrapper">
+            <div v-else-if="selected_company != null && add_company == false && edit_company == false && load_collaborators == false && add_user_admin == false && edit_user_admin == false" class="page-title-wrapper">
                 <div class="page-title-heading">
                     <div class="page-title-icon">
                         <i class="pe-7s-culture text-success"></i>
@@ -33,7 +33,7 @@
                     </button>
                 </div>
             </div>
-            <div v-else-if="selected_company == null && add_company == true && edit_company == false && load_collaborators == false" class="page-title-wrapper">
+            <div v-else-if="selected_company == null && add_company == true && edit_company == false && load_collaborators == false && add_user_admin == false && edit_user_admin == false" class="page-title-wrapper">
                 <div class="page-title-heading">
                     <div class="page-title-icon">
                         <i class="pe-7s-culture text-success"></i>
@@ -49,7 +49,7 @@
                     </button>
                 </div>
             </div>
-            <div v-else-if="selected_company != null && add_company == false && edit_company == true && load_collaborators == false" class="page-title-wrapper">
+            <div v-else-if="selected_company != null && add_company == false && edit_company == true && load_collaborators == false && add_user_admin == false && edit_user_admin == false" class="page-title-wrapper">
                 <div class="page-title-heading">
                     <div class="page-title-icon">
                         <i class="pe-7s-culture text-success"></i>
@@ -65,13 +65,45 @@
                     </button>
                 </div>
             </div>
-            <div v-else-if="selected_company != null && add_company == false && edit_company == false && load_collaborators == true" class="page-title-wrapper">
+            <div v-else-if="selected_company != null && add_company == false && edit_company == false && load_collaborators == true && add_user_admin == false && edit_user_admin == false" class="page-title-wrapper">
                 <div class="page-title-heading">
                     <div class="page-title-icon">
                         <i class="pe-7s-users text-success"></i>
                     </div>
                     <div>
                         Cargar Colaboradores
+                    </div>
+                </div>
+                <div class="page-title-actions">
+                    <button @click="returnToList()" class="btn btn-mh-dark-blue me-3">
+                        <i class="fa fa-arrow-left"></i>
+                        Volver al listado
+                    </button>
+                </div>
+            </div>
+            <div v-else-if="selected_company != null && add_company == false && edit_company == false && load_collaborators == false && add_user_admin == false && edit_user_admin == false" class="page-title-wrapper">
+                <div class="page-title-heading">
+                    <div class="page-title-icon">
+                        <i class="pe-7s-users text-success"></i>
+                    </div>
+                    <div>
+                        Agregar Administrador
+                    </div>
+                </div>
+                <div class="page-title-actions">
+                    <button @click="returnToList()" class="btn btn-mh-dark-blue me-3">
+                        <i class="fa fa-arrow-left"></i>
+                        Volver al listado
+                    </button>
+                </div>
+            </div>
+            <div v-else-if="selected_company != null && add_company == false && edit_company == false && load_collaborators == false && add_user_admin == false && edit_user_admin == true" class="page-title-wrapper">
+                <div class="page-title-heading">
+                    <div class="page-title-icon">
+                        <i class="pe-7s-users text-success"></i>
+                    </div>
+                    <div>
+                        Editar Administrador
                     </div>
                 </div>
                 <div class="page-title-actions">
@@ -106,7 +138,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="selected_company == null && add_company == false && edit_company == false && load_collaborators == false">
+                <div v-if="selected_company == null && add_company == false && edit_company == false && load_collaborators == false && add_user_admin == false && edit_user_admin == false">
                     <div class="row">
                         <div class="col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <div class="input-group mb-3">
@@ -166,10 +198,12 @@
                         </ul>
                     </nav>
                 </div>
-                <div v-if="selected_company !== null && add_company == false && edit_company == false && load_collaborators == false">
+                <div v-if="selected_company !== null && add_company == false && edit_company == false && load_collaborators == false && add_user_admin == false && edit_user_admin == false">
                     <company-detail
                         @editCompany="editCompany"
                         @loadCollaborators="loadCollaborators"
+                        @addUserAdmin="addUserAdmin"
+                        @editUserAdmin="editUserAdmin"
                         :company="selected_company"
                         :company_type="companyData.company_type"
                         :industry_type="companyData.industry_type"
@@ -178,7 +212,7 @@
                         :city="companyData.city"
                     ></company-detail>
                 </div>
-                <div v-if="selected_company == null && add_company == true && edit_company == false && load_collaborators == false">
+                <div v-if="selected_company == null && add_company == true && edit_company == false && load_collaborators == false && add_user_admin == false && edit_user_admin == false">
                     <company-create
                         :company_types="selectsDataCreate.company_types"
                         :document_types="selectsDataCreate.document_types"
@@ -186,7 +220,7 @@
                         :industry_types="selectsDataCreate.industry_types"
                     ></company-create>
                 </div>
-                <div v-if="selected_company != null && add_company == false && edit_company == true && load_collaborators == false">
+                <div v-if="selected_company != null && add_company == false && edit_company == true && load_collaborators == false && add_user_admin == false && edit_user_admin == false">
                     <company-edit
                         :company="companyDataEdit.company"
                         :company_types="companyDataEdit.company_types"
@@ -195,10 +229,90 @@
                         :industry_types="companyDataEdit.industry_types"
                     ></company-edit>
                 </div>
-                <div v-if="selected_company != null && add_company == false && edit_company == false && load_collaborators == true">
-                    <company-collaborators></company-collaborators>
-
-                    <!-- <p>Aquí va el componente para carga masiva de colaboradores ...</p> -->
+                <div v-if="selected_company != null && add_company == false && edit_company == false && load_collaborators == true && add_user_admin == false && edit_user_admin == false">
+                    <company-collaborators :company_id="selected_company.id"></company-collaborators>
+                </div>
+                <div v-if="selected_company != null && add_company == false && edit_company == false && load_collaborators == false && add_user_admin == true && edit_user_admin == false" class="main-card mb-3 card">
+                    <div class="card-body">
+                        <form @submit.prevent="storeUserAdmin" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="name" class="form-label">Nombre</label>
+                                        <input v-model="name" name="name" id="name" type="text" class="form-control" placeholder="Ingresa el nombre del ususario" autofocus>
+                                        <span v-if="errors && errors.name" class="error text-danger" for="name">{{ errors.name[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input v-model="email" name="email" id="email" type="email" class="form-control" placeholder="Ingresa el correo electrónico" autocomplete="new-password">
+                                        <span v-if="errors && errors.email" class="error text-danger" for="email">{{ errors.email[0] }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="image" class="form-label">Imagen</label>
+                                        <div class="input-group">
+                                            <input @change="onChangeImage" type="file" name="image" id="image" class="form-control">
+                                        </div>
+                                        <span v-if="errors && errors.image" class="error text-danger" for="image">{{ errors.image[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="password" class="form-label">Contraseña</label>
+                                        <input v-model="password" name="password" id="password" type="password" class="form-control" placeholder="Ingresa la contraseña solo si la deseas modificar" autocomplete="new-password">
+                                        <span v-if="errors && errors.password" class="error text-danger" for="password">{{ errors.password[0] }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="mt-2 btn btn-primary">Guardar</button>
+                        </form>
+                    </div>
+                </div>
+                <div v-if="selected_company != null && add_company == false && edit_company == false && load_collaborators == false && add_user_admin == false && edit_user_admin == true" class="main-card mb-3 card">
+                    <div class="card-body">
+                        <form @submit.prevent="updateUserAdmin" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="name" class="form-label">Nombre</label>
+                                        <input v-model="user_admin.name" name="name" id="name" type="text" class="form-control" placeholder="Ingresa el nombre del ususario" autofocus>
+                                        <span v-if="errors && errors.name" class="error text-danger" for="name">{{ errors.name[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input v-model="user_admin.email" name="email" id="email" type="email" class="form-control" placeholder="Ingresa el correo electrónico" autocomplete="new-password">
+                                        <span v-if="errors && errors.email" class="error text-danger" for="email">{{ errors.email[0] }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="image" class="form-label">Imagen</label>
+                                        <div class="input-group">
+                                            <input @change="onChangeImage" type="file" name="image" id="image" class="form-control">
+                                        </div>
+                                        <span v-if="errors && errors.image" class="error text-danger" for="image">{{ errors.image[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="password" class="form-label">Contraseña</label>
+                                        <input v-model="password" name="password" id="password" type="password" class="form-control" placeholder="Ingresa la contraseña solo si la deseas modificar" autocomplete="new-password">
+                                        <span v-if="errors && errors.password" class="error text-danger" for="password">{{ errors.password[0] }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="mt-2 btn btn-primary">Guardar</button>
+                        </form>
+                    </div>
                 </div>
 
 
@@ -208,6 +322,8 @@
 </template>
 
 <script>
+import { add } from 'lodash'
+
 export default {
     props: {
         companies: {
@@ -224,6 +340,8 @@ export default {
             add_company: false,
             edit_company: false,
             load_collaborators: false,
+            add_user_admin: false,
+            edit_user_admin: false,
 
             companyData: null,
             companyDataEdit: null,
@@ -237,6 +355,13 @@ export default {
             totalPages: 0,
             search: '',
             filteredCompanies: [],
+
+            name: '',
+            email: '',
+            image: null,
+            password: null,
+
+            user_admin: null,
 
             origin: '',
         }
@@ -292,6 +417,8 @@ export default {
             this.add_company = false
             this.edit_company = false
             this.load_collaborators = false
+            this.add_user_admin = false;
+            this.edit_user_admin = false;
         },
         getOrigin() {
             const origin = localStorage.getItem('origin');
@@ -357,6 +484,8 @@ export default {
             this.add_company = false
             this.edit_company = false
             this.load_collaborators = false
+            this.add_user_admin = false
+            this.edit_user_admin = false
 
             axios.get(`/companies/${company}`).then(
                 (res) => {
@@ -380,6 +509,8 @@ export default {
             this.add_company = true
             this.edit_company = false
             this.load_collaborators = false
+            this.add_user_admin = false
+            this.edit_user_admin = false
 
             axios.get(`/companies/create`).then(
                 (res) => {
@@ -397,6 +528,8 @@ export default {
             this.add_company = false
             this.edit_company = true
             this.load_collaborators = false
+            this.add_user_admin = false
+            this.edit_user_admin = false
 
             axios.get(`/companies/${company}/edit`).then(
                 (res) => {
@@ -414,6 +547,110 @@ export default {
             this.add_company = false
             this.edit_company = false
             this.load_collaborators = true
+            this.add_user_admin = false
+            this.edit_user_admin = false
+        },
+        addUserAdmin(company) {
+            this.selected_company = this.companies.find(c => c.id === company)
+            this.add_company = false
+            this.edit_company = false
+            this.load_collaborators = false
+            this.add_user_admin = true;
+            this.edit_user_admin = false;
+
+            // Emit an event to the parent component to handle adding a user admin
+            this.$emit('addUserAdmin', company);
+        },
+        editUserAdmin(user_admin) {
+            this.user_admin = user_admin;
+            this.add_company = false;
+            this.edit_company = false;
+            this.load_collaborators = false;
+            this.add_user_admin = false;
+            this.edit_user_admin = true;
+
+            // Emit an event to the parent component to handle editing a user admin
+            this.$emit('editUserAdmin', user_admin);
+        },
+        storeUserAdmin() {
+            const selected_roles = ["Admin"]; // Asignar el rol "Admin" por defecto
+            let fd = new FormData()
+
+            fd.append('company_id', this.selected_company.id)
+            fd.append('name', this.name)
+            fd.append('email', this.email)
+            if (this.image) {
+                fd.append('image', this.image);
+            }
+            if (this.password) {
+                fd.append('password', this.password)
+            }
+            selected_roles.forEach((role, index) => {
+                fd.append(`roles[${index}]`, role);
+            });
+
+            axios.post('/users', fd).then(
+                (res) => {
+                    // localStorage.setItem('origin', 'created');
+
+                    // this.successfully_created_message = true
+                    // this.successfully_updated_message = false
+                    // this.successfully_deleted_message = false
+
+                    // this.getMessage(res.data.message)
+
+                    // this.getUsers();
+
+                    this.add_company = false
+                    this.edit_company = false
+                    this.load_collaborators = false
+                    this.add_user_admin = false;
+                    this.edit_user_admin = false;
+
+                    // window.location.href = '/users'
+                    this.errors = null
+                }).catch(
+                (error) => {
+                    if(error && error.response && error.response.data && error.response.data.errors) {
+                        this.errors = error.response.data.errors
+                    }
+                })
+        },
+        updateUserAdmin() {
+            const selected_roles = ["Admin"];
+            let fd = new FormData()
+
+            fd.append('company_id', this.selected_company.id)
+            fd.append('name', this.user_admin.name)
+            fd.append('email', this.user_admin.email)
+            if (this.image) {
+                fd.append('image', this.image);
+            }
+            if (this.password) {
+                fd.append('password', this.password)
+            }
+            selected_roles.forEach((role, index) => {
+                fd.append(`roles[${index}]`, role);
+            });
+            fd.append('_method', 'PUT');
+
+            axios.post(`/users/${this.user_admin.id}`, fd).then(
+                (res) => {
+
+                    this.add_company = false
+                    this.edit_company = false
+                    this.load_collaborators = false
+                    this.add_user_admin = false;
+                    this.edit_user_admin = false;
+
+                    // window.location.href = '/users'
+                    this.errors = null
+                }).catch(
+                (error) => {
+                    if(error && error.response && error.response.data && error.response.data.errors) {
+                        this.errors = error.response.data.errors
+                    }
+                })
         },
         deleteCompany(id){
             // console.log('Eliminar empresa: ' + id);
@@ -431,7 +668,7 @@ export default {
                 }).catch(
                 (error) => {
                     if(error && error.response && error.response.data && error.response.data.errors) {
-                        console.log(error.response.data.errors)
+                        // console.log(error.response.data.errors)
                         this.errors = error.response.data.errors
                     }
                 })
@@ -442,127 +679,4 @@ export default {
 
 <style scoped>
     @import './../../assets/css/custom.css';
-    /* .message-success {
-        width: 100%;
-        background: #D8FFDC;
-        border-radius: 4px;
-        padding: 10px;
-    }
-
-    .message-success .content {
-        align-items: flex-start;
-        justify-content: center;
-        border-left: 5px solid #00660A;
-    }
-
-    .message-success .content p {
-        font-size: 16px;
-        line-height: 16px;
-    }
-
-    .card-profile {
-        height: 230px;
-        background: #fff;
-        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
-        display: flex;
-        flex-direction: row;
-        border-radius: 5px;
-        position: relative;
-    }
-
-    .card-profile .name-profile {
-        margin: 0;
-        padding: 0 1rem;
-        font-weight: bold;
-        font-size: 1.2rem;
-    }
-
-    .card-profile .surname-profile {
-        margin: 0;
-        padding: 0 1rem;
-        font-weight: bold;
-        color: #8e8e8e;
-    }
-
-    .card-profile .email-profile {
-        margin: 0;
-        padding: 0 1rem;
-    }
-
-    .card-profile .cellphone-profile {
-        margin: 0;
-        padding: 0 1rem;
-    }
-
-    .card-profile .title {
-        padding: 1rem;
-        text-align: right;
-        color: #12b338;
-        font-weight: bold;
-        font-size: 12px;
-    }
-
-    .card-profile .desc {
-        padding: 0.5rem 1rem;
-        font-size: 12px;
-    }
-
-    .card-profile .actions {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        align-items: center;
-        padding: 0.5rem 1rem;
-    }
-
-    .img-avatar>img {
-        width: 80px;
-        height: 80px;
-        position: absolute;
-        border-radius: 50%;
-        border: 6px solid white;
-        background-image: linear-gradient(-60deg, #16a085 0%, #f4d03f 100%);
-        top: 15px;
-        left: 15px;
-        transition:.5s;
-        &:hover{
-            transform: rotate(22deg)
-        }
-    }
-
-    .card-profile-text {
-        width: 100%;
-        display: flex;
-    }
-
-    .title-total {
-        flex: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .portada {
-        flex-shrink: 0;
-        width: 110px;
-        height: 100%;
-        border-top-left-radius: 5px;
-        border-bottom-left-radius: 5px;
-        background-image: url("/images/card-image-bk.png");
-        background-position: bottom center;
-        background-size: cover;
-    }
-
-    .actions>button {
-        text-align: center;
-        border: none;
-        background: none;
-        font-size: 24px;
-        color: #12b338;
-        cursor: pointer;
-        transition:.5s;
-        &:hover{
-            color: #0d7726  ;
-            transform: rotate(22deg)
-        }
-    } */
 </style>

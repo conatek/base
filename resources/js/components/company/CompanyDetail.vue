@@ -30,15 +30,30 @@
                             <h6 class="menu-header-subtitle">Información complementaria</h6>
                         </div>
                         <div class="menu-header-btn-pane">
-                            <button @click="emitEditCompany" class="btn btn-lg btn-mh-white m-2">
-                                <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-                                Editar empresa
-                            </button>
-                            <button @click="emitLoadCollaborators" class="btn btn-lg btn-mh-white m-2">
-                                <font-awesome-icon :icon="['fas', 'upload']" />
-                                Carga masiva de colaboradores
-                            </button>
+                            <div class="inner-menu-header-btn-pane">
+                                <button v-if="user_admin && user_admin.id" @click="loginAs(user_admin.id)" class="btn btn-lg btn-mh-white m-2">
+                                    <font-awesome-icon :icon="['fas', 'ticket']" />
+                                    Modo administrador asistido
+                                </button>
+                                <button @click="emitLoadCollaborators" class="btn btn-lg btn-mh-white m-2">
+                                    <font-awesome-icon :icon="['fas', 'upload']" />
+                                    Carga masiva de colaboradores
+                                </button>
+                                <button @click="emitEditCompany" class="btn btn-lg btn-mh-white m-2">
+                                    <font-awesome-icon :icon="['fas', 'pen-to-square']" />
+                                    Editar empresa
+                                </button>
+                                <button v-if="!user_admin" @click="emitAddUserAdmin" class="btn btn-lg btn-mh-white m-2">
+                                    <font-awesome-icon :icon="['fas', 'user']" />
+                                    Agregar Administrador
+                                </button>
+                                <button v-else @click="emitEditUserAdmin" class="btn btn-lg btn-mh-white m-2">
+                                    <font-awesome-icon :icon="['fas', 'user']" />
+                                    Editar Administrador
+                                </button>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -405,6 +420,7 @@ export default {
             errors_area_data: null,
             errors_position_data: null,
 
+            user_admin: null,
             origin: '',
         }
     },
@@ -417,6 +433,8 @@ export default {
         this.getAreasData(this.company.id)
         this.getPositionsData(this.company.id)
         this.getCollaboratorsData(this.company.id)
+
+        this.getUserAdmin()
     },
     methods: {
         showDeleteAlert(action, item, index) {
@@ -452,6 +470,18 @@ export default {
         },
         emitLoadCollaborators() {
             this.$emit('loadCollaborators', this.company.id)
+        },
+        emitAddUserAdmin() {
+            this.$emit('addUserAdmin', this.company.id)
+        },
+        emitEditUserAdmin() {
+            this.$emit('editUserAdmin', this.user_admin)
+        },
+        loginAs(userId) {
+            axios.post(`/login-as/${userId}`).then(() => {
+                // window.open('/home', '_blank');
+                window.open('/home');
+            });
         },
         changeMainTab(tab) {
             this.card_selected = tab
@@ -495,6 +525,16 @@ export default {
                 ({data}) => {
                     this.cities = data.cities
                 })
+        },
+        getUserAdmin() {
+            axios.get(`/users/${this.company.id}/admin`)
+            .then(response => {
+                this.user_admin = response.data.user_admin;
+                console.log(this.user_admin);
+            })
+            .catch(e => {
+                //
+            })
         },
         addCampusData() {
             if(this.add_campus_data == false) {
@@ -1126,4 +1166,16 @@ export default {
 <style scoped>
     @import './../../assets/css/company_detail.css';
     @import './../../assets/css/custom.css';
+
+    .menu-header-btn-pane {
+        display: flex;
+        justify-content: center;
+    }
+
+    .inner-menu-header-btn-pane {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 600px;
+        justify-content: end;
+    }
 </style>

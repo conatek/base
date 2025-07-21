@@ -44,6 +44,13 @@
                                     <span class="ladda-label">Editar</span>
                                     <span class="ladda-spinner"></span>
                                 </a> -->
+
+                                <div v-if="isImpersonating" class="text-center">
+                                    <form @submit.prevent="returnToOriginalUser">
+                                        <button type="submit" class="btn btn-lg btn-mh-white m-2"><i class="fa fa-undo"></i> Volver a mi usuario</button>
+                                    </form>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -1120,6 +1127,8 @@ export default {
             showMessageArea: false,
             showMessagePosition: false,
 
+            isImpersonating: window.Laravel?.isImpersonating || false,
+
             errors_campus_data: null,
             errors_area_data: null,
             errors_position_data: null,
@@ -1160,6 +1169,15 @@ export default {
                     icon: "success"
                 });
             }
+            });
+        },
+        returnToOriginalUser() {
+            axios.post('/return-to-original-user').then(
+                (response) => {
+                    window.open('/home');
+                }
+            ).catch((error) => {
+                console.error('Error al volver al usuario original', error);
             });
         },
         changeMainTab(tab) {
@@ -1822,6 +1840,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
     @import './../../assets/css/company_show.css';
+    @import './../../assets/css/custom.css';
 </style>

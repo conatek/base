@@ -1,7 +1,7 @@
 <div class="app-wrapper-footer">
     <div class="app-footer">
         <div class="app-footer__inner">
-            <div class="app-footer-left">
+            {{-- <div class="app-footer-left">
                 <div class="footer-dots">
                     <div class="dropdown">
                         <a aria-haspopup="true" aria-expanded="false"
@@ -91,42 +91,42 @@
                                                                         <div class="avatar-wrapper mt-2 avatar-wrapper-overlap">
                                                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                                                 <div class="avatar-icon">
-                                                                                    {{-- <img src="images/avatars/1.jpg" alt=""> --}}
+                                                                                    <img src="images/avatars/1.jpg" alt="">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                                                 <div class="avatar-icon">
-                                                                                    {{-- <img src="images/avatars/2.jpg" alt=""> --}}
+                                                                                    <img src="images/avatars/2.jpg" alt="">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                                                 <div class="avatar-icon">
-                                                                                    {{-- <img src="images/avatars/3.jpg" alt=""> --}}
+                                                                                    <img src="images/avatars/3.jpg" alt="">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                                                 <div class="avatar-icon">
-                                                                                    {{-- <img src="images/avatars/4.jpg" alt=""> --}}
+                                                                                    <img src="images/avatars/4.jpg" alt="">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                                                 <div class="avatar-icon">
-                                                                                    {{-- <img src="images/avatars/5.jpg" alt=""> --}}
+                                                                                    <img src="images/avatars/5.jpg" alt="">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                                                 <div class="avatar-icon">
-                                                                                    {{-- <img src="images/avatars/9.jpg" alt=""> --}}
+                                                                                    <img src="images/avatars/9.jpg" alt="">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                                                 <div class="avatar-icon">
-                                                                                    {{-- <img src="images/avatars/7.jpg" alt=""> --}}
+                                                                                    <img src="images/avatars/7.jpg" alt="">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                                                 <div class="avatar-icon">
-                                                                                    {{-- <img src="images/avatars/8.jpg" alt=""> --}}
+                                                                                    <img src="images/avatars/8.jpg" alt="">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="avatar-icon-wrapper avatar-icon-sm avatar-icon-add">
@@ -454,8 +454,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="app-footer-right">
+            </div> --}}
+            {{-- <div class="app-footer-right">
                 <ul class="header-megamenu nav">
                     <li class="nav-item">
                         <a data-bs-placement="top" rel="popover-focus"
@@ -587,7 +587,23 @@
                         </div>
                     </li>
                 </ul>
+            </div> --}}
+
+            <div class="app-footer-right">
+                <ul class="header-megamenu nav">
+                    <li class="nav-item">
+                        {{-- <a data-bs-placement="top" rel="popover-focus"
+                            data-offset="300" data-toggle="popover-custom" class="nav-link">
+                            Desarrollado por: CONATEK SAS
+                        </a> --}}
+
+                        {{-- Desarrollado por: <strong>CONATEK S.A.S.</strong> --}}
+                        {{-- Desarrollado por: <strong>CONATEK S.A.S.</strong> --}}
+                        Todos los derechos reservados &copy; MUYHUMANO 2025
+                    </li>
+                </ul>
             </div>
+
         </div>
     </div>
 </div>

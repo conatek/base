@@ -71,6 +71,62 @@ class PermissionSeeder extends Seeder
             ['name' => 'collaborators_show', 'module_id' => 10, 'display_name' => 'Ver Colaboradores'],
             ['name' => 'collaborators_edit', 'module_id' => 10, 'display_name' => 'Editar Colaboradores'],
             ['name' => 'collaborators_destroy', 'module_id' => 10, 'display_name' => 'Eliminar Colaboradores'],
+
+            ['name' => 'selection_index', 'module_id' => 11, 'display_name' => 'Listar Procesos de Selección'],
+            ['name' => 'selection_create', 'module_id' => 11, 'display_name' => 'Crear Procesos de Selección'],
+            ['name' => 'selection_show', 'module_id' => 11, 'display_name' => 'Ver Procesos de Selección'],
+            ['name' => 'selection_edit', 'module_id' => 11, 'display_name' => 'Editar Procesos de Selección'],
+            ['name' => 'selection_destroy', 'module_id' => 11, 'display_name' => 'Eliminar Procesos de Selección'],
+
+            ['name' => 'absence_index', 'module_id' => 12, 'display_name' => 'Listar Ausentismos'],
+            ['name' => 'absence_create', 'module_id' => 12, 'display_name' => 'Crear Ausentismos'],
+            ['name' => 'absence_show', 'module_id' => 12, 'display_name' => 'Ver Ausentismos'],
+            ['name' => 'absence_edit', 'module_id' => 12, 'display_name' => 'Editar Ausentismos'],
+            ['name' => 'absence_destroy', 'module_id' => 12, 'display_name' => 'Eliminar Ausentismos'],
+
+            ['name' => 'provision_index', 'module_id' => 13, 'display_name' => 'Listar Dotaciones'],
+            ['name' => 'provision_create', 'module_id' => 13, 'display_name' => 'Crear Dotaciones'],
+            ['name' => 'provision_show', 'module_id' => 13, 'display_name' => 'Ver Dotaciones'],
+            ['name' => 'provision_edit', 'module_id' => 13, 'display_name' => 'Editar Dotaciones'],
+            ['name' => 'provision_destroy', 'module_id' => 13, 'display_name' => 'Eliminar Dotaciones'],
+
+            ['name' => 'training_index', 'module_id' => 14, 'display_name' => 'Listar Planes de Formación'],
+            ['name' => 'training_create', 'module_id' => 14, 'display_name' => 'Crear Planes de Formación'],
+            ['name' => 'training_show', 'module_id' => 14, 'display_name' => 'Ver Planes de Formación'],
+            ['name' => 'training_edit', 'module_id' => 14, 'display_name' => 'Editar Planes de Formación'],
+            ['name' => 'training_destroy', 'module_id' => 14, 'display_name' => 'Eliminar Planes de Formación'],
+
+            ['name' => 'performance_index', 'module_id' => 15, 'display_name' => 'Listar Evaluaciones de Desempeño'],
+            ['name' => 'performance_create', 'module_id' => 15, 'display_name' => 'Crear Evaluaciones de Desempeño'],
+            ['name' => 'performance_show', 'module_id' => 15, 'display_name' => 'Ver Evaluaciones de Desempeño'],
+            ['name' => 'performance_edit', 'module_id' => 15, 'display_name' => 'Editar Evaluaciones de Desempeño'],
+            ['name' => 'performance_destroy', 'module_id' => 15, 'display_name' => 'Eliminar Evaluaciones de Desempeño'],
+
+            ['name' => 'wellness_index', 'module_id' => 16, 'display_name' => 'Listar Bienestar'],
+            ['name' => 'wellness_create', 'module_id' => 16, 'display_name' => 'Crear Bienestar'],
+            ['name' => 'wellness_show', 'module_id' => 16, 'display_name' => 'Ver Bienestar'],
+            ['name' => 'wellness_edit', 'module_id' => 16, 'display_name' => 'Editar Bienestar'],
+            ['name' => 'wellness_destroy', 'module_id' => 16, 'display_name' => 'Eliminar Bienestar'],
+
+            ['name' => 'self_management_index', 'module_id' => 17, 'display_name' => 'Listar Autogestión'],
+            ['name' => 'self_management_create', 'module_id' => 17, 'display_name' => 'Crear Autogestión'],
+            ['name' => 'self_management_show', 'module_id' => 17, 'display_name' => 'Ver Autogestión'],
+            ['name' => 'self_management_edit', 'module_id' => 17, 'display_name' => 'Editar Autogestión'],
+            ['name' => 'self_management_destroy', 'module_id' => 17, 'display_name' => 'Eliminar Autogestión'],
+
+            ['name' => 'cms_index', 'module_id' => 18, 'display_name' => 'Listar CMS'],
+            ['name' => 'cms_create', 'module_id' => 18, 'display_name' => 'Crear CMS'],
+            ['name' => 'cms_show', 'module_id' => 18, 'display_name' => 'Ver CMS'],
+            ['name' => 'cms_edit', 'module_id' => 18, 'display_name' => 'Editar CMS'],
+            ['name' => 'cms_destroy', 'module_id' => 18, 'display_name' => 'Eliminar CMS'],
+
+            ['name' => 'tools_index', 'module_id' => 19, 'display_name' => 'Listar Herramientas'],
+            ['name' => 'tools_create', 'module_id' => 19, 'display_name' => 'Crear Herramientas'],
+            ['name' => 'tools_show', 'module_id' => 19, 'display_name' => 'Ver Herramientas'],
+            ['name' => 'tools_edit', 'module_id' => 19, 'display_name' => 'Editar Herramientas'],
+            ['name' => 'tools_destroy', 'module_id' => 19, 'display_name' => 'Eliminar Herramientas'],
+
+
         ];
 
         foreach ($permissions as $permission) {

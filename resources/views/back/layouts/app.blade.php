@@ -68,6 +68,12 @@
         {{-- scripts específicos --}}
         @yield('scripts')
 
+        <script>
+            window.Laravel = {
+                isImpersonating: {{ session()->has('original_user_id') ? 'true' : 'false' }}
+            };
+        </script>
+
         @vite('resources/js/app.js')
     </body>
 </html>

@@ -13,7 +13,8 @@ class UserCreateRequest extends FormRequest
 
     public function rules()
     {
-        if($this->request->get('image') != "null"){
+        // if($this->request->get('image') != "null"){
+        if($this->request->get('image') != null){
             return [
                 'name' => 'required',
                 'email' => 'required|email|unique:users',

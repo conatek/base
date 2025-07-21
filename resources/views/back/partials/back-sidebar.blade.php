@@ -48,9 +48,6 @@
                     </a>
                 </li>
                 @endcan
-
-            <hr style="color: #fff;">
-
             @endcan
 
             @can('block_collaborators')
@@ -63,7 +60,6 @@
                     </a>
                 </li>
 
-                {{-- @can(['area_index']) --}}
                 <li>
                     <a href="#" class="{{ request()->is('modules*') ? 'mm-active' : '' }}">
                         <i class="metismenu-icon fa fa-cube"></i>
@@ -71,51 +67,61 @@
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                     </a>
                     <ul>
+                        @can('selection_index')
                         <li class="{{ request()->is('modules/selection*') ? 'mm-active' : '' }}">
                             <a href="{{ route('selection.index') }}" class="{{ request()->is('modules/selection*') ? 'mm-active' : '' }}">
                                 <i class="metismenu-icon fa fa-toolbox"></i>
                                 Procesos de Selección
                             </a>
                         </li>
+                        @endcan
 
+                        @can('absence_index')
                         <li class="{{ request()->is('modules/absence*') ? 'mm-active' : '' }}">
                             <a href="{{ route('absence.index') }}" class="{{ request()->is('modules/absence*') ? 'mm-active' : '' }}">
                                 <i class="metismenu-icon fa fa-toolbox"></i>
                                 Ausentismo
                             </a>
                         </li>
+                        @endcan
 
+                        @can('provision_index')
                         <li class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
                             <a href="{{ route('provision.index') }}" class="{{ request()->is('modules/provision*') ? 'mm-active' : '' }}">
                                 <i class="metismenu-icon fa fa-toolbox"></i>
                                 Dotación
                             </a>
                         </li>
+                        @endcan
 
+                        @can('training_index')
                         <li class="{{ request()->is('modules/training*') ? 'mm-active' : '' }}">
                             <a href="{{ route('training.index') }}" class="{{ request()->is('modules/training*') ? 'mm-active' : '' }}">
                                 <i class="metismenu-icon fa fa-toolbox"></i>
                                 Planes de Formación
                             </a>
                         </li>
+                        @endcan
 
+                        @can('performance_index')
                         <li class="{{ request()->is('modules/performance*') ? 'mm-active' : '' }}">
                             <a href="{{ route('performance.index') }}" class="{{ request()->is('modules/performance*') ? 'mm-active' : '' }}">
                                 <i class="metismenu-icon fa fa-toolbox"></i>
                                 Evaluación de Desempeño
                             </a>
                         </li>
+                        @endcan
 
+                        @can('wellness_index')
                         <li class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
                             <a href="{{ route('wellness.index') }}" class="{{ request()->is('modules/wellness*') ? 'mm-active' : '' }}">
                                 <i class="metismenu-icon fa fa-toolbox"></i>
                                 Bienestar
                             </a>
                         </li>
+                        @endcan
                     </ul>
                 </li>
-
-            <hr style="color: #fff;">
             @endcan
 
 
@@ -154,8 +160,6 @@
             @endcan
 
             @can('block_utilities')
-            <hr style="color: #fff;">
-
             <li class="app-sidebar__heading" style="color: white !important;">Utilidades</li>
 
             <li>
@@ -188,7 +192,6 @@
                 </ul>
             </li>
 
-            {{-- @can('cms_index') --}}
             <li class="{{ request()->is('cms*') ? 'mm-active' : '' }}">
                 <a href="#">
                     <i class="metismenu-icon pe-7s-news-paper"></i>

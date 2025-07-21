@@ -293,7 +293,7 @@ export default {
             name: '',
             email: '',
             image: null,
-            password: '',
+            password: null,
 
             errors: null,
             message: '',
@@ -440,8 +440,12 @@ export default {
             fd.append('company_id', this.company_id)
             fd.append('name', this.name)
             fd.append('email', this.email)
-            fd.append('image', this.image)
-            fd.append('password', this.password)
+            if (this.image) {
+                fd.append('image', this.image);
+            }
+            if (this.password) {
+                fd.append('password', this.password);
+            }
             this.selected_roles.forEach((role, index) => {
                 fd.append(`roles[${index}]`, role);
             });
@@ -512,7 +516,9 @@ export default {
             fd.append('company_id', this.company_id)
             fd.append('name', this.name)
             fd.append('email', this.email)
-            fd.append('image', this.image)
+            if (this.image) {
+                fd.append('image', this.image);
+            }
             if (this.password) {
                 fd.append('password', this.password);
             }

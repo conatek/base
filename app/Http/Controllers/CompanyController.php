@@ -124,6 +124,7 @@ class CompanyController extends Controller
                 END as age_group'),
             DB::raw('COUNT(*) as count')
         )
+        ->where('company_id', $company_id)
         ->groupBy('age_group')
         ->orderBy('count', 'desc')
         ->get();

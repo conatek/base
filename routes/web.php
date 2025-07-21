@@ -17,6 +17,7 @@ use App\Http\Controllers\CollaboratorHomeVisitController;
 use App\Http\Controllers\CollaboratorMedicalExaminationController;
 use App\Http\Controllers\CompaniesController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Import\CollaboratorImportController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OvertimeController;
@@ -30,14 +31,52 @@ use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\WellnessController;
 use Illuminate\Support\Facades\Route;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+
 Route::get('/', function () {
     return view('front.welcome');
 })->name('start');
 
+// Ruta para actuar como otro usuario
+// Route::middleware(['auth', 'can:login-as'])->post('/login-as/{user}', function (User $user) {
+Route::middleware(['auth'])->post('/login-as/{user}', function (User $user) {
+    $roles = Auth::user()->roles->pluck('name')->map(fn($r) => strtolower($r))->toArray();
+
+    if (empty(array_intersect(['master', 'super'], $roles))) {
+        abort(403);
+    }
+
+    Session::put('original_user_id', Auth::id());
+    Auth::login($user);
+
+    return response()->json([
+        'message' => 'Ahora estás actuando como ' . $user->name,
+        'redirect' => '/home'
+    ]);
+});
+
+// Ruta para volver al usuario original
+Route::middleware(['auth'])->post('/return-to-original-user', function () {
+    $originalUserId = Session::pull('original_user_id');
+
+    if ($originalUserId && Auth::id() !== $originalUserId) {
+        Auth::loginUsingId($originalUserId);
+    }
+
+    return response()->json([
+        'message' => 'Has vuelto a tu usuario original.',
+        'redirect' => '/home'
+    ]);
+});
+
 Route::group(['middleware' => 'auth'], function() {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
+    // Route::post('/login-as/{user_id}', [UserController::class, 'loginAs']);
     Route::get('/users-data/{company_id}', [UserController::class, 'getUsers']);
+    Route::get('/users/{company_id}/admin', [UserController::class, 'getUserAdmin']);
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
@@ -194,4 +233,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('/modules', [ModuleController::class, 'store'])->name('modules.store');
     Route::put('/modules/{module}', [ModuleController::class, 'update'])->name('modules.update');
     Route::delete('/modules/{module}', [ModuleController::class, 'destroy'])->name('modules.destroy');
+
+    // COLLABORATOR IMPORT
+    Route::post('/collaborators/import', [CollaboratorImportController::class, 'import']);
 });

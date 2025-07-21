@@ -15,11 +15,11 @@ class SocialStratumSeeder extends Seeder
      */
     public function run()
     {
-        SocialStratum::create(['name' => 'Bajo-Bajo']);
-        SocialStratum::create(['name' => 'Bajo']);
-        SocialStratum::create(['name' => 'Medio-Bajo']);
-        SocialStratum::create(['name' => 'Medio']);
-        SocialStratum::create(['name' => 'Medio-Alto']);
-        SocialStratum::create(['name' => 'Alto']);
+        SocialStratum::create(['name' => '1-Bajo-Bajo']);
+        SocialStratum::create(['name' => '2-Bajo']);
+        SocialStratum::create(['name' => '3-Medio-Bajo']);
+        SocialStratum::create(['name' => '4-Medio']);
+        SocialStratum::create(['name' => '5-Medio-Alto']);
+        SocialStratum::create(['name' => '6-Alto']);
     }
 }
