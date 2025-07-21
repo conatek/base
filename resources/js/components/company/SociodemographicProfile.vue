@@ -5,18 +5,18 @@
                 <div class="main-card mb-3 card">
                     <!-- <div class="card-body">
                         <h5 class="card-title">Género</h5>
-                        <Doughnut 
-                            :data="chartGenderData" 
-                            :options="chartGenderOptions" 
+                        <Doughnut
+                            :data="chartGenderData"
+                            :options="chartGenderOptions"
                         />
                     </div> -->
                     <div class="card-body">
                         <h5 class="card-title">Género</h5>
                         <div class="row d-flex">
                             <div class="col-md-6">
-                                <Doughnut 
-                                    :data="chartGenderData" 
-                                    :options="chartGenderOptions" 
+                                <Doughnut
+                                    :data="chartGenderData"
+                                    :options="chartGenderOptions"
                                 />
                             </div>
                             <div class="col-md-6 labels align-content-center">
@@ -32,18 +32,18 @@
                 <div class="main-card mb-3 card">
                     <!-- <div class="card-body">
                         <h5 class="card-title">Estado Civil</h5>
-                        <Doughnut 
-                            :data="chartCivilStatusData" 
-                            :options="chartCivilStatusOptions" 
+                        <Doughnut
+                            :data="chartCivilStatusData"
+                            :options="chartCivilStatusOptions"
                         />
                     </div> -->
                     <div class="card-body">
                         <h5 class="card-title">Estado Civil</h5>
                         <div class="row d-flex">
                             <div class="col-md-6">
-                                <Doughnut 
-                                    :data="chartCivilStatusData" 
-                                    :options="chartCivilStatusOptions" 
+                                <Doughnut
+                                    :data="chartCivilStatusData"
+                                    :options="chartCivilStatusOptions"
                                 />
                             </div>
                             <div class="col-md-6 labels align-content-center">
@@ -59,18 +59,18 @@
                 <div class="main-card mb-3 card">
                     <!-- <div class="card-body">
                         <h5 class="card-title">Rangos de Edad</h5>
-                        <Doughnut 
-                            :data="chartAgeRangesData" 
-                            :options="chartAgeRangesOptions" 
+                        <Doughnut
+                            :data="chartAgeRangesData"
+                            :options="chartAgeRangesOptions"
                         />
                     </div> -->
                     <div class="card-body">
                         <h5 class="card-title">Rangos de Edad</h5>
                         <div class="row d-flex">
                             <div class="col-md-6">
-                                <Doughnut 
-                                    :data="chartAgeRangesData" 
-                                    :options="chartAgeRangesOptions" 
+                                <Doughnut
+                                    :data="chartAgeRangesData"
+                                    :options="chartAgeRangesOptions"
                                 />
                             </div>
                             <div class="col-md-6 labels align-content-center">
@@ -86,18 +86,18 @@
                 <div class="main-card mb-3 card">
                     <!-- <div class="card-body">
                         <h5 class="card-title">Nivel Académico</h5>
-                        <Doughnut 
-                            :data="chartAcademicLevelData" 
-                            :options="chartAcademicLevelOptions" 
+                        <Doughnut
+                            :data="chartAcademicLevelData"
+                            :options="chartAcademicLevelOptions"
                         />
                     </div> -->
                     <div class="card-body">
                         <h5 class="card-title">Nivel Académico</h5>
                         <div class="row d-flex">
                             <div class="col-md-6">
-                                <Doughnut 
-                                    :data="chartAcademicLevelData" 
-                                    :options="chartAcademicLevelOptions" 
+                                <Doughnut
+                                    :data="chartAcademicLevelData"
+                                    :options="chartAcademicLevelOptions"
                                 />
                             </div>
                             <div class="col-md-6 labels align-content-center">
@@ -115,9 +115,9 @@
                         <h5 class="card-title">Estrato Social</h5>
                         <div class="row d-flex">
                             <div class="col-md-6">
-                                <Doughnut 
-                                    :data="chartSocialStrataData" 
-                                    :options="chartSocialStrataOptions" 
+                                <Doughnut
+                                    :data="chartSocialStrataData"
+                                    :options="chartSocialStrataOptions"
                                 />
                             </div>
                             <div class="col-md-6 labels align-content-center">
@@ -135,9 +135,9 @@
                         <h5 class="card-title">Antiguedad</h5>
                         <div class="row d-flex">
                             <div class="col-md-6">
-                                <Doughnut 
-                                    :data="chartLengthServiceData" 
-                                    :options="chartLengthServiceOptions" 
+                                <Doughnut
+                                    :data="chartLengthServiceData"
+                                    :options="chartLengthServiceOptions"
                                 />
                             </div>
                             <div class="col-md-6 labels align-content-center">
@@ -155,9 +155,9 @@
                 <div class="main-card mb-3 card">
                     <div class="card-body">
                         <h5 class="card-title">Nivel Académico</h5>
-                        <Bar 
-                            :data="chartTestOneData" 
-                            :options="chartTestOneOptions" 
+                        <Bar
+                            :data="chartTestOneData"
+                            :options="chartTestOneOptions"
                         />
                     </div>
                 </div>
@@ -188,23 +188,23 @@ export default {
             age_ranges_data: [],
             academic_level_data: [],
 
-            
+
             chartGenderData: null,
             chartCivilStatusData: null,
             chartAgeRangesData: null,
             chartAcademicLevelData: null,
             chartSocialStrataData: null,
             chartLengthServiceData: null,
-            
+
             chartTestOneData: null,
-            
+
             chartGenderOptions: null,
             chartCivilStatusOptions: null,
             chartAgeRangesOptions: null,
             chartAcademicLevelOptions: null,
             chartSocialStrataOptions: null,
             chartLengthServiceOptions: null,
-            
+
             chartTestOneOptions: null,
         }
     },
@@ -250,7 +250,7 @@ export default {
                 };
             })
             .catch(e => {
-                console.error('Error:', e);  
+                console.error('Error:', e);
             })
         },
         getCivilStatusData(company_id) {
@@ -272,7 +272,7 @@ export default {
                 };
             })
             .catch(e => {
-                console.error('Error:', e);  
+                console.error('Error:', e);
             })
         },
         getAgeRangesData(company_id) {
@@ -294,7 +294,7 @@ export default {
                 };
             })
             .catch(e => {
-                console.error('Error:', e);  
+                console.error('Error:', e);
             })
         },
         getAcademicLevelData(company_id) {
@@ -316,7 +316,7 @@ export default {
                 };
             })
             .catch(e => {
-                console.error('Error:', e);  
+                console.error('Error:', e);
             })
         },
         getSocialStrataData(company_id) {
@@ -338,7 +338,7 @@ export default {
                 };
             })
             .catch(e => {
-                console.error('Error:', e);  
+                console.error('Error:', e);
             })
         },
         getLengthServiceData(company_id) {
@@ -360,7 +360,7 @@ export default {
                 };
             })
             .catch(e => {
-                console.error('Error:', e);  
+                console.error('Error:', e);
             })
         },
         getRandomColors(quantity) {
@@ -395,13 +395,4 @@ export default {
         margin-bottom: 2px;
         font-size: 12px;
     }
-    
-    /* .custom-list-item::before {
-        content: "";
-        display: inline-block;
-        width: 30px;
-        height: 10px;
-        background-color: blue;
-        margin-right: 10px;
-    } */
 </style>

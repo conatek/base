@@ -19,7 +19,6 @@ import './assets/css/custom-permissions-table.css';
 import './assets/css/custom-vue-good-tables.css';
 import './assets/css/custom.css';
 import './assets/css/message.css';
-import './assets/css/sociodemographic_profile.css';
 
 const app = createApp({});
 
