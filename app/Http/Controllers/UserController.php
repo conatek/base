@@ -63,10 +63,15 @@ class UserController extends Controller
         })->first();
 
         if (!$user) {
-            return response()->json(['message' => 'No se encontró un administrador para esta empresa.'], 404);
+            return response()->json([
+                'message' => 'No se encontró un administrador para esta empresa.',
+                'user_admin' => null
+            ]);
         }
 
-        return response()->json(['user_admin' => $user]);
+        return response()->json([
+            'user_admin' => $user
+        ]);
     }
 
     public function index()

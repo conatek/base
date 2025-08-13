@@ -12,8 +12,7 @@ class ModuleSeeder extends Seeder
     public function run(): void
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        Module::truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        DB::table('modules')->truncate();
 
         $modules = [
             ['name' => 'home', 'display_name' => 'Inicio'], // Module 1
@@ -44,5 +43,7 @@ class ModuleSeeder extends Seeder
                 'display_name' => $module['display_name'],
             ]);
         }
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

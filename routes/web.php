@@ -21,12 +21,15 @@ use App\Http\Controllers\Import\CollaboratorImportController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OvertimeController;
+use App\Http\Controllers\PdfReportController;
 use App\Http\Controllers\PerformanceController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\ProvisionController;
 use App\Http\Controllers\SelectionController;
+use App\Http\Controllers\SelfManagementController;
+use App\Http\Controllers\StaffProviderController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\WellnessController;
 use Illuminate\Support\Facades\Route;
@@ -236,4 +239,18 @@ Route::group(['middleware' => 'auth'], function() {
 
     // COLLABORATOR IMPORT
     Route::post('/collaborators/import', [CollaboratorImportController::class, 'import']);
+
+    // PDF REPORTS
+    Route::get('/report/collaborators', [PdfReportController::class, 'downloadReportCollaborators']);
+    // Route::get('/report/collaborators', [PdfReportController::class, 'downloadReportCollaboratorsWithPagination']);
+
+    // SELF MANAGEMENT
+    Route::get('/self-management/profile', [SelfManagementController::class, 'profile'])->name('self-management.profile');
+
+    // PROVIDERS
+    Route::get('/providers-data/{company_id}', [StaffProviderController::class, 'getProvidersData']);
+    Route::get('/staff-providers', [StaffProviderController::class, 'index'])->name('staff-providers.index');
+    Route::post('/staff-providers', [StaffProviderController::class, 'store'])->name('staff-providers.store');
+    Route::put('/staff-providers/{provider}', [StaffProviderController::class, 'update'])->name('staff-providers.update');
+    Route::delete('/staff-providers/{provider}', [StaffProviderController::class, 'destroy'])->name('staff-providers.destroy');
 });

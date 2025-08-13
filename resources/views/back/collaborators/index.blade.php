@@ -40,6 +40,7 @@
     :collaborators="{{ $collaborators }}"
     :absence_types="{{ collect($absence_types) }}"
     :absence_subtypes="{{ collect($absence_subtypes) }}"
+    {{-- :staff_providers="{{ collect($staff_providers) }}" --}}
 ></collaborator-index>
 
 @endsection

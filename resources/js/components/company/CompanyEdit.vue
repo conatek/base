@@ -14,10 +14,10 @@
                                         <div class="col-sm-12 col-md-6 col-lg-2 d-flex align-items-end">
                                             <div class="position-relative mb-3 d-flex flex-column justify-content-end" style="height: 100%;">
                                                 <div v-if="company && company.logo_url" class="avatar-icon rounded" style="width: 64px; height: auto; border: 2px solid #ced4da;">
-                                                    <img :src="company.logo_url" :alt="company.company_name" style="width: 100%; height: auto;">
+                                                    <img :src="company.logo_url" :alt="company && company.company_name ? company.company_name : ''" style="width: 100%; height: auto;">
                                                 </div>
                                                 <div v-else class="avatar-icon rounded" style="width: 64px; height: auto; border: 2px solid #ced4da;">
-                                                    <img :src="'/images/default-profile.jpeg'" :alt="company.company_name" style="width: 100%; height: auto;">
+                                                    <img :src="'/images/default-profile.jpeg'" :alt="company && company.company_name ? company.company_name : ''" style="width: 100%; height: auto;">
                                                 </div>
                                             </div>
                                         </div>
@@ -124,7 +124,7 @@
                                             <div class="position-relative mb-3">
                                                 <label for="founded_at" class="form-label">Fecha de fundación*</label>
                                                 <input v-model="founded_at" name="founded_at" id="founded_at" type="date" class="form-control" placeholder="Ingrese fecha de nacimiento">
-                                                <span v-if="errors_relative_data && errors_relative_data.founded_at" class="error text-danger" for="founded_at">{{ errors_relative_data.founded_at[0] }}</span>
+                                                <span v-if="errors && errors.founded_at" class="error text-danger" for="founded_at">{{ errors.founded_at[0] }}</span>
                                             </div>
                                         </div>
                                         <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center">
@@ -238,7 +238,7 @@
                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                             <div class="position-relative mb-3">
                                                 <label for="x_twitter" class="form-label">X (Twitter)</label>
-                                                <input v-model="x" name="x_twitter" id="x_twitter" type="text" class="form-control" placeholder="Ingrese url de X">
+                                                <input v-model="x_twitter" name="x_twitter" id="x_twitter" type="text" class="form-control" placeholder="Ingrese url de X">
                                                 <span v-if="errors && errors.x_twitter" class="error text-danger" for="x_twitter">{{ errors.x_twitter[0] }}</span>
                                             </div>
                                         </div>
@@ -262,6 +262,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue';
+
 export default {
     props: {
         company: {
@@ -284,43 +286,77 @@ export default {
         return {
             identification_type_default: null,
 
-            // logo: this.company.logo_url,
-            company_type_id: this.company.company_type_id,
-            company_name: this.company.company_name,
-            identification_type_id: this.company.identification_type_id,
-            identification_number: this.company.identification_number,
-            province_id: this.company.province_id,
-            // city_id: this.company.city_id,
-            address: this.company.address,
-            industry_type_id: this.company.industry_type_id,
-            size: this.company.size,
-            founded_at: this.company.founded_at,
-            status: '',
-            description: this.company.description,
-            contact_name: this.company.contact_name,
-            contact_first_surname: this.company.contact_first_surname,
-            contact_second_surname: this.company.contact_second_surname,
-            website: this.company.website,
-            email: this.company.email,
-            phone: this.company.phone,
-            cellphone: this.company.cellphone,
-            facebook: this.company.facebook,
-            instagram: this.company.instagram,
-            linkedin: this.company.linkedin,
-            x_twitter: this.company.x_twitter,
-            youtube: this.company.youtube,
+            logo: '',
+            company_type_id: '',
+            company_name: '',
+            identification_type_id: '',
+            identification_number: '',
+            province_id: '',
+            city_id: '',
+            address: '',
+            industry_type_id: '',
+            size: '',
+            founded_at: '',
+            status: 0,
+            description: '',
+            contact_name: '',
+            contact_first_surname: '',
+            contact_second_surname: '',
+            website: '',
+            email: '',
+            phone: '',
+            cellphone: '',
+            facebook: '',
+            instagram: '',
+            linkedin: '',
+            x_twitter: '',
+            youtube: '',
 
             cities: [],
 
             errors: null,
+
         };
     },
     mounted() {
         // Lógica de inicialización aquí
         this.handleChangeCompanyType()
         this.getCities(this.province_id)
-        if(this.company.is_active == 1) {
+        if(this.company && this.company.is_active && this.company.is_active == 1) {
             document.getElementById('is_active').checked = true
+        }
+    },
+    watch: {
+        company: {
+            deep: true,
+            handler(newVal) {
+                this.logo = newVal.logo_url || '';
+                this.company_type_id = newVal.company_type_id || '';
+                this.company_name = newVal.company_name || '';
+                this.company_type_id = newVal.company_type_id || '';
+                this.identification_type_id = newVal.identification_type_id || '';
+                this.identification_number = newVal.identification_number || '';
+                this.province_id = newVal.province_id || '';
+                this.city_id = newVal.city_id || '';
+                this.address = newVal.address || '';
+                this.industry_type_id = newVal.industry_type_id || '';
+                this.size = newVal.size || '';
+                this.founded_at = newVal.founded_at || '';
+                this.status = newVal.is_active && newVal.is_active == 1 ? 1 : 0;
+                this.description = newVal.description || '';
+                this.contact_name = newVal.contact_name || '';
+                this.contact_first_surname = newVal.contact_first_surname || '';
+                this.contact_second_surname = newVal.contact_second_surname || '';
+                this.website = newVal.website || '';
+                this.email = newVal.email || '';
+                this.phone = newVal.phone || '';
+                this.cellphone = newVal.cellphone || '';
+                this.facebook = newVal.facebook || '';
+                this.instagram = newVal.instagram || '';
+                this.linkedin = newVal.linkedin || '';
+                this.x_twitter = newVal.x_twitter || '';
+                this.youtube = newVal.youtube || '';
+            }
         }
     },
     methods: {

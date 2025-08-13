@@ -67,7 +67,7 @@ class CollaboratorImportController extends Controller
         CollaboratorImport::where('hash', $this->hash)->delete();
 
         return response()->json([
-            'message' => 'Colaboradores importados correctamente.'
+            'message' => 'Proceso ejecutado correctamente. Le llegará un correo con los resultados.',
         ]);
     }
 

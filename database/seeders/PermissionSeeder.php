@@ -11,9 +11,10 @@ class PermissionSeeder extends Seeder
 {
     public function run()
     {
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        Permission::truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        DB::table('permissions')->truncate();
 
         $permissions = [
             ['name' => 'block_company', 'module_id' => 1, 'display_name' => 'Bloque de Gestión de Empresa'],
@@ -109,10 +110,11 @@ class PermissionSeeder extends Seeder
             ['name' => 'wellness_destroy', 'module_id' => 16, 'display_name' => 'Eliminar Bienestar'],
 
             ['name' => 'self_management_index', 'module_id' => 17, 'display_name' => 'Listar Autogestión'],
-            ['name' => 'self_management_create', 'module_id' => 17, 'display_name' => 'Crear Autogestión'],
-            ['name' => 'self_management_show', 'module_id' => 17, 'display_name' => 'Ver Autogestión'],
-            ['name' => 'self_management_edit', 'module_id' => 17, 'display_name' => 'Editar Autogestión'],
-            ['name' => 'self_management_destroy', 'module_id' => 17, 'display_name' => 'Eliminar Autogestión'],
+            ['name' => 'self_management_profile', 'module_id' => 17, 'display_name' => 'Mi perfil'],
+            ['name' => 'self_management_requests', 'module_id' => 17, 'display_name' => 'Solicitudes'],
+            // ['name' => 'self_management_show', 'module_id' => 17, 'display_name' => 'Ver Autogestión'],
+            // ['name' => 'self_management_edit', 'module_id' => 17, 'display_name' => 'Editar Autogestión'],
+            // ['name' => 'self_management_destroy', 'module_id' => 17, 'display_name' => 'Eliminar Autogestión'],
 
             ['name' => 'cms_index', 'module_id' => 18, 'display_name' => 'Listar CMS'],
             ['name' => 'cms_create', 'module_id' => 18, 'display_name' => 'Crear CMS'],
@@ -137,5 +139,7 @@ class PermissionSeeder extends Seeder
                 'guard_name' => 'web',
             ]);
         }
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

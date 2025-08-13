@@ -13,7 +13,7 @@ return new class extends Migration
             $table->unsignedBigInteger('absence_type_id');
             $table->string('subtype');
 
-            $table->foreign('absence_type_id')->references('id')->on('absence_types');
+            $table->foreign('absence_type_id')->references('id')->on('absence_types')->onDelete('cascade');
 
             $table->timestamps();
         });

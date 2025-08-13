@@ -11,11 +11,6 @@
                     <span>Información Contractual</span>
                 </a>
             </li>
-            <!-- <li class="nav-item">
-                <a @click="tab_collaborator_status = 'documentation'" role="tab" class="nav-link" :class="tab_collaborator_status == 'documentation' ? 'active' : ''" id="tab-2" data-bs-toggle="tab" href="#tab-content-2">
-                    <span>Gestión Documental</span>
-                </a>
-            </li> -->
         </ul>
         <div class="tab-content">
             <div class="tab-pane tabs-animation fade" :class="tab_collaborator_status == 'general' ? 'show active' : ''" id="tab-content-0" role="tabpanel">
@@ -41,33 +36,15 @@
                                                 </div>
                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                     <div class="position-relative mb-3">
-                                                        <label for="document_type_id" class="form-label">Tipo de documento*</label>
-                                                        <select v-model="document_type_id" name="document_type_id" class="form-control"  id="document_type_id">
-                                                            <option value="" disabled selected hidden>Seleccionar Tipo Documento</option>
-                                                            <option v-for="document_type in document_types" :value="document_type.id">{{ document_type.type }}</option>
+                                                        <label for="staff_provider_id" class="form-label">Proveedor*</label>
+                                                        <select v-model="staff_provider_id" name="staff_provider_id" class="form-control"  id="staff_provider_id">
+                                                            <option value="" disabled selected hidden>Seleccionar Proveedor</option>
+                                                            <option v-for="staff_provider in staff_providers" :value="staff_provider.id">{{ staff_provider.name }}</option>
                                                         </select>
-                                                        <span v-if="errors && errors.document_type_id" class="error text-danger" for="document_type_id">{{ errors.document_type_id[0] }}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12 col-md-6 col-lg-6">
-                                                    <div class="position-relative mb-3">
-                                                        <label for="document_number" class="form-label">Documento*</label>
-                                                        <input v-model="document_number" name="document_number" id="document_number" type="text" class="form-control" placeholder="Ingrese número documento">
-                                                        <span v-if="errors && errors.document_number" class="error text-danger" for="document_number">{{ errors.document_number[0] }}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12 col-md-6 col-lg-6">
-                                                    <div class="position-relative mb-3">
-                                                        <label for="civil_status_type_id" class="form-label">Estado civil*</label>
-                                                        <select v-model="civil_status_type_id" class="form-control" name="civil_status_type_id" id="civil_status_type_id">
-                                                            <option value="" disabled selected hidden>Seleccionar Sexo</option>
-                                                            <option v-for="civil_status in civil_status_types" :value="civil_status.id">{{ civil_status.type }}</option>
-                                                        </select>
-                                                        <span v-if="errors && errors.civil_status_type_id" class="error text-danger" for="civil_status_type_id">{{ errors.civil_status_type_id[0] }}</span>
+                                                        <span v-if="errors && errors.staff_provider_id" class="error text-danger" for="staff_provider_id">{{ errors.staff_provider_id[0] }}</span>
                                                     </div>
                                                 </div>
                                             </div>
-
                                             <div class="row">
                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                     <div class="position-relative mb-3">
@@ -100,7 +77,25 @@
                                                     </div>
                                                 </div>
                                             </div>
-
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="position-relative mb-3">
+                                                        <label for="document_type_id" class="form-label">Tipo de documento*</label>
+                                                        <select v-model="document_type_id" name="document_type_id" class="form-control"  id="document_type_id">
+                                                            <option value="" disabled selected hidden>Seleccionar Tipo Documento</option>
+                                                            <option v-for="document_type in document_types" :value="document_type.id">{{ document_type.type }}</option>
+                                                        </select>
+                                                        <span v-if="errors && errors.document_type_id" class="error text-danger" for="document_type_id">{{ errors.document_type_id[0] }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="position-relative mb-3">
+                                                        <label for="document_number" class="form-label">Documento*</label>
+                                                        <input v-model="document_number" name="document_number" id="document_number" type="text" class="form-control" placeholder="Ingrese número documento">
+                                                        <span v-if="errors && errors.document_number" class="error text-danger" for="document_number">{{ errors.document_number[0] }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="row">
                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                     <div class="position-relative mb-3">
@@ -116,13 +111,14 @@
                                                     <div class="position-relative mb-3">
                                                         <label for="document_city_id" class="form-label">Municipio de Expedición*</label>
                                                         <select v-model="document_city_id" class="form-control" name="document_city_id" id="document_city_id">
-                                                            <!-- <option value="" :selected="cities === []" disabled selected hidden>Seleccionar Municipio</option> -->
                                                             <option value="" disabled selected hidden>Seleccionar Municipio</option>
                                                             <option v-for="city in document_cities" :value="city.id">{{ city.name }}</option>
                                                         </select>
                                                         <span v-if="errors && errors.document_city_id" class="error text-danger" for="document_city_id">{{ errors.document_city_id[0] }}</span>
                                                     </div>
                                                 </div>
+                                            </div>
+                                            <div class="row">
                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                     <div class="position-relative mb-3">
                                                         <label for="expedition_date" class="form-label">Fecha de Expedición*</label>
@@ -141,7 +137,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-
                                             <div class="row">
                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                     <div class="position-relative mb-3">
@@ -163,6 +158,8 @@
                                                         <span v-if="errors && errors.birth_city_id" class="error text-danger" for="birth_city_id">{{ errors.birth_city_id[0] }}</span>
                                                     </div>
                                                 </div>
+                                            </div>
+                                            <div class="row">
                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                     <div class="position-relative mb-3">
                                                         <label for="birth_date" class="form-label">Fecha de Nacimiento*</label>
@@ -170,8 +167,17 @@
                                                         <span v-if="errors && errors.birth_date" class="error text-danger" for="birth_date">{{ errors.birth_date[0] }}</span>
                                                     </div>
                                                 </div>
+                                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="position-relative mb-3">
+                                                        <label for="civil_status_type_id" class="form-label">Estado Civil*</label>
+                                                        <select v-model="civil_status_type_id" class="form-control" name="civil_status_type_id" id="civil_status_type_id">
+                                                            <option value="" disabled selected hidden>Seleccionar Estado Civil</option>
+                                                            <option v-for="civil_status in civil_status_types" :value="civil_status.id">{{ civil_status.type }}</option>
+                                                        </select>
+                                                        <span v-if="errors && errors.civil_status_type_id" class="error text-danger" for="civil_status_type_id">{{ errors.civil_status_type_id[0] }}</span>
+                                                    </div>
+                                                </div>
                                             </div>
-
                                             <div class="row">
                                                 <div class="col-12">
                                                     <div class="position-relative mb-3">
@@ -453,26 +459,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- <div class="tab-content">
-            <div class="tab-pane tabs-animation fade" :class="tab_collaborator_status == 'documentation' ? 'show active' : ''" id="tab-content-2" role="tabpanel">
-                <div class="main-card mb-3 card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="card-hover-shadow card-border mb-3 card">
-                                    <div class="card-header">
-                                        Gestión Documental
-                                    </div>
-                                    <div class="card-body">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
     </div>
 </template>
 
@@ -527,6 +513,9 @@ export default {
         ccf_types: {
             default: null,
         },
+        staff_providers: {
+            default: null,
+        },
     },
     data() {
         return {
@@ -554,6 +543,7 @@ export default {
             residence_province_id: '',
             residence_city_id: '',
             housing_tenure_id: this.collaborator.housing_tenure_id,
+            staff_provider_id: this.collaborator.staff_provider_id,
 
             document_cities: [],
             birth_cities: [],
@@ -594,7 +584,10 @@ export default {
     },
     watch: {
         position_id: function(newPositionId) {
-            this.salary = this.position_types.find(position => position.id === newPositionId)?.estimated_salary || '';
+            // this.salary = this.position_types.find(position => position.id === newPositionId)?.estimated_salary || '';
+            this.salary = this.contractual_information != null && this.contractual_information.position_id === newPositionId
+                ? this.contractual_information.salary
+                : this.position_types.find(position => position.id === newPositionId)?.estimated_salary || '';
         }
     },
     methods: {
@@ -635,6 +628,8 @@ export default {
             .then(response => {
                 this.contractual_information = response.data.contractual_information;
 
+                console.log(this.contractual_information);
+
                 this.position_id = this.contractual_information.position_id;
                 this.salary = this.contractual_information.salary;
                 this.contract_type_id = this.contractual_information.contract_type_id;
@@ -656,41 +651,33 @@ export default {
             })
         },
         updateCollaborator() {
-            let dataSend = {
-                'image': this.image,
-                'name': this.name,
-                'first_surname': this.first_surname,
-                'second_surname': this.second_surname,
-                'document_type_id': this.document_type_id,
-
-            }
-
             let fd = new FormData()
 
-            fd.append('image', this.image)
-            fd.append('name', this.name)
-            fd.append('first_surname', this.first_surname)
-            fd.append('second_surname', this.second_surname)
-            fd.append('document_type_id', this.document_type_id)
-            fd.append('document_number', this.document_number)
-            fd.append('document_province_id', this.document_province_id)
-            fd.append('document_city_id', this.document_city_id)
-            fd.append('expedition_date', this.expedition_date)
-            fd.append('birth_province_id', this.birth_province_id)
-            fd.append('birth_city_id', this.birth_city_id)
-            fd.append('birth_date', this.birth_date)
-            fd.append('civil_status_type_id', this.civil_status_type_id)
-            fd.append('sex_type_id', this.sex_type_id)
-            fd.append('rh_type_id', this.rh_type_id)
-            fd.append('observations', this.observations)
-            fd.append('residence_province_id', this.residence_province_id)
-            fd.append('residence_city_id', this.residence_city_id)
-            fd.append('stratum_type_id', this.stratum_type_id)
-            fd.append('housing_tenure_id', this.housing_tenure_id)
-            fd.append('address', this.address)
-            fd.append('phone', this.phone)
-            fd.append('cellphone', this.cellphone)
-            fd.append('email', this.email)
+            this.appendIfNotEmpty(fd, 'image', this.image)
+            this.appendIfNotEmpty(fd, 'staff_provider_id', this.staff_provider_id)
+            this.appendIfNotEmpty(fd, 'name', this.name)
+            this.appendIfNotEmpty(fd, 'first_surname', this.first_surname)
+            this.appendIfNotEmpty(fd, 'second_surname', this.second_surname)
+            this.appendIfNotEmpty(fd, 'document_type_id', this.document_type_id)
+            this.appendIfNotEmpty(fd, 'document_number', this.document_number)
+            this.appendIfNotEmpty(fd, 'document_province_id', this.document_province_id)
+            this.appendIfNotEmpty(fd, 'document_city_id', this.document_city_id)
+            this.appendIfNotEmpty(fd, 'expedition_date', this.expedition_date)
+            this.appendIfNotEmpty(fd, 'birth_province_id', this.birth_province_id)
+            this.appendIfNotEmpty(fd, 'birth_city_id', this.birth_city_id)
+            this.appendIfNotEmpty(fd, 'birth_date', this.birth_date)
+            this.appendIfNotEmpty(fd, 'civil_status_type_id', this.civil_status_type_id)
+            this.appendIfNotEmpty(fd, 'sex_type_id', this.sex_type_id)
+            this.appendIfNotEmpty(fd, 'rh_type_id', this.rh_type_id)
+            this.appendIfNotEmpty(fd, 'observations', this.observations)
+            this.appendIfNotEmpty(fd, 'residence_province_id', this.residence_province_id)
+            this.appendIfNotEmpty(fd, 'residence_city_id', this.residence_city_id)
+            this.appendIfNotEmpty(fd, 'stratum_type_id', this.stratum_type_id)
+            this.appendIfNotEmpty(fd, 'housing_tenure_id', this.housing_tenure_id)
+            this.appendIfNotEmpty(fd, 'address', this.address)
+            this.appendIfNotEmpty(fd, 'phone', this.phone)
+            this.appendIfNotEmpty(fd, 'cellphone', this.cellphone)
+            this.appendIfNotEmpty(fd, 'email', this.email)
             fd.append('_method', 'PUT')
 
             let url = ''
@@ -698,7 +685,6 @@ export default {
                 (res) => {
                     localStorage.setItem('origin', 'updated');
 
-                    // url = `/collaborators/${res.data.collaborator.id}`
                     url = `/collaborators`
                     window.location.href = url
                     this.errors = null
@@ -786,6 +772,11 @@ export default {
                         this.errors = error.response.data.errors
                     }
                 })
+        },
+        appendIfNotEmpty(fd, key, value) {
+            if (value !== null && value !== '' && value !== undefined) {
+                fd.append(key, value)
+            }
         },
     },
 }

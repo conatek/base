@@ -12,6 +12,10 @@
                     </div>
                 </div>
                 <div class="page-title-actions">
+                    <a href="/report/collaborators" class="btn btn-mh-dark-blue me-3">
+                        <i class="fa fa-file-contract"></i>
+                        Reporte de Colaboradores
+                    </a>
                     <button @click="addCollaborator()" class="btn btn-mh-dark-blue me-3">
                         <i class="fa fa-plus"></i>
                         Agregar
@@ -123,6 +127,18 @@
                             </span>
                             Colaborador eliminado correctamente!
                         </div>
+                        <div v-else-if="origin == 'contractual_info_created'" class="mbg-3 alert alert-success alert-dismissible fade show" role="alert">
+                            <span class="pe-2">
+                                <i class="fa fa-star"></i>
+                            </span>
+                            Información contractual del colaborador creada correctamente!
+                        </div>
+                        <div v-else-if="origin == 'contractual_info_updated'" class="mbg-3 alert alert-success alert-dismissible fade show" role="alert">
+                            <span class="pe-2">
+                                <i class="fa fa-star"></i>
+                            </span>
+                            Información contractual del colaborador actualizada correctamente!
+                        </div>
                     </div>
                 </div>
                 <div v-if="selected_collaborator == null && add_collaborator == false && edit_collaborator == false">
@@ -159,18 +175,27 @@
                                 <div class="card-profile-text">
                                     <div class="portada"></div>
                                     <div class="title-total">
-                                        <div class="title text-truncate">{{ collaborator && collaborator.position ? collaborator.position.name : 'Cargo sin definir' }}</div>
+                                        <!-- <div>Activo</div> -->
+                                        <div class="title text-truncate d-flex justify-content-between align-items-center">
+                                            <span class="badge rounded-pill bg-success">Activo</span>
+                                            <span>{{ collaborator && collaborator.position ? collaborator.position.name : 'Cargo sin definir' }}</span>
+                                        </div>
                                         <div class="name-profile text-truncate">{{ collaborator ? collaborator.name : '' }}</div>
                                         <div class="surname-profile text-truncate" style="border-bottom: 1px dotted #127cb3; padding-bottom: 10px; margin-bottom: 10px;">{{ collaborator ? collaborator.first_surname : '' }} {{ collaborator ? collaborator.second_surname : '' }}</div>
                                         <div class="email-profile text-truncate">{{ collaborator ? collaborator.email : '' }}</div>
                                         <div class="cellphone-profile text-truncate">{{ collaborator ? collaborator.cellphone : '' }}</div>
 
-                                        <!-- <div class="desc"></div> -->
                                         <div class="actions">
                                             <button v-if="collaborator" @click="getCollaborator(collaborator.id)"><i class="fa fa-eye"></i></button>
                                             <button v-if="collaborator" @click="editCollaborator(collaborator.id)"><i class="fa fa-edit"></i></button>
                                             <button v-if="collaborator" @click="showDeleteAlert('deleteCollaborator', collaborator.id)"><i class="fa fa-trash"></i></button>
                                         </div>
+
+                                        <!-- <div class="actions d-flex justify-content-between align-items-center">
+                                            <a v-if="collaborator" @click="getCollaborator(collaborator.id)" class="btn btn-outline-success btn-sm"><i class="fa fa-eye"></i> Ver</a>
+                                            <a v-if="collaborator" @click="editCollaborator(collaborator.id)" class="btn btn-outline-primary btn-sm mx-2"><i class="fa fa-edit"></i> Editar</a>
+                                            <a v-if="collaborator" @click="showDeleteAlert('deleteCollaborator', collaborator.id)" class="btn btn-outline-danger btn-sm"><i class="fa fa-trash"></i> Eliminar</a>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
@@ -214,6 +239,7 @@
                         :stratum_type="collaboratorData.stratum_type"
                         :highest_academic_achievement="collaboratorData.highest_academic_achievement"
                         :housing_tenure="collaboratorData.housing_tenure"
+                        :staff_provider="collaboratorData.staff_provider"
                         :relationship_types="collaboratorData.relationship_types"
                         :occupation_types="collaboratorData.occupation_types"
                         :sex_types="collaboratorData.sex_types"
@@ -232,6 +258,7 @@
                         :stratum_types="selectsDataCreate.stratum_types"
                         :housing_tenure_types="selectsDataCreate.housing_tenure_types"
                         :provinces="selectsDataCreate.provinces"
+                        :staff_providers="selectsDataCreate.staff_providers"
                     ></collaborator-create>
                 </div>
                 <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == true && show_collaborator_absence == false && show_collaborator_provision == false && collaboratorDataEdit">
@@ -251,6 +278,7 @@
                         :afp_types="collaboratorDataEdit.afp_types"
                         :arl_types="collaboratorDataEdit.arl_types"
                         :ccf_types="collaboratorDataEdit.ccf_types"
+                        :staff_providers="collaboratorDataEdit.staff_providers"
                     ></collaborator-edit>
                 </div>
                 <div v-else-if="selected_collaborator != null && add_collaborator == false && edit_collaborator == false && show_collaborator_absence == true && show_collaborator_provision == false">

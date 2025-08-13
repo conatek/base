@@ -1,5 +1,18 @@
 <template>
     <div>
+        <!-- <div v-if="successMessage" class="alert alert-success" role="alert">
+            {{ successMessage }}
+        </div>
+        <div v-if="errorMessage" class="alert alert-danger" role="alert">
+            {{ errorMessage }}
+        </div> -->
+
+        <div v-if="message !== ''" class="message-success mb-3">
+            <div class="content d-flex align-items-start p-2">
+                <p class="mb-0" style="font-size: 14px;"> {{ this.message }}</p>
+            </div>
+        </div>
+
         <div class="main-card mb-3 card">
             <div class="card-body">
                 <!-- <form> -->
@@ -81,12 +94,24 @@ export default {
         return {
             file: '',
             fileName: '',
+
+            message: '',
+            errors: null,
         };
     },
     mounted() {
         // Add your mounted logic here
     },
     methods: {
+        getMessage(msg) {
+            if(msg != '' && msg != null) {
+                this.message = msg
+            }
+
+            setTimeout(() => {
+                this.resetForm();
+            }, 5000)
+        },
         selectFile() {
             this.$refs.fileInput.click();
             console.log(this.file);
@@ -104,15 +129,20 @@ export default {
             axios.post(`/collaborators/import`, formData).then(
                 (res) => {
                     console.log(res.data.message);
-                    // this.selectsDataCreate = res.data
-                    // this.errors = null
+                    this.getMessage(res.data.message);
                 }).catch(
                 (error) => {
                     console.error('Error importing collaborators:', error);
-                    // if(error && error.response && error.response.data && error.response.data.errors) {
-                    //     this.errors = error.response.data.errors
-                    // }
+                    if(error && error.response && error.response.data && error.response.data.errors) {
+                        this.errors = error.response.data.errors
+                    }
                 })
+        },
+        resetForm() {
+            this.file = '';
+            this.fileName = '';
+            this.message = '';
+            this.errors = null;
         },
     },
 };

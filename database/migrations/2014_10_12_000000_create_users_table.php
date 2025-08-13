@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('image_url')->nullable();
             $table->rememberToken();
 
-            $table->foreign('company_id')->references('id')->on('companies');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
 
             $table->timestamps();
         });

@@ -48,6 +48,13 @@
                     </a>
                 </li>
                 @endcan
+
+                <li class="{{ request()->is('staff-providers*') ? 'mm-active' : '' }}">
+                    <a href="{{ route('staff-providers.index') }}" class="{{ request()->is('staff-providers*') ? 'mm-active' : '' }}">
+                        <i class="metismenu-icon fa fa-people-arrows"></i>
+                        Proveedores
+                    </a>
+                </li>
             @endcan
 
             @can('block_collaborators')
@@ -128,35 +135,43 @@
             @can('block_self_management')
             <li class="app-sidebar__heading" style="color: white !important;">Autogestión</li>
 
-            <li>
-                <a href="#" class="{{ request()->is('tools*') ? 'mm-active' : '' }}">
-                    <i class="metismenu-icon fa fa-hand-point-up"></i>
-                    Solicitudes
-                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+            <li class="{{ request()->is('self-management*') ? 'mm-active' : '' }}">
+                <a href="{{ route('self-management.profile') }}" class="{{ request()->is('self-management*') ? 'mm-active' : '' }}">
+                    <i class="metismenu-icon fa fa-address-card"></i>
+                    Mi Perfil
                 </a>
-                <ul>
-                    <li class="{{ request()->is('tools/overtime*') ? 'mm-active' : '' }}">
-                        <a href="{{ route('overtime.index') }}" class="{{ request()->is('tools/overtime*') ? 'mm-active' : '' }}">
-                            <i class="metismenu-icon fa fa-toolbox"></i>
-                            Certificados
-                        </a>
-                    </li>
-
-                    <li class="{{ request()->is('tools/inventory*') ? 'mm-active' : '' }}">
-                        <a href="{{ route('inventory.index') }}" class="{{ request()->is('tools/inventory*') ? 'mm-active' : '' }}">
-                            <i class="metismenu-icon"></i>
-                            Vacaciones
-                        </a>
-                    </li>
-
-                    <li class="{{ request()->is('tools/cards*') ? 'mm-active' : '' }}">
-                        <a href="{{ route('cards.index') }}" class="{{ request()->is('tools/cards*') ? 'mm-active' : '' }}">
-                            <i class="metismenu-icon"></i>
-                            Permisos
-                        </a>
-                    </li>
-                </ul>
             </li>
+                @can('self_management_requests')
+                <li>
+                    <a href="#" class="{{ request()->is('tools*') ? 'mm-active' : '' }}">
+                        <i class="metismenu-icon fa fa-hand-point-up"></i>
+                        Solicitudes
+                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                    </a>
+                    <ul>
+                        <li class="{{ request()->is('tools/overtime*') ? 'mm-active' : '' }}">
+                            <a href="{{ route('overtime.index') }}" class="{{ request()->is('tools/overtime*') ? 'mm-active' : '' }}">
+                                <i class="metismenu-icon fa fa-toolbox"></i>
+                                Certificados
+                            </a>
+                        </li>
+
+                        <li class="{{ request()->is('tools/inventory*') ? 'mm-active' : '' }}">
+                            <a href="{{ route('inventory.index') }}" class="{{ request()->is('tools/inventory*') ? 'mm-active' : '' }}">
+                                <i class="metismenu-icon"></i>
+                                Vacaciones
+                            </a>
+                        </li>
+
+                        <li class="{{ request()->is('tools/cards*') ? 'mm-active' : '' }}">
+                            <a href="{{ route('cards.index') }}" class="{{ request()->is('tools/cards*') ? 'mm-active' : '' }}">
+                                <i class="metismenu-icon"></i>
+                                Permisos
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                @endcan
             @endcan
 
             @can('block_utilities')

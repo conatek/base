@@ -39,11 +39,11 @@ return new class extends Migration
             $table->string('x_twitter')->nullable();
             $table->string('youtube')->nullable();
 
-            $table->foreign('company_type_id')->references('id')->on('company_types');
-            $table->foreign('identification_type_id')->references('id')->on('document_types');
-            $table->foreign('province_id')->references('id')->on('provinces');
-            $table->foreign('city_id')->references('id')->on('cities');
-            $table->foreign('industry_type_id')->references('id')->on('industries');
+            $table->foreign('company_type_id')->references('id')->on('company_types')->onDelete('cascade');
+            $table->foreign('identification_type_id')->references('id')->on('document_types')->onDelete('cascade');
+            $table->foreign('province_id')->references('id')->on('provinces')->onDelete('cascade');
+            $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
+            $table->foreign('industry_type_id')->references('id')->on('industries')->onDelete('cascade');
 
             $table->timestamps();
         });

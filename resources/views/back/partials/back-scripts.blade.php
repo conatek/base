@@ -9,7 +9,7 @@
 <script type="text/javascript" src="{{ asset('vendors/perfect-scrollbar/dist/perfect-scrollbar.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendors/toastr/build/toastr.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendors/jquery.fancytree/dist/jquery.fancytree-all-deps.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('vendors/apexcharts/dist/apexcharts.min.js') }}"></script>
+{{-- <script type="text/javascript" src="{{ asset('vendors/apexcharts/dist/apexcharts.min.js') }}"></script> --}}
 <script type="text/javascript" src="{{ asset('vendors/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
 
 {{-- <script type="text/javascript" src="{{ asset('vendors/datatables.net/js/jquery.dataTables.min.js') }}"></script>
@@ -19,7 +19,7 @@
 
 <script type="text/javascript" src="{{ asset('vendors/select2/dist/js/select2.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendors/@atomaras/bootstrap-multiselect/dist/js/bootstrap-multiselect.js') }}"></script>
-<script type="text/javascript" src="{{ asset('vendors/apexcharts/dist/apexcharts.min.js') }}"></script>
+{{-- <script type="text/javascript" src="{{ asset('vendors/apexcharts/dist/apexcharts.min.js') }}"></script> --}}
 <script type="text/javascript" src="{{ asset('vendors/chart.js/dist/Chart.min.js') }}"></script>
 
 <!-- DataTables  & Plugins -->
@@ -40,7 +40,7 @@
 {{-- <script type="text/javascript" src="{{ asset('vendors/sweetalert2/dist/sweetalert2.all.min.js') }}"></script> --}}
 
 <!-- custome.js -->
-<script type="text/javascript" src="{{ asset('js/charts/apex-charts.js') }}"></script>
+{{-- <script type="text/javascript" src="{{ asset('js/charts/apex-charts.js') }}"></script> --}}
 <script type="text/javascript" src="{{ asset('js/circle-progress.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/demo.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/scrollbar.js') }}"></script>

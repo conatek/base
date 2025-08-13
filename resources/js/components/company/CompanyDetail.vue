@@ -530,7 +530,7 @@ export default {
             axios.get(`/users/${this.company.id}/admin`)
             .then(response => {
                 this.user_admin = response.data.user_admin;
-                console.log(this.user_admin);
+                // console.log(this.user_admin);
             })
             .catch(e => {
                 //

@@ -14,7 +14,7 @@ return new class extends Migration
             $table->bigInteger('province_id')->unsigned();
             $table->string('dane_code');
 
-            $table->foreign('province_id')->references('id')->on('provinces');
+            $table->foreign('province_id')->references('id')->on('provinces')->onDelete('cascade');
         });
     }
 

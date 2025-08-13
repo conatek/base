@@ -25,8 +25,8 @@ return new class extends Migration
             $table->string('support_file_url')->nullable();
             $table->text('observations')->nullable();
 
-            $table->foreign('collaborator_id')->references('id')->on('collaborators');
-            $table->foreign('absence_type_id')->references('id')->on('absence_types');
+            $table->foreign('collaborator_id')->references('id')->on('collaborators')->onDelete('cascade');
+            $table->foreign('absence_type_id')->references('id')->on('absence_types')->onDelete('cascade');
 
             $table->timestamps();
         });

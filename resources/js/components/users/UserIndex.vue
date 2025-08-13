@@ -107,7 +107,7 @@
 
                                 <template v-else>
                                     <span class="text-muted small" style="min-height: 38px; line-height: 1.5;">
-                                        Sin permisos
+                                        Sin acciones disponibles
                                     </span>
                                 </template>
                             </td>

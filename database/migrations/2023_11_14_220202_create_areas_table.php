@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->mediumText('description')->nullable();
 
-            $table->foreign('company_id')->references('id')->on('companies');
-            $table->foreign('campus_id')->references('id')->on('campuses');
-            $table->foreign('leader_id')->references('id')->on('collaborators');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+            $table->foreign('campus_id')->references('id')->on('campuses')->onDelete('cascade');
+            $table->foreign('leader_id')->references('id')->on('collaborators')->onDelete('cascade');
 
             $table->timestamps();
         });

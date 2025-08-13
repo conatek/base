@@ -35,6 +35,7 @@ use App\Models\RhType;
 use App\Models\Scholarship;
 use App\Models\SexType;
 use App\Models\SocialStratum;
+use App\Models\StaffProvider;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Exception;
 use Illuminate\Http\Request;
@@ -120,6 +121,8 @@ class CollaboratorController extends Controller
         $collaborators = Collaborator::where('company_id', $company->id)->orderBy('created_at', 'desc')->with('position')->get();
         $absence_types = AbsenceType::all();
         $absence_subtypes = AbsenceSubtype::all();
+        // $staff_providers = StaffProvider::all();
+
         return view('back.collaborators.index', compact('company', 'collaborators', 'absence_types', 'absence_subtypes'));
     }
 
@@ -140,6 +143,7 @@ class CollaboratorController extends Controller
         $civil_status_types = CivilStatusType::all();
         $housing_tenure_types = HousingTenure::all();
         $provinces = Province::all();
+        $staff_providers = StaffProvider::where('company_id', $company->id)->orderBy('id', 'asc')->get();
 
         // return view('back.collaborators.create', compact('company', 'document_types', 'sex_types', 'rh_types', 'stratum_types', 'civil_status_types', 'housing_tenure_types', 'provinces'));
 
@@ -151,6 +155,7 @@ class CollaboratorController extends Controller
         $result['civil_status_types'] = $civil_status_types;
         $result['housing_tenure_types'] = $housing_tenure_types;
         $result['provinces'] = $provinces;
+        $result['staff_providers'] = $staff_providers;
 
         return $result;
     }
@@ -171,6 +176,7 @@ class CollaboratorController extends Controller
 
                 $data = array(
                     'company_id' => $company_id,
+                    'staff_provider_id' => $request->staff_provider_id,
                     'name' => $request->name,
                     'first_surname' => $request->first_surname,
                     'second_surname' => $request->second_surname,
@@ -200,6 +206,7 @@ class CollaboratorController extends Controller
             } else {
                 $data = array(
                     'company_id' => $company_id,
+                    'staff_provider_id' => $request->staff_provider_id,
                     'name' => $request->name,
                     'first_surname' => $request->first_surname,
                     'second_surname' => $request->second_surname,
@@ -326,33 +333,7 @@ class CollaboratorController extends Controller
 
         $relationship_type = Relationship::where('id', $collaborator->relationship_id)->first();
         $occupation_type = Occupation::where('id', $collaborator->occupation_id)->first();
-
-        // return view('back.collaborators.show', compact(
-        //     'company',
-        //     'collaborator',
-        //     'document_type',
-        //     'document_province',
-        //     'document_city',
-        //     'birth_province',
-        //     'birth_city',
-        //     'residence_province',
-        //     'residence_city',
-        //     'civil_status',
-        //     'sex_type',
-        //     'rh_type',
-        //     'highest_academic_achievement',
-        //     'stratum_type',
-        //     'housing_tenure',
-        //     'relationship_types',
-        //     'relationship_type',
-        //     'occupation_types',
-        //     'occupation_type',
-        //     'sex_types',
-        //     'achievement_types',
-        //     'examination_types',
-        //     'home_visit_types',
-        //     'contractual_documents_types',
-        // ));
+        $staff_provider = StaffProvider::where('id', $collaborator->staff_provider_id)->first();
 
         $result['company'] = $company;
         $result['collaborator'] = $collaborator;
@@ -369,6 +350,7 @@ class CollaboratorController extends Controller
         $result['highest_academic_achievement'] = $highest_academic_achievement;
         $result['stratum_type'] = $stratum_type;
         $result['housing_tenure'] = $housing_tenure;
+        $result['staff_provider'] = $staff_provider;
         $result['relationship_types'] = $relationship_types;
         $result['relationship_type'] = $relationship_type;
         $result['occupation_types'] = $occupation_types;
@@ -410,6 +392,7 @@ class CollaboratorController extends Controller
         $afp_types = AfpType::all();
         $arl_types = ArlType::all();
         $ccf_types = CcfType::all();
+        $staff_providers = StaffProvider::where('company_id', $company->id)->orderBy('id', 'asc')->get();
 
         // return view('back.collaborators.edit', compact(
         //     'company',
@@ -446,11 +429,13 @@ class CollaboratorController extends Controller
         $result['afp_types'] = $afp_types;
         $result['arl_types'] = $arl_types;
         $result['ccf_types'] = $ccf_types;
+        $result['staff_providers'] = $staff_providers;
 
         return $result;
     }
 
     public function update(CollaboratorEditRequest $request, Collaborator $collaborator)
+    // public function update(Request $request, Collaborator $collaborator)
     {
         // Las validaciones se realizan en CollaboratorEditRequest
 
@@ -459,6 +444,7 @@ class CollaboratorController extends Controller
 
             $data = array(
                 'company_id' => $company_id,
+                'staff_provider_id' => $request->staff_provider_id,
                 'name' => $request->name,
                 'first_surname' => $request->first_surname,
                 'second_surname' => $request->second_surname,
@@ -521,8 +507,12 @@ class CollaboratorController extends Controller
     {
         // Las validaciones se realizan en CollaboratorContractEditRequest
 
+        // dd($request->all());
+
         try {
             $collaborator_contract = CollaboratorContract::where('collaborator_id', $id)->first();
+
+            // dd($collaborator_contract);
 
             $data = array(
                 'collaborator_id' => $id,
@@ -564,7 +554,7 @@ class CollaboratorController extends Controller
     {
         // abort_if(Gate::denies('collaborator_destroy'), 403);
 
-        try {
+        // try {
             if(isset($collaborator['image_public_id'])) {
                 $public_id = $collaborator['image_public_id'];
                 Cloudinary::destroy($public_id);
@@ -576,10 +566,10 @@ class CollaboratorController extends Controller
                 'message'=>'Colaborador eliminado exitosamente!',
                 'collaborator'=>$collaborator
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage()
-            ]);
-        }
+        // } catch (Exception $e) {
+        //     return response()->json([
+        //         'message' => $e->getMessage()
+        //     ]);
+        // }
     }
 }

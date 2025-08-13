@@ -10,6 +10,7 @@ use App\Models\CompanyType;
 use App\Models\DocumentType;
 use App\Models\Industry;
 use App\Models\Province;
+use App\Models\StaffProvider;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Exception;
 use Illuminate\Http\Request;
@@ -101,6 +102,13 @@ class CompaniesController extends Controller
             if ($request->hasFile('logo')) {
                 $this->uploadLogo($company, $request->file('logo'));
             }
+
+            // Crear registro inicial en staff_providers
+            // StaffProvider::create([
+            //     'company_id' => $company->id,
+            //     'provider_type_id' => 1,
+            //     'name' => $company->company_name,
+            // ]);
 
             return response()->json([
                 'message' => 'Empresa creada exitosamente!',

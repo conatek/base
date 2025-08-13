@@ -27,15 +27,15 @@ return new class extends Migration
             $table->bigInteger('arl_id')->unsigned();
             $table->bigInteger('ccf_id')->unsigned();
 
-            $table->foreign('collaborator_id')->references('id')->on('collaborators');
-            $table->foreign('position_id')->references('id')->on('positions');
-            $table->foreign('contract_type_id')->references('id')->on('contract_types');
-            $table->foreign('bank_id')->references('id')->on('bank_types');
-            $table->foreign('eps_id')->references('id')->on('eps_types');
-            $table->foreign('afp_pension_id')->references('id')->on('afp_types');
-            $table->foreign('afp_saving_id')->references('id')->on('afp_types');
-            $table->foreign('arl_id')->references('id')->on('arl_types');
-            $table->foreign('ccf_id')->references('id')->on('ccf_types');
+            $table->foreign('collaborator_id')->references('id')->on('collaborators')->onDelete('cascade');
+            $table->foreign('position_id')->references('id')->on('positions')->onDelete('cascade');
+            $table->foreign('contract_type_id')->references('id')->on('contract_types')->onDelete('cascade');
+            $table->foreign('bank_id')->references('id')->on('bank_types')->onDelete('cascade');
+            $table->foreign('eps_id')->references('id')->on('eps_types')->onDelete('cascade');
+            $table->foreign('afp_pension_id')->references('id')->on('afp_types')->onDelete('cascade');
+            $table->foreign('afp_saving_id')->references('id')->on('afp_types')->onDelete('cascade');
+            $table->foreign('arl_id')->references('id')->on('arl_types')->onDelete('cascade');
+            $table->foreign('ccf_id')->references('id')->on('ccf_types')->onDelete('cascade');
 
             $table->timestamps();
         });

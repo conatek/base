@@ -205,11 +205,11 @@
                         @addUserAdmin="addUserAdmin"
                         @editUserAdmin="editUserAdmin"
                         :company="selected_company"
-                        :company_type="companyData.company_type"
-                        :industry_type="companyData.industry_type"
-                        :identification_type="companyData.identification_type"
-                        :province="companyData.province"
-                        :city="companyData.city"
+                        :company_type="companyData && companyData.company_type ? companyData.company_type : ''"
+                        :industry_type="companyData && companyData.industry_type ? companyData.industry_type : ''"
+                        :identification_type="companyData && companyData.identification_type ? companyData.identification_type : ''"
+                        :province="companyData && companyData.province ? companyData.province : ''"
+                        :city="companyData && companyData.city ? companyData.city : ''"
                     ></company-detail>
                 </div>
                 <div v-if="selected_company == null && add_company == true && edit_company == false && load_collaborators == false && add_user_admin == false && edit_user_admin == false">
@@ -222,11 +222,11 @@
                 </div>
                 <div v-if="selected_company != null && add_company == false && edit_company == true && load_collaborators == false && add_user_admin == false && edit_user_admin == false">
                     <company-edit
-                        :company="companyDataEdit.company"
-                        :company_types="companyDataEdit.company_types"
-                        :document_types="companyDataEdit.document_types"
-                        :provinces="companyDataEdit.provinces"
-                        :industry_types="companyDataEdit.industry_types"
+                        :company="companyDataEdit && companyDataEdit.company ? companyDataEdit.company : null"
+                        :company_types="companyDataEdit && companyDataEdit.company_types ? companyDataEdit.company_types : []"
+                        :document_types="companyDataEdit && companyDataEdit.document_types ? companyDataEdit.document_types : []"
+                        :provinces="companyDataEdit && companyDataEdit.provinces ? companyDataEdit.provinces : []"
+                        :industry_types="companyDataEdit && companyDataEdit.industry_types ? companyDataEdit.industry_types : []"
                     ></company-edit>
                 </div>
                 <div v-if="selected_company != null && add_company == false && edit_company == false && load_collaborators == true && add_user_admin == false && edit_user_admin == false">

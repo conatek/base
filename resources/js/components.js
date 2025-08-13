@@ -34,6 +34,9 @@ const components = {
     'collaborator-provision': defineAsyncComponent(() => import('./components/collaborators/CollaboratorProvision.vue')),
 
     'user-index': defineAsyncComponent(() => import('./components/users/UserIndex.vue')),
+    'user-profile': defineAsyncComponent(() => import('./components/users/UserProfile.vue')),
+
+    'staff-provider-index': defineAsyncComponent(() => import('./components/staff_providers/StaffProviderIndex.vue')),
 
     // MODULOS DE ADMINISTRACION - SELECCION
     'selection-index': defineAsyncComponent(() => import('./components/modules/selection/Selection.vue')),

@@ -17,8 +17,7 @@ class RoleSeeder extends Seeder
     public function run()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        Role::truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        DB::table('roles')->truncate();
 
         $roles = [
             'Master',
@@ -36,5 +35,7 @@ class RoleSeeder extends Seeder
                 'guard_name' => 'web',
             ]);
         }
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

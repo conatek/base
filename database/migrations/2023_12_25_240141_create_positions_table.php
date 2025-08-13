@@ -18,10 +18,10 @@ return new class extends Migration
             $table->integer('estimated_salary')->unsigned()->nullable();
             $table->mediumText('description')->nullable();
 
-            $table->foreign('company_id')->references('id')->on('companies');
-            $table->foreign('area_id')->references('id')->on('areas');
-            $table->foreign('criticality_level_id')->references('id')->on('position_criticality_levels');
-            $table->foreign('risk_class_id')->references('id')->on('position_risk_classes');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+            $table->foreign('area_id')->references('id')->on('areas')->onDelete('cascade');
+            $table->foreign('criticality_level_id')->references('id')->on('position_criticality_levels')->onDelete('cascade');
+            $table->foreign('risk_class_id')->references('id')->on('position_risk_classes')->onDelete('cascade');
 
             $table->timestamps();
         });

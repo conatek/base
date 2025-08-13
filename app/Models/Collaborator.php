@@ -11,6 +11,7 @@ class Collaborator extends Model
 
     protected $fillable = [
         'company_id',
+        'staff_provider_id',
         'name',
         'first_surname',
         'second_surname',

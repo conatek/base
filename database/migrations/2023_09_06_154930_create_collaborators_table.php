@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('collaborators', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('staff_provider_id');
             $table->unsignedBigInteger('document_type_id');
             $table->string('document_number');
             $table->date('expedition_date')->nullable();
@@ -41,8 +42,9 @@ return new class extends Migration
             $table->boolean('is_active')->default(1);
             $table->text('observations')->nullable();
 
-            $table->foreign('company_id')->references('id')->on('companies');
-            $table->foreign('document_type_id')->references('id')->on('document_types');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+            $table->foreign('staff_provider_id')->references('id')->on('staff_providers')->onDelete('cascade');
+            $table->foreign('document_type_id')->references('id')->on('document_types')->onDelete('cascade');
             $table->foreign('document_province_id')->references('id')->on('provinces')->onDelete('cascade');
             $table->foreign('document_city_id')->references('id')->on('cities')->onDelete('cascade');
             $table->foreign('civil_status_type_id')->references('id')->on('civil_status_types')->onDelete('cascade');

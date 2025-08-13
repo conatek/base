@@ -76,6 +76,33 @@ function usersDatatable() {
     });
 }
 
+function providersDatatable() {
+    $(document).ready(() => {
+        $("#dt_providers").DataTable({
+            "responsive": true,
+            "lengthChange": true,
+            "autoWidth": false,
+            "searching": true,
+            "ordering": false,
+            "pageLength": 10,
+            "lengthMenu": [5, 10, 25, 50, 100],
+            "language": {
+                "zeroRecords": "No se encontraron resultados",
+                "search": "Buscar:",
+                "lengthMenu":     "Mostrar _MENU_ registros",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando 0 a 0 de 0 registros",
+            }
+        });
+    });
+}
+
 function absencesDatatable() {
     let table = $('#dt_absences');
 
@@ -242,4 +269,4 @@ function rolesDatatable() {
     });
 }
 
-export { contractsDatatable, birthdaysDatatable, usersDatatable, absencesDatatable, disabilitiesDatatable, disabilityDetailDatatable, rolesDatatable };
+export { contractsDatatable, birthdaysDatatable, usersDatatable, providersDatatable, absencesDatatable, disabilitiesDatatable, disabilityDetailDatatable, rolesDatatable };

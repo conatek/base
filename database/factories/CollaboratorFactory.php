@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\City;
 use App\Models\Province;
+use App\Models\StaffProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,12 +19,13 @@ class CollaboratorFactory extends Factory
      */
     public function definition()
     {
+        $companyId = $this->faker->randomElement([1, 2]);
         $provinces = Province::all()->modelKeys();
         $cities = City::all()->modelKeys();
 
-
         return [
-            'company_id' => $this->faker->randomElement([1, 2]),
+            'company_id' => $companyId,
+            'staff_provider_id' => StaffProvider::where('company_id', $companyId)->first()?->id,
             'document_type_id' => $this->faker->randomElement([1, 2, 3, 4, 5, 6]),
             'document_number' => $this->faker->numberBetween(10000000, 99999999),
             'expedition_date' => $this->faker->dateTime(),

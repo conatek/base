@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
 
-            $table->foreign('company_id')->references('id')->on('companies');
-            $table->foreign('province_id')->references('id')->on('provinces');
-            $table->foreign('city_id')->references('id')->on('cities');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+            $table->foreign('province_id')->references('id')->on('provinces')->onDelete('cascade');
+            $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
 
             $table->timestamps();
         });
