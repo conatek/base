@@ -45,6 +45,7 @@
                             <h5 class="menu-header-title">{{ collaborator.name }}</h5>
                             <h6 class="menu-header-subtitle">{{ collaborator.email }}</h6>
                             <h6 class="menu-header-subtitle">{{ staff_provider.provider_type_id == 1 ? 'Contratado directamente' : 'Contratado vía proveedor externo' }}</h6>
+                            <!-- <h6 class="menu-header-subtitle">{{ staff_provider.provider_type_id == 1 ? 'Contratado directamente' : 'Contratado vía proveedor externo' }}</h6> -->
                         </div>
                         <div class="menu-header-btn-pane">
                             <button @click="emitEditCollaborator" class="btn btn-lg btn-mh-white">

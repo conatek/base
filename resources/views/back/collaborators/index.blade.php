@@ -1,24 +1,6 @@
 @extends('back.layouts.app')
 
 @section('content')
-{{-- <div class="app-page-title">
-    <div class="page-title-wrapper">
-        <div class="page-title-heading">
-            <div class="page-title-icon">
-                <i class="pe-7s-users text-success"></i>
-            </div>
-            <div>
-                Listado de Colaboradores
-            </div>
-        </div>
-        <div class="page-title-actions">
-            <a href="{{ route('collaborators.create') }}" type="button" class="btn-shadow me-3 btn btn-info">
-                <i class="fa fa-plus"></i>
-                Agregar
-            </a>
-        </div>
-    </div>
-</div> --}}
 
 @if (session('success'))
     <div class="mbg-3 alert alert-success alert-dismissible fade show" role="alert">
@@ -37,10 +19,9 @@
 
 <collaborator-index
     :company_id="{{ $company_id }}"
-    :collaborators="{{ $collaborators }}"
+    {{-- :collaborators="{{ $collaborators }}" --}}
     :absence_types="{{ collect($absence_types) }}"
     :absence_subtypes="{{ collect($absence_subtypes) }}"
-    {{-- :staff_providers="{{ collect($staff_providers) }}" --}}
 ></collaborator-index>
 
 @endsection

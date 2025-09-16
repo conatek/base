@@ -17,8 +17,8 @@ return new class extends Migration
             $table->date('contract_start_date');
             $table->date('contract_end_date')->nullable();
             $table->date('test_period_end_date');
-            $table->string('corporate_email')->nullable();
-            $table->string('corporate_cellphone')->nullable();
+            // $table->string('corporate_email')->nullable();
+            // $table->string('corporate_cellphone')->nullable();
             $table->bigInteger('bank_id')->unsigned();
             $table->string('bank_account')->nullable();
             $table->bigInteger('eps_id')->unsigned();

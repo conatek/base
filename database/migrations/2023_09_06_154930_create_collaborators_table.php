@@ -39,7 +39,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('image_public_id')->nullable();
             $table->string('image_url')->nullable();
-            $table->boolean('is_active')->default(1);
+            $table->boolean('is_active')->default(0);
             $table->text('observations')->nullable();
 
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');

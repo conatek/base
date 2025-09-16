@@ -93,12 +93,12 @@
 }
 
 .absence > a,
-.provision > a {
+.contract > a {
     width: 50px;
     height: 50px;
     position: absolute;
-    border-radius: 50%;
-    /* border-radius: 5px; */
+    /* border-radius: 50%; */
+    border-radius: 5px;
     border: 1px dotted #0dacff;
     background-image: linear-gradient(white, white);
     top: 160px;
@@ -115,13 +115,13 @@
     left: 30px;
 }
 
-.provision > a {
+.contract > a {
     top: 110px;
     right: 30px;
 }
 
 /* .absence > a:hover,
-.provision > a:hover {
+.contract > a:hover {
     transform: rotate(22deg);
 } */
 
@@ -131,7 +131,7 @@
     line-height: 1;
 }
 
-.provision > a > i {
+.contract > a > i {
     font-size: 30px;
     color: #127cb3;
     line-height: 1;

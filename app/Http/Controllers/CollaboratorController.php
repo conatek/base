@@ -36,6 +36,7 @@ use App\Models\Scholarship;
 use App\Models\SexType;
 use App\Models\SocialStratum;
 use App\Models\StaffProvider;
+use Carbon\Carbon;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Exception;
 use Illuminate\Http\Request;
@@ -56,7 +57,51 @@ class CollaboratorController extends Controller
         })->except(['index']);
     }
 
-    public function getCollaborators() {
+    // public function getCollaborators() {
+    //     $results = [];
+
+    //     $user = Auth::user();
+
+    //     $user_company_id = $user->company_id;
+    //     $collaborators = Collaborator::where('company_id', $user_company_id)->orderBy('created_at', 'desc')->with('position')->get();
+
+    //     $results['collaborators'] = $collaborators;
+
+    //     return $results;
+    // }
+
+    public function getCollaborators()
+    {
+        $user = Auth::user();
+        $today = now()->toDateString();
+
+        $collaborators = Collaborator::where('company_id', $user->company_id)
+            ->with('position') // tu relación actual
+            ->withCount([
+                // Cuenta cuántos contratos vigentes hay hoy
+                'contracts as has_active_contract' => function ($q) use ($today) {
+                    $q->whereDate('contract_start_date', '<=', $today)
+                    ->where(function ($qq) use ($today) {
+                        $qq->whereNull('contract_end_date')
+                            ->orWhereDate('contract_end_date', '>=', $today);
+                    });
+                },
+            ])
+            ->orderByDesc('created_at')
+            ->get()
+            // Convertimos el count (0/1/...) a booleano y con el nombre camelCase pedido:
+            ->map(function ($c) {
+                $c->hasActiveContract = (bool) $c->has_active_contract;
+                unset($c->has_active_contract); // opcional: oculta el count original
+                return $c;
+            });
+
+        return [
+            'collaborators' => $collaborators,
+        ];
+    }
+
+    public function getCollaboratorsData() {
         $results = [];
 
         // $user = auth()->user();
@@ -82,48 +127,19 @@ class CollaboratorController extends Controller
         return $results;
     }
 
-    public function getContractualInformation($id) {
-        $results = [];
-
-        $contractual_information = CollaboratorContract::where('collaborator_id', $id)->first();
-
-        if($contractual_information != null) {
-            $position = Position::where('id', $contractual_information->position_id)->first();
-            $contract_type = ContractType::where('id', $contractual_information->contract_type_id)->first();
-            $bank = BankType::where('id', $contractual_information->bank_id)->first();
-            $eps = EpsType::where('id', $contractual_information->eps_id)->first();
-            $afp_pension = AfpType::where('id', $contractual_information->afp_pension_id)->first();
-            $afp_saving = AfpType::where('id', $contractual_information->afp_saving_id)->first();
-            $arl = ArlType::where('id', $contractual_information->arl_id)->first();
-            $ccf = CcfType::where('id', $contractual_information->ccf_id)->first();
-
-            $contractual_information['position'] = $position;
-            $contractual_information['contract_type'] = $contract_type;
-            $contractual_information['bank'] = $bank;
-            $contractual_information['eps'] = $eps;
-            $contractual_information['afp_pension'] = $afp_pension;
-            $contractual_information['afp_saving'] = $afp_saving;
-            $contractual_information['arl'] = $arl;
-            $contractual_information['ccf'] = $ccf;
-        }
-
-        $results['contractual_information'] = $contractual_information;
-
-        return $results;
-    }
-
     public function index()
     {
         // abort_if(Gate::denies('collaborator_index'), 403);
 
         $user = Auth::user();
         $company = Company::where('id', $user->company_id)->first();
-        $collaborators = Collaborator::where('company_id', $company->id)->orderBy('created_at', 'desc')->with('position')->get();
+        // $collaborators = Collaborator::where('company_id', $company->id)->orderBy('created_at', 'desc')->with('position')->get();
         $absence_types = AbsenceType::all();
         $absence_subtypes = AbsenceSubtype::all();
         // $staff_providers = StaffProvider::all();
 
-        return view('back.collaborators.index', compact('company', 'collaborators', 'absence_types', 'absence_subtypes'));
+        // return view('back.collaborators.index', compact('company', 'collaborators', 'absence_types', 'absence_subtypes'));
+        return view('back.collaborators.index', compact('company', 'absence_types', 'absence_subtypes'));
     }
 
     public function create()
@@ -244,39 +260,6 @@ class CollaboratorController extends Controller
                 'message' => $e->getMessage()
             ]);
         }
-    }
-
-    public function storeContractualInformation(CollaboratorContractCreateRequest $request, $id) {
-        // Las validaciones se realizan en CollaboratorContractCreateRequest
-
-        $user = Auth::user();
-        $company = Company::where('id', $user->company_id)->first();
-
-        $data = array(
-            'collaborator_id' => $id,
-            'position_id' => $request->position_id,
-            'salary' => $request->salary,
-            'contract_type_id' => $request->contract_type_id,
-            'contract_start_date' => $request->contract_start_date,
-            'contract_end_date' => $request->contract_end_date,
-            'test_period_end_date' => $request->test_period_end_date,
-            'corporate_email' => $request->corporate_email,
-            'corporate_cellphone' => $request->corporate_cellphone,
-            'bank_id' => $request->bank_id,
-            'bank_account' => $request->bank_account,
-            'eps_id' => $request->eps_id,
-            'afp_pension_id' => $request->afp_pension_id,
-            'afp_saving_id' => $request->afp_saving_id,
-            'arl_id' => $request->arl_id,
-            'ccf_id' => $request->ccf_id,
-        );
-
-        $collaborator_contract = CollaboratorContract::create($data);
-
-        return response()->json([
-            'message'=>'Información contractual creada exitosamente!',
-            'collaborator_contract'=>$collaborator_contract
-        ]);
     }
 
     public function show(Collaborator $collaborator)
@@ -503,53 +486,6 @@ class CollaboratorController extends Controller
         }
     }
 
-    public function updateContractualInformation(CollaboratorContractEditRequest $request, $id)
-    {
-        // Las validaciones se realizan en CollaboratorContractEditRequest
-
-        // dd($request->all());
-
-        try {
-            $collaborator_contract = CollaboratorContract::where('collaborator_id', $id)->first();
-
-            // dd($collaborator_contract);
-
-            $data = array(
-                'collaborator_id' => $id,
-                'position_id' => $request->position_id,
-                'salary' => $request->salary,
-                'contract_type_id' => $request->contract_type_id,
-                'contract_start_date' => $request->contract_start_date,
-                'contract_end_date' => $request->contract_end_date,
-                'test_period_end_date' => $request->test_period_end_date,
-                'corporate_email' => $request->corporate_email,
-                'corporate_cellphone' => $request->corporate_cellphone,
-                'bank_id' => $request->bank_id,
-                'bank_account' => $request->bank_account,
-                'eps_id' => $request->eps_id,
-                'afp_pension_id' => $request->afp_pension_id,
-                'afp_saving_id' => $request->afp_saving_id,
-                'arl_id' => $request->arl_id,
-                'ccf_id' => $request->ccf_id,
-            );
-
-            if(isset($collaborator_contract['id'])) {
-                $collaborator_contract->update($data);
-            } else {
-                $collaborator_contract = CollaboratorContract::create($data);
-            }
-
-            return response()->json([
-                'message'=>'Información contractual actualizada exitosamente!',
-                'collaborator_contract'=>$collaborator_contract
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage()
-            ]);
-        }
-    }
-
     public function destroy(Collaborator $collaborator)
     {
         // abort_if(Gate::denies('collaborator_destroy'), 403);
@@ -571,5 +507,25 @@ class CollaboratorController extends Controller
         //         'message' => $e->getMessage()
         //     ]);
         // }
+    }
+
+    public function deactivate(Collaborator $collaborator)
+    {
+        $collaborator->update(['is_active' => 0]);
+
+        return response()->json([
+            'message' => 'Colaborador inactivado exitosamente!',
+            'collaborator' => $collaborator
+        ]);
+    }
+
+    public function activate(Collaborator $collaborator)
+    {
+        $collaborator->update(['is_active' => 1]);
+
+        return response()->json([
+            'message' => 'Colaborador activado exitosamente!',
+            'collaborator' => $collaborator
+        ]);
     }
 }

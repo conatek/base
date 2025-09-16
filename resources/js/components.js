@@ -31,6 +31,7 @@ const components = {
     'collaborator-show': defineAsyncComponent(() => import('./components/collaborators/CollaboratorShow.vue')),
     'collaborator-edit': defineAsyncComponent(() => import('./components/collaborators/CollaboratorEdit.vue')),
     'collaborator-absence': defineAsyncComponent(() => import('./components/collaborators/CollaboratorAbsence.vue')),
+    'collaborator-contract': defineAsyncComponent(() => import('./components/collaborators/CollaboratorContract.vue')),
     'collaborator-provision': defineAsyncComponent(() => import('./components/collaborators/CollaboratorProvision.vue')),
 
     'user-index': defineAsyncComponent(() => import('./components/users/UserIndex.vue')),

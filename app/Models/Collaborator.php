@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Carbon\Carbon;
 
 class Collaborator extends Model
 {
@@ -38,6 +41,7 @@ class Collaborator extends Model
         'email',
         'image_public_id',
         'image_url',
+        'is_active',
     ];
 
     public function document_type()
@@ -50,9 +54,29 @@ class Collaborator extends Model
         return $this->belongsTo(Province::class);
     }
 
-    public function contractInfo()
+    public function contracts(): HasMany
     {
-        return $this->hasOne(CollaboratorContract::class);
+        return $this->hasMany(CollaboratorContract::class);
+    }
+
+    public function activeContract(): HasOne
+    {
+        // Usa el scope 'active' y fija un orden determinista
+        return $this->hasOne(CollaboratorContract::class)
+            ->active()                     // scope (ver abajo)
+            ->latest('contract_start_date');
+    }
+
+    public function hasActiveContract(?Carbon $on = null): bool
+    {
+        return $this->contracts()->active($on)->exists();
+    }
+
+    public function getActiveContract(?Carbon $on = null): ?CollaboratorContract
+    {
+        return $this->contracts()->active($on)
+            ->latest('contract_start_date')
+            ->first();
     }
 
     public function position()

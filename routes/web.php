@@ -16,6 +16,7 @@ use App\Http\Controllers\CollaboratorFamilyController;
 use App\Http\Controllers\CollaboratorHomeVisitController;
 use App\Http\Controllers\CollaboratorMedicalExaminationController;
 use App\Http\Controllers\CompaniesController;
+use App\Http\Controllers\ContractController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Import\CollaboratorImportController;
 use App\Http\Controllers\InventoryController;
@@ -74,7 +75,7 @@ Route::middleware(['auth'])->post('/return-to-original-user', function () {
     ]);
 });
 
-Route::group(['middleware' => 'auth'], function() {
+Route::group(['middleware' => 'auth'], function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     // Route::post('/login-as/{user_id}', [UserController::class, 'loginAs']);
@@ -141,20 +142,27 @@ Route::group(['middleware' => 'auth'], function() {
     Route::delete('/campus-data-delete/{campus}', [CampusController::class, 'destroy']);
 
     // COLLABORATORS DATA
-    Route::get('/collaborators-data/{company_id}', [CollaboratorController::class, 'getCollaborators']);
+    Route::get('/collaborators/{company_id}', [CollaboratorController::class, 'getCollaborators']);
+    Route::get('/collaborators-data/{company_id}', [CollaboratorController::class, 'getCollaboratorsData']);
     Route::get('/collaborators', [CollaboratorController::class, 'index'])->name('collaborators.index');
     Route::get('/collaborators/create', [CollaboratorController::class, 'create'])->name('collaborators.create');
     Route::post('/collaborators', [CollaboratorController::class, 'store'])->name('collaborators.store');
     // Route::get('/collaborators/{collaborator}-{message?}', [CollaboratorController::class, 'show'])->name('collaborators.show');
-    Route::get('/collaborators/{collaborator}', [CollaboratorController::class, 'show'])->name('collaborators.show');
+    Route::get('/collaborators/{collaborator}/show', [CollaboratorController::class, 'show'])->name('collaborators.show');
     Route::get('/collaborators/{collaborator}/edit', [CollaboratorController::class, 'edit'])->name('collaborators.edit');
     Route::put('/collaborators/{collaborator}', [CollaboratorController::class, 'update'])->name('collaborators.update');
     Route::delete('/collaborators/{collaborator}/destroy', [CollaboratorController::class, 'destroy'])->name('collaborators.destroy');
+    Route::put('/collaborators/{collaborator}/deactivate', [CollaboratorController::class, 'deactivate'])->name('collaborators.deactivate');
+    Route::put('/collaborators/{collaborator}/activate', [CollaboratorController::class, 'activate'])->name('collaborators.activate');
 
     // CONTRACTUAL INFORMATION
-    Route::get('/contractual-information/{collaborator_id}', [CollaboratorController::class, 'getContractualInformation']);
-    Route::post('/collaborators/{collaborator}/contractual-information', [CollaboratorController::class, 'storeContractualInformation']);
-    Route::put('/collaborators/{collaborator}/contractual-information', [CollaboratorController::class, 'updateContractualInformation']);
+    Route::get('/contracts/{collaborator_id}', [ContractController::class, 'getContracts']);
+    Route::get('/contractual-information', [ContractController::class, 'getContractualInformation']);
+    // Route::post('/collaborators/{collaborator}/contractual-information', [ContractController::class, 'store']);
+    // Route::put('/collaborators/{collaborator}/contractual-information', [ContractController::class, 'update']);
+    Route::post('/contracts/{collaborator}', [ContractController::class, 'store']);
+    Route::put('/contracts/{contract}', [ContractController::class, 'update']);
+    Route::delete('/contracts/{contract}', [ContractController::class, 'destroy']);
 
     // ROLES AND PERMISSIONS
     Route::resource('permissions', PermissionController::class);
