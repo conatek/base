@@ -165,7 +165,7 @@
                             <img v-if="collaborator && collaborator.image_url" :src="collaborator.image_url">
                             <img v-else :src="'/images/default-profile.jpeg'" :alt="collaborator ? collaborator.name : 'Default profile'">
                         </div>
-                        <div class="contract">
+                        <!-- <div class="contract">
                             <a @click="showCollaboratorContract(collaborator.id)">
                                 <i class="fa fa-file-contract"></i>
                             </a>
@@ -174,9 +174,34 @@
                             <a @click="showCollaboratorAbsence(collaborator.id)">
                                 <i class="fa fa-clock"></i>
                             </a>
-                        </div>
+                        </div> -->
+                        <!-- <div class="icon-grid">
+                            <a @click="showCollaboratorContract(collaborator.id)" title="Contrato">
+                                <i class="fa fa-file-contract"></i>
+                            </a>
+                            <a @click="showCollaboratorAbsence(collaborator.id)" title="Ausencias">
+                                <i class="fa fa-clock"></i>
+                            </a>
+                            <a @click="showDocs(collaborator.id)" title="Documentos"> <i class="fa fa-folder"></i>
+                            </a>
+                            <a @click="showConfig(collaborator.id)" title="Ajustes"> <i class="fa fa-cog"></i>
+                            </a>
+                        </div> -->
                         <div class="card-profile-text">
-                            <div class="portada"></div>
+                            <div class="portada">
+                                <div class="icon-grid">
+                                    <a @click="showCollaboratorContract(collaborator.id)" title="Contrato">
+                                        <i class="fa fa-file-contract"></i>
+                                    </a>
+                                    <a @click="showDocs(collaborator.id)" title="Documentos"> <i class="fa fa-handshake"></i>
+                                    </a>
+                                    <a @click="showCollaboratorAbsence(collaborator.id)" title="Ausencias">
+                                        <i class="fa fa-clock"></i>
+                                    </a>
+                                    <a @click="showConfig(collaborator.id)" title="Ajustes"> <i class="fa fa-vest"></i>
+                                    </a>
+                                </div>
+                            </div>
                             <div class="title-total">
                                 <!-- <div>Activo</div> -->
                                 <div class="title text-truncate d-flex justify-content-end align-items-center">
@@ -598,4 +623,55 @@ export default {
 
 <style scoped>
     @import './../../assets/css/custom.css';
+
+.portada {
+    flex-shrink: 0;
+    width: 110px;
+    height: 100%;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    background: linear-gradient(270deg, #fff, #bee6fe);
+
+    /* --- NUEVOS ESTILOS --- */
+    /* Usamos flex para posicionar el grid en la parte inferior,
+       dejando espacio para el avatar absoluto de arriba */
+    display: flex;
+    align-items: flex-end; /* Alinea el grid abajo */
+    justify-content: center;
+    padding: 15px 0; /* Un poco de espacio vertical */
+    box-sizing: border-box;
+}
+
+/* 3. AÑADE LOS ESTILOS PARA EL NUEVO GRID Y SUS BOTONES */
+.icon-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 columnas de igual tamaño */
+    gap: 2px; /* Espacio entre los botones */
+    width: 90px; /* Ajusta esto según necesites */
+}
+
+.icon-grid > a {
+    width: 100%; /* Ocupa el espacio de la celda del grid */
+    aspect-ratio: 1 / 1; /* Mantiene el botón cuadrado */
+    border-radius: 5px;
+    border: 1px dotted #0dacff;
+    background-color: white;
+
+    /* Centrar el ícono */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.icon-grid > a:hover {
+    background-color: #eef8ff;
+    transform: scale(1.05);
+}
+
+.icon-grid > a > i {
+    font-size: 20px; /* Tamaño de ícono más pequeño para el grid */
+    color: #127cb3;
+}
 </style>

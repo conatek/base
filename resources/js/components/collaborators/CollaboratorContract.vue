@@ -9,7 +9,8 @@
 
         <button @click="addContract" type="button" class="mb-2 btn btn-mh-dark-blue mb-3"><i class="fa fa-plus"></i>  Agregar contrato</button>
 
-        <div class="main-card mb-3 card">
+        <!-- <div class="main-card mb-3 card"> -->
+        <div v-if="contracts && contracts.length > 0" class="main-card mb-3 card-hover-shadow">
             <div class="card-body table-responsive">
                 <vue-good-table
                     :columns="columns"
@@ -33,8 +34,15 @@
                         allLabel: 'Todo'
                     }"
                     :style-class="'vgt-table bordered condensed'"
-                    :no-data-message="'No hay resultados que coincidan'"
                 >
+                    <!-- <template #table-actions-bottom>
+                        <div v-if="rows.length === 0" class="vgt-center-align vgt-text-disabled">
+                            <div style="padding: 40px 20px; font-size: 16px; color: #6c757d; text-align: center;">
+                                <strong>No hay resultados que coincidan</strong>
+                            </div>
+                        </div>
+                    </template> -->
+
                     <template #table-row="props">
                         <span v-if="props.column.field === 'status'" class="badge rounded-pill" style="width: 100px;" :class="props.row.status === 'Vigente' ? 'bg-success' : 'bg-danger'">
                             {{ props.row.status }}
@@ -80,6 +88,25 @@
             </div>
         </div>
 
+        <div v-else class="empty-state mb-3">
+            <div class="empty-state__art" aria-hidden="true">
+                <svg width="140" height="100" viewBox="0 0 300 200" role="img">
+                    <defs>
+                    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#eef2ff"/>
+                        <stop offset="100%" stop-color="#e0f2fe"/>
+                    </linearGradient>
+                    </defs>
+                    <rect x="20" y="50" width="260" height="110" rx="10" fill="url(#grad)" />
+                    <rect x="40" y="70" width="220" height="18" rx="4" fill="#cbd5e1"/>
+                    <rect x="40" y="96" width="160" height="18" rx="4" fill="#e2e8f0"/>
+                    <rect x="40" y="122" width="190" height="18" rx="4" fill="#e2e8f0"/>
+                </svg>
+            </div>
+            <h2 class="empty-state__title">No hay contratos disponibles para este colaborador</h2>
+            <p class="empty-state__desc">Puedes agregar un nuevo contrato haciendo clic <strong @click="addContract" style="cursor: pointer;color: #127cb3;">aquí</strong>.</p>
+        </div>
+
         <div class="modal fade" id="contractDetailModal" tabindex="-1" aria-hidden="true" ref="contractModal">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -111,11 +138,14 @@
                             <div class="label">Fecha de Terminación Prueba:</div>
                             <div class="value">{{ selected_contract.test_period_end_date ? selected_contract.test_period_end_date : 'Sin asignar' }}</div>
 
-                            <div class="label">Correo Corporativo:</div>
+                            <div class="label">Observaciones:</div>
+                            <div class="value">{{ selected_contract.observations }}</div>
+
+                            <!-- <div class="label">Correo Corporativo:</div>
                             <div class="value">{{ selected_contract.corporate_email }}</div>
 
                             <div class="label">Celular Corporativo:</div>
-                            <div class="value">{{ selected_contract.corporate_cellphone }}</div>
+                            <div class="value">{{ selected_contract.corporate_cellphone }}</div> -->
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -130,165 +160,118 @@
             </div>
         </div>
 
-        <div v-if="selected_contract == null && add_contract == true && edit_contract == false && show_contract == false" class="main-card mb-3 card">
-            <div class="card-body">
+        <div v-if="selected_contract == null && add_contract == true && edit_contract == false && show_contract == false" class="row">
+            <div class="col-md-12 col-lg-6">
                 <form @submit.prevent="storeContract" enctype="multipart/form-data">
-                    <div class="row">
-                        <div class="col-md-12 col-lg-6">
-                            <div class="card-hover-shadow card-border mb-3 card">
-                                <div class="card-header">
-                                    Información Contractual
+                    <div class="card-hover-shadow card-border mb-3 card">
+                        <div class="card-header">
+                            Información Contractual
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="position_id" class="form-label">Cargo*</label>
+                                        <select v-model="position_id" name="position_id" class="form-control"  id="position_id">
+                                            <option value="" disabled selected hidden>Seleccionar Cargo</option>
+                                            <option v-for="position_type in position_types" :value="position_type.id">{{ position_type.name }}</option>
+                                        </select>
+                                        <span v-if="errors && errors.position_id" class="error text-danger" for="position_id">{{ errors.position_id[0] }}</span>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="position_id" class="form-label">Cargo*</label>
-                                                <select v-model="position_id" name="position_id" class="form-control"  id="position_id">
-                                                    <option value="" disabled selected hidden>Seleccionar Cargo</option>
-                                                    <option v-for="position_type in position_types" :value="position_type.id">{{ position_type.name }}</option>
-                                                </select>
-                                                <span v-if="errors && errors.position_id" class="error text-danger" for="position_id">{{ errors.position_id[0] }}</span>
-                                            </div>
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="salary" class="form-label">Salario*</label>
+                                        <input v-model="salary" name="salary" id="salary" type="text" class="form-control" placeholder="Ingrese el salario">
+                                        <span v-if="errors && errors.salary" class="error text-danger" for="salary">{{ errors.salary[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="contract_type_id" class="form-label">Tipo de contrato*</label>
+                                        <select v-model="contract_type_id" name="contract_type_id" class="form-control"  id="contract_type_id">
+                                            <option value="" disabled selected hidden>Seleccionar Tipo Contrato</option>
+                                            <option v-for="contract_type in contract_types" :value="contract_type.id">{{ contract_type.name }}</option>
+                                        </select>
+                                        <span v-if="errors && errors.contract_type_id" class="error text-danger" for="contract_type_id">{{ errors.contract_type_id[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="contract_start_date" class="form-label">Fecha de ingreso*</label>
+                                        <input v-model="contract_start_date" name="contract_start_date" id="contract_start_date" type="date" class="form-control">
+                                        <span v-if="errors && errors.contract_start_date" class="error text-danger" for="contract_start_date">{{ errors.contract_start_date[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="contract_end_date" class="form-label">Fecha de terminación</label>
+                                        <input v-model="contract_end_date" name="contract_end_date" id="contract_end_date" type="date" class="form-control">
+                                        <span v-if="errors && errors.contract_end_date" class="error text-danger" for="contract_end_date">{{ errors.contract_end_date[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="test_period_end_date" class="form-label">Fecha de terminación prueba</label>
+                                        <input v-model="test_period_end_date" name="test_period_end_date" id="test_period_end_date" type="date" class="form-control">
+                                        <span v-if="errors && errors.test_period_end_date" class="error text-danger" for="test_period_end_date">{{ errors.test_period_end_date[0] }}</span>
+                                    </div>
+                                </div>
+                                <!-- <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="certificate" class="form-label">Contrato</label>
+                                        <div class="input-group">
+                                            <input @change="onChangeCertificate" type="file" name="certificate" id="certificate" class="form-control">
                                         </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="salary" class="form-label">Salario*</label>
-                                                <input v-model="salary" name="salary" id="salary" type="text" class="form-control" placeholder="Ingrese el salario">
-                                                <span v-if="errors && errors.salary" class="error text-danger" for="salary">{{ errors.salary[0] }}</span>
-                                            </div>
+                                        <span v-if="errors_academic_data && errors_academic_data.certificate" class="error text-danger" for="certificate">{{ errors_academic_data.certificate[0] }}</span>
+                                    </div>
+                                </div> -->
+
+                                <!-- <div class="col-12 mb-3">
+                                    <div class="position-relative">
+                                        <input
+                                            ref="fileInput"
+                                            type="file"
+                                            accept=".xlsx, .xls"
+                                            class="form-control d-none"
+                                            @change="handleFile"
+                                        >
+                                        <span v-if="errors && errors.logo" class="error text-danger" for="logo">{{ errors.logo[0] }}</span>
+
+                                        <div class="input-group">
+                                            <button type="button" class="btn btn-primary" @click="selectFile">
+                                                <font-awesome-icon :icon="['fas', 'upload']" />
+                                                Seleccionar
+                                            </button>
+                                            <input
+                                                @click="selectFile"
+                                                type="text"
+                                                class="form-control"
+                                                :value="file != '' ? file.name : ''"
+                                                readonly
+                                                placeholder="Ningún archivo seleccionado"
+                                            />
                                         </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="contract_type_id" class="form-label">Tipo de contrato*</label>
-                                                <select v-model="contract_type_id" name="contract_type_id" class="form-control"  id="contract_type_id">
-                                                    <option value="" disabled selected hidden>Seleccionar Tipo Contrato</option>
-                                                    <option v-for="contract_type in contract_types" :value="contract_type.id">{{ contract_type.name }}</option>
-                                                </select>
-                                                <span v-if="errors && errors.contract_type_id" class="error text-danger" for="contract_type_id">{{ errors.contract_type_id[0] }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="contract_start_date" class="form-label">Fecha de ingreso*</label>
-                                                <input v-model="contract_start_date" name="contract_start_date" id="contract_start_date" type="date" class="form-control">
-                                                <span v-if="errors && errors.contract_start_date" class="error text-danger" for="contract_start_date">{{ errors.contract_start_date[0] }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="contract_end_date" class="form-label">Fecha de terminación</label>
-                                                <input v-model="contract_end_date" name="contract_end_date" id="contract_end_date" type="date" class="form-control">
-                                                <span v-if="errors && errors.contract_end_date" class="error text-danger" for="contract_end_date">{{ errors.contract_end_date[0] }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="test_period_end_date" class="form-label">Fecha de terminación prueba</label>
-                                                <input v-model="test_period_end_date" name="test_period_end_date" id="test_period_end_date" type="date" class="form-control">
-                                                <span v-if="errors && errors.test_period_end_date" class="error text-danger" for="test_period_end_date">{{ errors.test_period_end_date[0] }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="corporate_email" class="form-label">Correo corporativo</label>
-                                                <input v-model="corporate_email" name="corporate_email" id="corporate_email" type="text" class="form-control" placeholder="Ingrese correo corporativo">
-                                                <span v-if="errors && errors.corporate_email" class="error text-danger" for="corporate_email">{{ errors.corporate_email[0] }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="corporate_cellphone" class="form-label">Celular corporativo</label>
-                                                <input v-model="corporate_cellphone" name="corporate_cellphone" id="corporate_cellphone" type="text" class="form-control" placeholder="Ingrese celular corporativo">
-                                                <span v-if="errors && errors.corporate_cellphone" class="error text-danger" for="corporate_cellphone">{{ errors.corporate_cellphone[0] }}</span>
-                                            </div>
-                                        </div>
+                                    </div>
+                                </div> -->
+                                <div class="col-12">
+                                    <div class="position-relative mb-3">
+                                        <label for="observations" class="form-label">Observaciones</label>
+                                        <textarea v-model="observations" name="observations" id="observations" type="text" class="form-control" placeholder="Ingrese sus observaciones" rows="4" cols="50"></textarea>
+                                        <span v-if="errors && errors.observations" class="error text-danger" for="observations">{{ errors.observations[0] }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-12 col-lg-6">
-                            <div class="card-hover-shadow card-border mb-3 card">
-                                <div class="card-header">
-                                    Entidades Relacionadas
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="bank_id" class="form-label">Banco*</label>
-                                                <select v-model="bank_id" name="bank_id" class="form-control"  id="bank_id">
-                                                    <option value="" disabled selected hidden>Seleccionar Banco</option>
-                                                    <option v-for="bank_type in bank_types" :value="bank_type.id">{{ bank_type.name }}</option>
-                                                </select>
-                                                <span v-if="errors && errors.bank_id" class="error text-danger" for="bank_id">{{ errors.bank_id[0] }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="bank_account" class="form-label">Número de cuenta*</label>
-                                                <input v-model="bank_account" name="bank_account" id="bank_account" type="text" class="form-control" placeholder="Ingrese número de cuenta">
-                                                <span v-if="errors && errors.bank_account" class="error text-danger" for="bank_account">{{ errors.bank_account[0] }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="eps_id" class="form-label">EPS*</label>
-                                                <select v-model="eps_id" name="eps_id" class="form-control"  id="eps_id">
-                                                    <option value="" disabled selected hidden>Seleccionar EPS</option>
-                                                    <option v-for="eps_type in eps_types" :value="eps_type.id">{{ eps_type.name }}</option>
-                                                </select>
-                                                <span v-if="errors && errors.eps_id" class="error text-danger" for="eps_id">{{ errors.eps_id[0] }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="arl_id" class="form-label">ARL*</label>
-                                                <select v-model="arl_id" name="arl_id" class="form-control"  id="arl_id">
-                                                    <option value="" disabled selected hidden>Seleccionar ARL</option>
-                                                    <option v-for="arl_type in arl_types" :value="arl_type.id">{{ arl_type.name }}</option>
-                                                </select>
-                                                <span v-if="errors && errors.arl_id" class="error text-danger" for="arl_id">{{ errors.arl_id[0] }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="afp_pension_id" class="form-label">AFP Pensiones*</label>
-                                                <select v-model="afp_pension_id" name="afp_pension_id" class="form-control"  id="afp_pension_id">
-                                                    <option value="" disabled selected hidden>Seleccionar AFP</option>
-                                                    <option v-for="afp_type in afp_types" :value="afp_type.id">{{ afp_type.name }}</option>
-                                                </select>
-                                                <span v-if="errors && errors.afp_pension_id" class="error text-danger" for="afp_pension_id">{{ errors.afp_pension_id[0] }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="afp_saving_id" class="form-label">AFP Cesantías*</label>
-                                                <select v-model="afp_saving_id" name="afp_saving_id" class="form-control"  id="afp_saving_id">
-                                                    <option value="" disabled selected hidden>Seleccionar AFP</option>
-                                                    <option v-for="afp_type in afp_types" :value="afp_type.id">{{ afp_type.name }}</option>
-                                                </select>
-                                                <span v-if="errors && errors.afp_saving_id" class="error text-danger" for="afp_saving_id">{{ errors.afp_saving_id[0] }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="ccf_id" class="form-label">Caja de compensación familiar*</label>
-                                                <select v-model="ccf_id" name="ccf_id" class="form-control"  id="ccf_id">
-                                                    <option value="" disabled selected hidden>Seleccionar caja de compensación</option>
-                                                    <option v-for="ccf_type in ccf_types" :value="ccf_type.id">{{ ccf_type.name }}</option>
-                                                </select>
-                                                <span v-if="errors && errors.ccf_id" class="error text-danger" for="ccf_id">{{ errors.ccf_id[0] }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="card-footer d-flex">
+                            <!-- Los campos marcados con * son obligatorios. -->
+                            <button type="submit" class="mt-2 btn btn-primary">Guardar</button>
+
+                            <button @click="reset" type="button" class="mt-2 btn btn-secondary mx-2">Cancelar</button>
+
+                            <!-- <span class="float-end text-muted" style="font-size: 0.95em;">Los campos marcados con * son obligatorios.</span> -->
                         </div>
                     </div>
-                    <button type="submit" class="mt-2 btn btn-primary">Guardar</button>
-
-                    <button @click="reset" type="button" class="mt-2 btn btn-secondary mx-2">Cancelar</button>
                 </form>
             </div>
         </div>
@@ -489,15 +472,16 @@ export default {
             contract_start_date: '',
             contract_end_date: '',
             test_period_end_date: '',
-            corporate_email: '',
-            corporate_cellphone: '',
-            bank_id: '',
-            bank_account: '',
-            eps_id: '',
-            arl_id: '',
-            afp_pension_id: '',
-            afp_saving_id: '',
-            ccf_id: '',
+            observations: '',
+            // corporate_email: '',
+            // corporate_cellphone: '',
+            // bank_id: '',
+            // bank_account: '',
+            // eps_id: '',
+            // arl_id: '',
+            // afp_pension_id: '',
+            // afp_saving_id: '',
+            // ccf_id: '',
 
             selected_contract: null,
             add_contract: false,
@@ -552,15 +536,15 @@ export default {
                     this.contract_start_date = this.selected_contract.contract_start_date;
                     this.contract_end_date = this.selected_contract.contract_end_date;
                     this.test_period_end_date = this.selected_contract.test_period_end_date;
-                    this.corporate_email = this.selected_contract.corporate_email;
-                    this.corporate_cellphone = this.selected_contract.corporate_cellphone;
-                    this.bank_id = this.selected_contract.bank_id;
-                    this.bank_account = this.selected_contract.bank_account;
-                    this.eps_id = this.selected_contract.eps_id;
-                    this.arl_id = this.selected_contract.arl_id;
-                    this.afp_pension_id = this.selected_contract.afp_pension_id;
-                    this.afp_saving_id = this.selected_contract.afp_saving_id;
-                    this.ccf_id = this.selected_contract.ccf_id;
+                    // this.corporate_email = this.selected_contract.corporate_email;
+                    // this.corporate_cellphone = this.selected_contract.corporate_cellphone;
+                    // this.bank_id = this.selected_contract.bank_id;
+                    // this.bank_account = this.selected_contract.bank_account;
+                    // this.eps_id = this.selected_contract.eps_id;
+                    // this.arl_id = this.selected_contract.arl_id;
+                    // this.afp_pension_id = this.selected_contract.afp_pension_id;
+                    // this.afp_saving_id = this.selected_contract.afp_saving_id;
+                    // this.ccf_id = this.selected_contract.ccf_id;
                 } else {
                     this.position_id = '';
                     this.salary = '';
@@ -568,15 +552,15 @@ export default {
                     this.contract_start_date = '';
                     this.contract_end_date = '';
                     this.test_period_end_date = '';
-                    this.corporate_email = '';
-                    this.corporate_cellphone = '';
-                    this.bank_id = '';
-                    this.bank_account = '';
-                    this.eps_id = '';
-                    this.arl_id = '';
-                    this.afp_pension_id = '';
-                    this.afp_saving_id = '';
-                    this.ccf_id = '';
+                    // this.corporate_email = '';
+                    // this.corporate_cellphone = '';
+                    // this.bank_id = '';
+                    // this.bank_account = '';
+                    // this.eps_id = '';
+                    // this.arl_id = '';
+                    // this.afp_pension_id = '';
+                    // this.afp_saving_id = '';
+                    // this.ccf_id = '';
                 }
             },
             immediate: true,
@@ -620,11 +604,11 @@ export default {
             .then(response => {
                 this.position_types = response.data.position_types;
                 this.contract_types = response.data.contract_types;
-                this.bank_types = response.data.bank_types;
-                this.eps_types = response.data.eps_types;
-                this.arl_types = response.data.arl_types;
-                this.afp_types = response.data.afp_types;
-                this.ccf_types = response.data.ccf_types;
+                // this.bank_types = response.data.bank_types;
+                // this.eps_types = response.data.eps_types;
+                // this.arl_types = response.data.arl_types;
+                // this.afp_types = response.data.afp_types;
+                // this.ccf_types = response.data.ccf_types;
             })
             .catch(e => {
                 //
@@ -675,16 +659,19 @@ export default {
                 'contract_start_date': this.contract_start_date,
                 'contract_end_date': this.contract_end_date,
                 'test_period_end_date': this.test_period_end_date,
-                'corporate_email': this.corporate_email,
-                'corporate_cellphone': this.corporate_cellphone,
-                'bank_id': this.bank_id,
-                'bank_account': this.bank_account,
-                'eps_id': this.eps_id,
-                'afp_pension_id': this.afp_pension_id,
-                'afp_saving_id': this.afp_saving_id,
-                'arl_id': this.arl_id,
-                'ccf_id': this.ccf_id,
+                'observations': this.observations,
+                // 'corporate_email': this.corporate_email,
+                // 'corporate_cellphone': this.corporate_cellphone,
+                // 'bank_id': this.bank_id,
+                // 'bank_account': this.bank_account,
+                // 'eps_id': this.eps_id,
+                // 'afp_pension_id': this.afp_pension_id,
+                // 'afp_saving_id': this.afp_saving_id,
+                // 'arl_id': this.arl_id,
+                // 'ccf_id': this.ccf_id,
             }
+
+            console.log(dataSend);
 
             axios.post(`/contracts/${this.collaborator.id}`, dataSend).then(
                 (res) => {
@@ -775,5 +762,24 @@ export default {
 </script>
 
 <style scoped>
-/* Your component styles here */
+.empty-state {
+    border: 1px dashed #e5e7eb;
+    border-radius: 12px;
+    padding: 28px;
+    text-align: center;
+    background: #ffffff;
+}
+.empty-state__art { margin-bottom: 14px; }
+.empty-state__title {
+    font-size: 1.15rem;
+    margin: 8px 0 4px;
+    color: #0f172a;
+}
+.empty-state__desc {
+    color: #475569;
+    margin-bottom: 14px;
+}
+.empty-state__actions .btn {
+    min-width: 160px;
+}
 </style>
