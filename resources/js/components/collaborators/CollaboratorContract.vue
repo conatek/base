@@ -35,14 +35,6 @@
                     }"
                     :style-class="'vgt-table bordered condensed'"
                 >
-                    <!-- <template #table-actions-bottom>
-                        <div v-if="rows.length === 0" class="vgt-center-align vgt-text-disabled">
-                            <div style="padding: 40px 20px; font-size: 16px; color: #6c757d; text-align: center;">
-                                <strong>No hay resultados que coincidan</strong>
-                            </div>
-                        </div>
-                    </template> -->
-
                     <template #table-row="props">
                         <span v-if="props.column.field === 'status'" class="badge rounded-pill" style="width: 100px;" :class="props.row.status === 'Vigente' ? 'bg-success' : 'bg-danger'">
                             {{ props.row.status }}
@@ -140,12 +132,6 @@
 
                             <div class="label">Observaciones:</div>
                             <div class="value">{{ selected_contract.observations }}</div>
-
-                            <!-- <div class="label">Correo Corporativo:</div>
-                            <div class="value">{{ selected_contract.corporate_email }}</div>
-
-                            <div class="label">Celular Corporativo:</div>
-                            <div class="value">{{ selected_contract.corporate_cellphone }}</div> -->
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -217,43 +203,6 @@
                                         <span v-if="errors && errors.test_period_end_date" class="error text-danger" for="test_period_end_date">{{ errors.test_period_end_date[0] }}</span>
                                     </div>
                                 </div>
-                                <!-- <div class="col-sm-12 col-md-6 col-lg-6">
-                                    <div class="position-relative mb-3">
-                                        <label for="certificate" class="form-label">Contrato</label>
-                                        <div class="input-group">
-                                            <input @change="onChangeCertificate" type="file" name="certificate" id="certificate" class="form-control">
-                                        </div>
-                                        <span v-if="errors_academic_data && errors_academic_data.certificate" class="error text-danger" for="certificate">{{ errors_academic_data.certificate[0] }}</span>
-                                    </div>
-                                </div> -->
-
-                                <!-- <div class="col-12 mb-3">
-                                    <div class="position-relative">
-                                        <input
-                                            ref="fileInput"
-                                            type="file"
-                                            accept=".xlsx, .xls"
-                                            class="form-control d-none"
-                                            @change="handleFile"
-                                        >
-                                        <span v-if="errors && errors.logo" class="error text-danger" for="logo">{{ errors.logo[0] }}</span>
-
-                                        <div class="input-group">
-                                            <button type="button" class="btn btn-primary" @click="selectFile">
-                                                <font-awesome-icon :icon="['fas', 'upload']" />
-                                                Seleccionar
-                                            </button>
-                                            <input
-                                                @click="selectFile"
-                                                type="text"
-                                                class="form-control"
-                                                :value="file != '' ? file.name : ''"
-                                                readonly
-                                                placeholder="Ningún archivo seleccionado"
-                                            />
-                                        </div>
-                                    </div>
-                                </div> -->
                                 <div class="col-12">
                                     <div class="position-relative mb-3">
                                         <label for="observations" class="form-label">Observaciones</label>
@@ -460,11 +409,6 @@ export default {
 
             position_types: [],
             contract_types: [],
-            bank_types: [],
-            eps_types: [],
-            arl_types: [],
-            afp_types: [],
-            ccf_types: [],
 
             position_id: '',
             salary: '',
@@ -473,15 +417,6 @@ export default {
             contract_end_date: '',
             test_period_end_date: '',
             observations: '',
-            // corporate_email: '',
-            // corporate_cellphone: '',
-            // bank_id: '',
-            // bank_account: '',
-            // eps_id: '',
-            // arl_id: '',
-            // afp_pension_id: '',
-            // afp_saving_id: '',
-            // ccf_id: '',
 
             selected_contract: null,
             add_contract: false,
@@ -536,15 +471,6 @@ export default {
                     this.contract_start_date = this.selected_contract.contract_start_date;
                     this.contract_end_date = this.selected_contract.contract_end_date;
                     this.test_period_end_date = this.selected_contract.test_period_end_date;
-                    // this.corporate_email = this.selected_contract.corporate_email;
-                    // this.corporate_cellphone = this.selected_contract.corporate_cellphone;
-                    // this.bank_id = this.selected_contract.bank_id;
-                    // this.bank_account = this.selected_contract.bank_account;
-                    // this.eps_id = this.selected_contract.eps_id;
-                    // this.arl_id = this.selected_contract.arl_id;
-                    // this.afp_pension_id = this.selected_contract.afp_pension_id;
-                    // this.afp_saving_id = this.selected_contract.afp_saving_id;
-                    // this.ccf_id = this.selected_contract.ccf_id;
                 } else {
                     this.position_id = '';
                     this.salary = '';
@@ -552,15 +478,6 @@ export default {
                     this.contract_start_date = '';
                     this.contract_end_date = '';
                     this.test_period_end_date = '';
-                    // this.corporate_email = '';
-                    // this.corporate_cellphone = '';
-                    // this.bank_id = '';
-                    // this.bank_account = '';
-                    // this.eps_id = '';
-                    // this.arl_id = '';
-                    // this.afp_pension_id = '';
-                    // this.afp_saving_id = '';
-                    // this.ccf_id = '';
                 }
             },
             immediate: true,
@@ -604,11 +521,6 @@ export default {
             .then(response => {
                 this.position_types = response.data.position_types;
                 this.contract_types = response.data.contract_types;
-                // this.bank_types = response.data.bank_types;
-                // this.eps_types = response.data.eps_types;
-                // this.arl_types = response.data.arl_types;
-                // this.afp_types = response.data.afp_types;
-                // this.ccf_types = response.data.ccf_types;
             })
             .catch(e => {
                 //
@@ -660,15 +572,6 @@ export default {
                 'contract_end_date': this.contract_end_date,
                 'test_period_end_date': this.test_period_end_date,
                 'observations': this.observations,
-                // 'corporate_email': this.corporate_email,
-                // 'corporate_cellphone': this.corporate_cellphone,
-                // 'bank_id': this.bank_id,
-                // 'bank_account': this.bank_account,
-                // 'eps_id': this.eps_id,
-                // 'afp_pension_id': this.afp_pension_id,
-                // 'afp_saving_id': this.afp_saving_id,
-                // 'arl_id': this.arl_id,
-                // 'ccf_id': this.ccf_id,
             }
 
             console.log(dataSend);
@@ -696,15 +599,6 @@ export default {
                 'contract_start_date': this.contract_start_date,
                 'contract_end_date': this.contract_end_date,
                 'test_period_end_date': this.test_period_end_date,
-                'corporate_email': this.corporate_email,
-                'corporate_cellphone': this.corporate_cellphone,
-                'bank_id': this.bank_id,
-                'bank_account': this.bank_account,
-                'eps_id': this.eps_id,
-                'afp_pension_id': this.afp_pension_id,
-                'afp_saving_id': this.afp_saving_id,
-                'arl_id': this.arl_id,
-                'ccf_id': this.ccf_id,
             }
 
             axios.put(`/contracts/${this.selected_contract.id}`, dataSend).then(

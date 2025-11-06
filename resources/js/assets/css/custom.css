@@ -135,8 +135,19 @@
     display: flex;
 }
 
-.title-total {
+/* .title-total {
     flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+} */
+
+.title-total {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

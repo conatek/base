@@ -27,19 +27,9 @@ class ContractController extends Controller
 
         $position_types = Position::all();
         $contract_types = ContractType::all();
-        $bank_types = BankType::all();
-        $eps_types = EpsType::all();
-        $arl_types = ArlType::all();
-        $afp_types = AfpType::all();
-        $ccf_types = CcfType::all();
 
         $results['position_types'] = $position_types;
         $results['contract_types'] = $contract_types;
-        $results['bank_types'] = $bank_types;
-        $results['eps_types'] = $eps_types;
-        $results['arl_types'] = $arl_types;
-        $results['afp_types'] = $afp_types;
-        $results['ccf_types'] = $ccf_types;
 
         return $results;
     }
@@ -53,12 +43,6 @@ class ContractController extends Controller
             ->with([
                 'position',
                 'contractType',
-                'bank',
-                'eps',
-                'afpPension',
-                'afpSaving',
-                'arl',
-                'ccf',
             ])
             ->orderByDesc('contract_start_date')
             ->get();
@@ -93,15 +77,6 @@ class ContractController extends Controller
             'contract_end_date' => $request->contract_end_date,
             'test_period_end_date' => $request->test_period_end_date,
             'observations' => $request->observations,
-            // 'corporate_email' => $request->corporate_email,
-            // 'corporate_cellphone' => $request->corporate_cellphone,
-            // 'bank_id' => $request->bank_id,
-            // 'bank_account' => $request->bank_account,
-            // 'eps_id' => $request->eps_id,
-            // 'afp_pension_id' => $request->afp_pension_id,
-            // 'afp_saving_id' => $request->afp_saving_id,
-            // 'arl_id' => $request->arl_id,
-            // 'ccf_id' => $request->ccf_id,
         );
 
         $contract = CollaboratorContract::create($data);
@@ -128,15 +103,6 @@ class ContractController extends Controller
                 'contract_start_date' => $request->contract_start_date,
                 'contract_end_date' => $request->contract_end_date,
                 'test_period_end_date' => $request->test_period_end_date,
-                'corporate_email' => $request->corporate_email,
-                'corporate_cellphone' => $request->corporate_cellphone,
-                'bank_id' => $request->bank_id,
-                'bank_account' => $request->bank_account,
-                'eps_id' => $request->eps_id,
-                'afp_pension_id' => $request->afp_pension_id,
-                'afp_saving_id' => $request->afp_saving_id,
-                'arl_id' => $request->arl_id,
-                'ccf_id' => $request->ccf_id,
             );
 
             $contract->update($data);

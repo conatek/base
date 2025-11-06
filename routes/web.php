@@ -11,10 +11,12 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\CampusController;
 use App\Http\Controllers\CardsController;
 use App\Http\Controllers\CollaboratorAcademicAchievementController;
+use App\Http\Controllers\CollaboratorBankAccountController;
 use App\Http\Controllers\CollaboratorDocumentController;
 use App\Http\Controllers\CollaboratorFamilyController;
 use App\Http\Controllers\CollaboratorHomeVisitController;
 use App\Http\Controllers\CollaboratorMedicalExaminationController;
+use App\Http\Controllers\CollaboratorSocialSecurityController;
 use App\Http\Controllers\CompaniesController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\HomeController;
@@ -163,6 +165,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/contracts/{collaborator}', [ContractController::class, 'store']);
     Route::put('/contracts/{contract}', [ContractController::class, 'update']);
     Route::delete('/contracts/{contract}', [ContractController::class, 'destroy']);
+
+    // SOCIAL SECURITY
+    Route::get('/social-security-information', [CollaboratorSocialSecurityController::class, 'getSocialSecurityInformation']);
+
+    // BANK INFORMATION
+    Route::get('/bank-account-information', [CollaboratorBankAccountController::class, 'getBankAccountInformation']);
+    Route::get('/bank-account-information/{collaborator_id}', [CollaboratorBankAccountController::class, 'getBankAccountByCollaborator']);
+    Route::post('/bank-account-information', [CollaboratorBankAccountController::class, 'store']);
+    Route::get('/download-bank-account-certificate/{bank_account_id}', [CollaboratorBankAccountController::class, 'downloadCertificate']);
+    Route::put('/bank-account-information/{bank_account}', [CollaboratorBankAccountController::class, 'update']);
+    Route::delete('/bank-account-information/{bank_account}', [CollaboratorBankAccountController::class, 'destroy']);
 
     // ROLES AND PERMISSIONS
     Route::resource('permissions', PermissionController::class);
