@@ -14,8 +14,35 @@
                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                             <div class="position-relative mb-3">
                                                 <label for="image" class="form-label">Foto</label>
+                                                <input
+                                                    ref="imageInput"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    class="form-control d-none"
+                                                    @change="onChangeImage"
+                                                >
                                                 <div class="input-group">
-                                                    <input @change="onChangeImage" type="file" name="image" id="image" class="form-control">
+                                                    <button type="button" class="btn btn-primary" @click="selectImage">
+                                                        <font-awesome-icon :icon="['fas', 'upload']" />
+                                                        Seleccionar
+                                                    </button>
+                                                    <input
+                                                        @click="selectImage"
+                                                        type="text"
+                                                        class="form-control"
+                                                        :value="image != '' ? image.name : ''"
+                                                        readonly
+                                                        placeholder="Sin archivo"
+                                                    />
+                                                </div>
+                                                <div v-if="image_src" class="cropper-container">
+                                                    <cropper
+                                                        ref="cropperRef"
+                                                        :src="image_src"
+                                                        :stencil-props="{
+                                                            aspectRatio: 1/1
+                                                        }"
+                                                    />
                                                 </div>
                                                 <span v-if="errors && errors.image" class="error text-danger" for="image">{{ errors.image[0] }}</span>
                                             </div>
@@ -281,7 +308,13 @@
 </template>
 
 <script>
+import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
+
 export default {
+    components: {
+        Cropper,
+    },
     props: {
         company_id: {
             default: null,
@@ -348,8 +381,10 @@ export default {
             cellphone: '',
             email: '',
 
-            image: '',
             observations: '',
+
+            image: '',
+            image_src: null,
 
             errors: null,
         }
@@ -358,6 +393,17 @@ export default {
         //
     },
     methods: {
+        selectImage() {
+            this.$refs.imageInput.click();
+        },
+        onChangeImage(e) {
+            // this.image = e.target.files[0]
+            const file = e.target.files[0];
+            if (file) {
+                // Creamos una URL local para que el cropper la muestre
+                this.image_src = URL.createObjectURL(file);
+            }
+        },
         getCities(province, type) {
             let dataSend = {
                 "province": province,
@@ -374,55 +420,91 @@ export default {
                     }
                 })
         },
-        onChangeImage(e) {
-            this.image = e.target.files[0]
-        },
         storeCollaborator() {
-            let fd = new FormData()
+            let fd = new FormData();
 
-            this.appendIfNotEmpty(fd, 'image', this.image)
-            this.appendIfNotEmpty(fd, 'staff_provider_id', this.staff_provider_id)
-            this.appendIfNotEmpty(fd, 'name', this.name)
-            this.appendIfNotEmpty(fd, 'first_surname', this.first_surname)
-            this.appendIfNotEmpty(fd, 'second_surname', this.second_surname)
-            this.appendIfNotEmpty(fd, 'document_type_id', this.document_type_id)
-            this.appendIfNotEmpty(fd, 'document_number', this.document_number)
-            this.appendIfNotEmpty(fd, 'expedition_date', this.expedition_date)
-            this.appendIfNotEmpty(fd, 'document_province_id', this.document_province_id)
-            this.appendIfNotEmpty(fd, 'document_city_id', this.document_city_id)
-            this.appendIfNotEmpty(fd, 'birth_province_id', this.birth_province_id)
-            this.appendIfNotEmpty(fd, 'birth_city_id', this.birth_city_id)
-            this.appendIfNotEmpty(fd, 'birth_date', this.birth_date)
-            this.appendIfNotEmpty(fd, 'civil_status_type_id', this.civil_status_type_id)
-            this.appendIfNotEmpty(fd, 'sex_type_id', this.sex_type_id)
-            this.appendIfNotEmpty(fd, 'rh_type_id', this.rh_type_id)
-            this.appendIfNotEmpty(fd, 'observations', this.observations)
-            this.appendIfNotEmpty(fd, 'residence_province_id', this.residence_province_id)
-            this.appendIfNotEmpty(fd, 'residence_city_id', this.residence_city_id)
-            this.appendIfNotEmpty(fd, 'stratum_type_id', this.stratum_type_id)
-            this.appendIfNotEmpty(fd, 'housing_tenure_id', this.housing_tenure_id)
-            this.appendIfNotEmpty(fd, 'address', this.address)
-            this.appendIfNotEmpty(fd, 'phone', this.phone)
-            this.appendIfNotEmpty(fd, 'cellphone', this.cellphone)
-            this.appendIfNotEmpty(fd, 'email', this.email)
+            // 1. La función interna que agrega campos y envía
+            const appendFieldsAndSubmit = (formData) => {
 
-            let url = ''
-            axios.post('/collaborators', fd).then(
-                (res) => {
-                    localStorage.setItem('origin', 'created');
+                // Agregamos todos los demás campos
+                this.appendIfNotEmpty(formData, 'staff_provider_id', this.staff_provider_id);
+                this.appendIfNotEmpty(formData, 'name', this.name);
+                this.appendIfNotEmpty(formData, 'first_surname', this.first_surname);
+                this.appendIfNotEmpty(formData, 'second_surname', this.second_surname);
+                this.appendIfNotEmpty(formData, 'document_type_id', this.document_type_id);
+                this.appendIfNotEmpty(formData, 'document_number', this.document_number);
+                this.appendIfNotEmpty(formData, 'expedition_date', this.expedition_date);
+                this.appendIfNotEmpty(formData, 'document_province_id', this.document_province_id);
+                this.appendIfNotEmpty(formData, 'document_city_id', this.document_city_id);
+                this.appendIfNotEmpty(formData, 'birth_province_id', this.birth_province_id);
+                this.appendIfNotEmpty(formData, 'birth_city_id', this.birth_city_id);
+                this.appendIfNotEmpty(formData, 'birth_date', this.birth_date);
+                this.appendIfNotEmpty(formData, 'civil_status_type_id', this.civil_status_type_id);
+                this.appendIfNotEmpty(formData, 'sex_type_id', this.sex_type_id);
+                this.appendIfNotEmpty(formData, 'rh_type_id', this.rh_type_id);
+                this.appendIfNotEmpty(formData, 'observations', this.observations);
+                this.appendIfNotEmpty(formData, 'residence_province_id', this.residence_province_id);
+                this.appendIfNotEmpty(formData, 'residence_city_id', this.residence_city_id);
+                this.appendIfNotEmpty(formData, 'stratum_type_id', this.stratum_type_id);
+                this.appendIfNotEmpty(formData, 'housing_tenure_id', this.housing_tenure_id);
+                this.appendIfNotEmpty(formData, 'address', this.address);
+                this.appendIfNotEmpty(formData, 'phone', this.phone);
+                this.appendIfNotEmpty(formData, 'cellphone', this.cellphone);
+                this.appendIfNotEmpty(formData, 'email', this.email);
 
-                    // url = `/collaborators/${res.data.collaborator.id}`
+                // 3. Enviamos la petición de Axios
+                axios.post('/collaborators', formData).then(
+                    (res) => {
+                        localStorage.setItem('origin', 'created');
+                        window.location.href = '/collaborators';
+                        this.errors = null;
+                    }).catch(
+                    (error) => {
+                        if(error && error.response && error.response.data && error.response.data.errors) {
+                            console.log(error.response.data.errors);
+                            this.errors = error.response.data.errors;
+                        }
+                    });
+            };
 
-                    url = `/collaborators`
-                    window.location.href = url
-                    this.errors = null
-                }).catch(
-                (error) => {
-                    if(error && error.response && error.response.data && error.response.data.errors) {
-                        console.log(error.response.data.errors)
-                        this.errors = error.response.data.errors
-                    }
-                })
+            // 4. Verificamos si hay una imagen para recortar
+            if (this.$refs.cropperRef && this.image_src) {
+                const { canvas } = this.$refs.cropperRef.getResult();
+
+                if (canvas) {
+
+                    // --- NUEVO: Crear un canvas de 300x300 ---
+                    const resizedCanvas = document.createElement('canvas');
+                    resizedCanvas.width = 300;
+                    resizedCanvas.height = 300;
+
+                    // --- NUEVO: Obtener el contexto y dibujar el recorte en 300x300 ---
+                    const ctx = resizedCanvas.getContext('2d');
+                    ctx.drawImage(canvas, 0, 0, 300, 300); // Dibuja y redimensiona
+
+                    // 5. Convertimos el *canvas redimensionado* a Blob (asíncrono)
+                    resizedCanvas.toBlob((blob) => {
+
+                        // DEBUG: Verás que este tamaño es MUCHO menor (ej: 0.08 MB)
+                        console.log('Tamaño del Blob REDIMENSIONADO (MB):', (blob.size / 1024 / 1024).toFixed(2));
+
+                        // 6. Añadimos la imagen recortada
+                        fd.append('image', blob, 'profile_300x300.png');
+
+                        // 7. Llamamos a la función que agrega el resto y envía
+                        appendFieldsAndSubmit(fd);
+
+                    }, 'image/png'); // Puedes usar 'image/jpeg' y un segundo param. (ej. 0.8) para calidad
+
+                } else {
+                    // Error de canvas, solo envía los campos
+                    appendFieldsAndSubmit(fd);
+                }
+            } else {
+                // 8. Si NO hay imagen, llamamos a la función
+                //    directamente para que envíe los demás datos.
+                appendFieldsAndSubmit(fd);
+            }
         },
         appendIfNotEmpty(fd, key, value) {
             if (value !== null && value !== '' && value !== undefined) {
@@ -432,3 +514,14 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+/* Dale un tamaño fijo al contenedor del cropper */
+.cropper-container {
+    width: 100%;
+    max-width: 500px;
+    /* height: 400px; */
+    margin-top: 15px;
+    border: 1px solid #ccc;
+}
+</style>

@@ -72,6 +72,7 @@ class CollaboratorController extends Controller
 
     public function getCollaborators()
     {
+        // dd('getCollaborators');
         $user = Auth::user();
         $today = now()->toDateString();
 
@@ -144,6 +145,7 @@ class CollaboratorController extends Controller
 
     public function create()
     {
+        // dd('create');
         $result = [];
 
         $user = Auth::user();
@@ -359,14 +361,10 @@ class CollaboratorController extends Controller
         $document_types = DocumentType::all();
         $sex_types = SexType::all();
         $rh_types = RhType::all();
-        // $academic_achievement_types = AcademicAchievementType::all();
         $stratum_types = SocialStratum::all();
         $civil_status_types = CivilStatusType::all();
         $housing_tenure_types = HousingTenure::all();
         $provinces = Province::all();
-        // $contractual_information = CollaboratorContract::where('collaborator_id', $collaborator->id)->first();
-
-        // dd($contractual_information);
 
         $position_types = Position::where('company_id',$company->id)->get();
         $contract_types = ContractType::all();
@@ -377,27 +375,6 @@ class CollaboratorController extends Controller
         $ccf_types = CcfType::all();
         $staff_providers = StaffProvider::where('company_id', $company->id)->orderBy('id', 'asc')->get();
 
-        // return view('back.collaborators.edit', compact(
-        //     'company',
-        //     'collaborator',
-        //     'document_types',
-        //     'sex_types',
-        //     'rh_types',
-        //     'stratum_types',
-        //     'civil_status_types',
-        //     'housing_tenure_types',
-        //     'provinces',
-        //     'position_types',
-        //     'contract_types',
-        //     'bank_types',
-        //     'eps_types',
-        //     'afp_types',
-        //     'arl_types',
-        //     'ccf_types',
-        // ));
-
-        // $result['company'] = $company;
-        // $result['collaborator'] = $collaborator;
         $result['document_types'] = $document_types;
         $result['sex_types'] = $sex_types;
         $result['rh_types'] = $rh_types;

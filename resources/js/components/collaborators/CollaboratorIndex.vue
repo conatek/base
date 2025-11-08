@@ -481,9 +481,10 @@ export default {
             this.selected_collaborator = null
             this.viewState = 'add';
 
-            axios.get(`/collaborators/create`).then(
+            axios.get(`/collaborators-data`).then(
                 (res) => {
                     this.selectsDataCreate = res.data
+
                     this.errors = null
                 }).catch(
                 (error) => {

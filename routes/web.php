@@ -147,7 +147,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/collaborators/{company_id}', [CollaboratorController::class, 'getCollaborators']);
     Route::get('/collaborators-data/{company_id}', [CollaboratorController::class, 'getCollaboratorsData']);
     Route::get('/collaborators', [CollaboratorController::class, 'index'])->name('collaborators.index');
-    Route::get('/collaborators/create', [CollaboratorController::class, 'create'])->name('collaborators.create');
+    Route::get('/collaborators-data', [CollaboratorController::class, 'create'])->name('collaborators.create');
     Route::post('/collaborators', [CollaboratorController::class, 'store'])->name('collaborators.store');
     // Route::get('/collaborators/{collaborator}-{message?}', [CollaboratorController::class, 'show'])->name('collaborators.show');
     Route::get('/collaborators/{collaborator}/show', [CollaboratorController::class, 'show'])->name('collaborators.show');
