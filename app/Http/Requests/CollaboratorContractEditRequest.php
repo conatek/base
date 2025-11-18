@@ -119,8 +119,6 @@ class CollaboratorContractEditRequest extends FormRequest
         // Calcular la duración máxima permitida para el período de prueba
         $maxTestPeriod = $this->calculateMaxTestPeriod($contractStartDate, $contractEndDate, $contractType);
 
-        // dd($maxTestPeriod);
-
         if ($maxTestPeriod === null) {
             $validator->errors()->add('test_period_end_date', 'No se pudo calcular el período de prueba máximo para este tipo de contrato.');
             return;

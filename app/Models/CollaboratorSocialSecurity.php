@@ -23,4 +23,29 @@ class CollaboratorSocialSecurity extends Model
         'ccf_id',
         'observations',
     ];
+
+    public function eps()
+    {
+        return $this->belongsTo(EpsType::class, 'eps_id');
+    }
+
+    public function afp_pension()
+    {
+        return $this->belongsTo(AfpType::class, 'afp_pension_id');
+    }
+
+    public function afp_saving()
+    {
+        return $this->belongsTo(AfpType::class, 'afp_saving_id');
+    }
+
+    public function arl()
+    {
+        return $this->belongsTo(ArlType::class, 'arl_id');
+    }
+
+    public function ccf()
+    {
+        return $this->belongsTo(CcfType::class, 'ccf_id');
+    }
 }

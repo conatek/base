@@ -17,6 +17,8 @@ return new class extends Migration
             $table->date('contract_start_date');
             $table->date('contract_end_date')->nullable();
             $table->date('test_period_end_date')->nullable();
+            $table->string('contract_file_public_id')->nullable();
+            $table->string('contract_file_url')->nullable();
             $table->text('observations')->nullable();
 
             $table->foreign('collaborator_id')->references('id')->on('collaborators')->onDelete('cascade');

@@ -20,6 +20,8 @@ class CollaboratorContract extends Model
         'contract_start_date',
         'contract_end_date',
         'test_period_end_date',
+        'contract_file_public_id',
+        'contract_file_url',
         'observations',
         'created_at',
         'updated_at',

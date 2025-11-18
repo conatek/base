@@ -2,22 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CollaboratorContractCreateRequest;
-use App\Http\Requests\CollaboratorContractEditRequest;
-use App\Models\AfpType;
-use App\Models\ArlType;
-use App\Models\BankType;
-use App\Models\CcfType;
-use App\Models\Collaborator;
-use App\Models\CollaboratorContract;
-use App\Models\Company;
-use App\Models\ContractType;
-use App\Models\EpsType;
-use App\Models\Position;
-use Carbon\Carbon;
 use Exception;
+use Carbon\Carbon;
+use App\Models\Position;
+use App\Models\Collaborator;
+use App\Models\ContractType;
 use Illuminate\Http\Request;
+use App\Models\CollaboratorContract;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\CollaboratorContractEditRequest;
+use App\Http\Requests\CollaboratorContractCreateRequest;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ContractController extends Controller
 {
@@ -65,26 +60,42 @@ class ContractController extends Controller
     {
         // Las validaciones se realizan en CollaboratorContractCreateRequest
 
-        // $user = Auth::user();
-        // $company = Company::where('id', $user->company_id)->first();
+        try {
+            $company_id = Auth::user()->company_id;
+            $collaborator_id = $request->collaborator_id;
 
-        $data = array(
-            'collaborator_id' => $id,
-            'position_id' => $request->position_id,
-            'salary' => $request->salary,
-            'contract_type_id' => $request->contract_type_id,
-            'contract_start_date' => $request->contract_start_date,
-            'contract_end_date' => $request->contract_end_date,
-            'test_period_end_date' => $request->test_period_end_date,
-            'observations' => $request->observations,
-        );
+            $folderPath = 'mh/' . env("APP_ENV", "local") . '/' . $company_id . '/collaborators/' . $collaborator_id . '/contracts';
 
-        $contract = CollaboratorContract::create($data);
+            $data = array(
+                'collaborator_id' => $id,
+                'position_id' => $request->position_id,
+                'salary' => $request->salary,
+                'contract_type_id' => $request->contract_type_id,
+                'contract_start_date' => $request->contract_start_date,
+                'contract_end_date' => $request->contract_end_date,
+                'test_period_end_date' => $request->test_period_end_date,
+                'observations' => $request->observations,
+            );
 
-        return response()->json([
-            'message' => 'Contrato creado exitosamente!',
-            'contract' => $contract
-        ]);
+            if ($request->hasFile('contract_file')) {
+                $file = $request->file('contract_file');
+                $cloudinary_object = Cloudinary::upload($file->getRealPath(), ['folder' => $folderPath]);
+
+                $data['contract_file_public_id'] = $cloudinary_object->getPublicId();
+                $data['contract_file_url'] = $cloudinary_object->getSecurePath();
+            }
+
+            $contract = CollaboratorContract::create($data);
+
+            return response()->json([
+                'message' => 'Contrato creado exitosamente!',
+                'contract' => $contract
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function update(CollaboratorContractEditRequest $request, $id)
@@ -92,17 +103,16 @@ class ContractController extends Controller
         // Las validaciones se realizan en CollaboratorContractEditRequest
 
         try {
-            // $collaborator_contract = CollaboratorContract::where('collaborator_id', $id)->first();
             $contract = CollaboratorContract::findOrFail($id);
 
             $data = array(
-                // 'collaborator_id' => $id,
                 'position_id' => $request->position_id,
                 'salary' => $request->salary,
                 'contract_type_id' => $request->contract_type_id,
                 'contract_start_date' => $request->contract_start_date,
                 'contract_end_date' => $request->contract_end_date,
                 'test_period_end_date' => $request->test_period_end_date,
+                'observations' => $request->observations,
             );
 
             $contract->update($data);

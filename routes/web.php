@@ -168,6 +168,13 @@ Route::group(['middleware' => 'auth'], function () {
 
     // SOCIAL SECURITY
     Route::get('/social-security-information', [CollaboratorSocialSecurityController::class, 'getSocialSecurityInformation']);
+    Route::get('/social-security-information/{collaborator_id}', [CollaboratorSocialSecurityController::class, 'getSocialSecurityByCollaborator']);
+    Route::post('/social-security-information', [CollaboratorSocialSecurityController::class, 'store']);
+    Route::get('/download-eps-certificate/{social_security_id}', [CollaboratorSocialSecurityController::class, 'downloadEpsCertificate']);
+    Route::get('/download-afp-pension-certificate/{social_security_id}', [CollaboratorSocialSecurityController::class, 'downloadAfpPensionCertificate']);
+    Route::get('/download-afp-saving-certificate/{social_security_id}', [CollaboratorSocialSecurityController::class, 'downloadAfpSavingCertificate']);
+    Route::put('/social-security-information/{social_security_id}', [CollaboratorSocialSecurityController::class, 'update']);
+    Route::delete('/social-security-information/{social_security_id}', [CollaboratorSocialSecurityController::class, 'destroy']);
 
     // BANK INFORMATION
     Route::get('/bank-account-information', [CollaboratorBankAccountController::class, 'getBankAccountInformation']);
