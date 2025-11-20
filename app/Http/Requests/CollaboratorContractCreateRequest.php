@@ -19,7 +19,7 @@ class CollaboratorContractCreateRequest extends FormRequest
         return [
             'position_id'          => 'required|integer',
             'salary'               => 'required|numeric|min:0',
-            'contract_type_id'     => 'required|integer',
+            'contract_type_id'     => 'required|integer|exists:contract_types,id',
             'contract_start_date'  => 'required|date',
             'contract_end_date'    => 'nullable|date|after_or_equal:contract_start_date',
             'test_period_end_date' => 'required|date|after_or_equal:contract_start_date',
@@ -29,6 +29,7 @@ class CollaboratorContractCreateRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'contract_type_id.exists' => 'El tipo de contrato seleccionado no es válido.',
             'position_id.required' => 'El cargo es requerido.',
             'position_id.integer'  => 'El cargo debe ser un número entero.',
             'salary.required' => 'El salario es requerido.',
@@ -125,7 +126,7 @@ class CollaboratorContractCreateRequest extends FormRequest
         }
 
         // Calcular la duración real del período de prueba en días
-        $actualTestPeriodDays = $contractStartDate->diffInDays($testPeriodEndDate);
+        $actualTestPeriodDays = $contractStartDate->diffInDays($testPeriodEndDate) + 1;
 
         // Validar que no exceda el máximo permitido
         if ($actualTestPeriodDays > $maxTestPeriod) {
@@ -148,7 +149,7 @@ class CollaboratorContractCreateRequest extends FormRequest
 
         // Contratos a término fijo: depende de la duración del contrato
         if ($endDate) {
-            $contractDurationDays = $startDate->diffInDays($endDate);
+            $contractDurationDays = $startDate->diffInDays($endDate) + 1;
             $contractDurationMonths = $startDate->diffInMonths($endDate);
 
             // Si el contrato es menor a 1 año (365 días)

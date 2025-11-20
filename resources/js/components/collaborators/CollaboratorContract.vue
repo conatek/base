@@ -39,8 +39,12 @@
                     </span>
                     <span v-else-if="props.column.field === 'actions'">
                         <template v-if="props.row.status === 'Vigente'">
-                            <button class="btn btn-sm btn-success mx-1" @click="duplicateContract(props.row.id)">
+                            <!-- <button class="btn btn-sm btn-success mx-1" @click="duplicateContract(props.row.id)">
                                 <font-awesome-icon :icon="['fas', 'plus']" /> Prórroga
+                            </button> -->
+
+                            <button v-if="props.row.contract_file_url !== null" class="btn btn-sm btn-primary mx-1" @click="downloadContract(props.row.id)">
+                                <font-awesome-icon :icon="['fas', 'download']" /> Contrato
                             </button>
 
                             <button
@@ -235,6 +239,34 @@
                                         <label for="test_period_end_date" class="form-label">Fecha de terminación prueba</label>
                                         <input v-model="selected_contract.test_period_end_date" name="test_period_end_date" id="test_period_end_date" type="date" class="form-control">
                                         <span v-if="errors && errors.test_period_end_date" class="error text-danger" for="test_period_end_date">{{ errors.test_period_end_date[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="position-relative mb-3">
+                                        <label for="image" class="form-label">Contrato</label>
+                                        <input
+                                            ref="contractFileInput"
+                                            type="file"
+                                            accept=".pdf"
+                                            class="form-control d-none"
+                                            @change="handleContractFile"
+                                        >
+                                        <!-- <span v-if="errors_bank_information && errors_bank_information.image" class="error text-danger" for="image">{{ errors_bank_information.image[0] }}</span> -->
+
+                                        <div class="input-group">
+                                            <button type="button" class="btn btn-primary" @click="selectContractFile">
+                                                <font-awesome-icon :icon="['fas', 'upload']" />
+                                                Seleccionar
+                                            </button>
+                                            <input
+                                                @click="selectContractFile"
+                                                type="text"
+                                                class="form-control"
+                                                :value="contract_file != '' ? contract_file.name : ''"
+                                                readonly
+                                                placeholder="Sin archivo"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-12">
@@ -523,17 +555,16 @@ export default {
             }
             fd.append('test_period_end_date', this.test_period_end_date)
             if(this.contract_file != '') {
-                console.log('Contrato: ' + this.contract_file)
                 fd.append('contract_file', this.contract_file)
             }
             fd.append('observations', this.observations)
 
             // Visualizar contenido
-            console.log('=== CONTENIDO DEL FORMDATA ===')
-            for (let [key, value] of fd.entries()) {
-                console.log(`${key}:`, value)
-            }
-            console.log('==============================')
+            // console.log('=== CONTENIDO DEL FORMDATA ===')
+            // for (let [key, value] of fd.entries()) {
+            //     console.log(`${key}:`, value)
+            // }
+            // console.log('==============================')
 
             axios.post(`/contracts/${this.collaborator.id}`, fd).then(
                 (res) => {
@@ -561,6 +592,9 @@ export default {
                 fd.append('contract_end_date', this.selected_contract.contract_end_date)
             }
             fd.append('test_period_end_date', this.selected_contract.test_period_end_date)
+            if(this.contract_file != '') {
+                fd.append('contract_file', this.contract_file)
+            }
             fd.append('observations', this.selected_contract.observations)
             fd.append('_method', 'PUT')
 
@@ -577,6 +611,12 @@ export default {
                         this.errors = error.response.data.errors
                     }
                 })
+        },
+        downloadContract(contract_id) {
+            const contract = this.contracts.find(c => c.id === contract_id);
+            if (contract && contract.contract_file_url) {
+                window.open(contract.contract_file_url, '_blank');
+            }
         },
         deleteContract(id){
             axios.delete(`/contracts/${id}`).then(

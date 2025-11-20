@@ -56,18 +56,17 @@ class ContractController extends Controller
         return $results;
     }
 
-    public function store(CollaboratorContractCreateRequest $request, $id)
+    public function store(CollaboratorContractCreateRequest $request, $collaborator_id)
     {
         // Las validaciones se realizan en CollaboratorContractCreateRequest
 
         try {
             $company_id = Auth::user()->company_id;
-            $collaborator_id = $request->collaborator_id;
 
             $folderPath = 'mh/' . env("APP_ENV", "local") . '/' . $company_id . '/collaborators/' . $collaborator_id . '/contracts';
 
             $data = array(
-                'collaborator_id' => $id,
+                'collaborator_id' => $collaborator_id,
                 'position_id' => $request->position_id,
                 'salary' => $request->salary,
                 'contract_type_id' => $request->contract_type_id,
@@ -103,7 +102,10 @@ class ContractController extends Controller
         // Las validaciones se realizan en CollaboratorContractEditRequest
 
         try {
+            $company_id = Auth::user()->company_id;
             $contract = CollaboratorContract::findOrFail($id);
+
+            $folderPath = 'mh/' . env("APP_ENV", "local") . '/' . $company_id . '/collaborators/' . $contract->collaborator_id . '/contracts';
 
             $data = array(
                 'position_id' => $request->position_id,
@@ -114,6 +116,18 @@ class ContractController extends Controller
                 'test_period_end_date' => $request->test_period_end_date,
                 'observations' => $request->observations,
             );
+
+            if ($request->hasFile('contract_file')) {
+                if ($contract->contract_file_public_id) {
+                    Cloudinary::destroy($contract->contract_file_public_id);
+                }
+
+                $file = $request->file('contract_file');
+                $cloudinary_object = Cloudinary::upload($file->getRealPath(), ['folder' => $folderPath]);
+
+                $data['contract_file_public_id'] = $cloudinary_object->getPublicId();
+                $data['contract_file_url'] = $cloudinary_object->getSecurePath();
+            }
 
             $contract->update($data);
 
