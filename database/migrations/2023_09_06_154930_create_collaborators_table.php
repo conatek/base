@@ -26,8 +26,9 @@ return new class extends Migration
             $table->unsignedBigInteger('rh_type_id');
             $table->date('birth_date')->nullable();
             // País de nacimiento
-            $table->unsignedBigInteger('birth_province_id');
-            $table->unsignedBigInteger('birth_city_id');
+            $table->boolean('is_foreigner')->default(0);
+            $table->unsignedBigInteger('birth_province_id')->nullable();
+            $table->unsignedBigInteger('birth_city_id')->nullable();
             // País de residencia
             $table->unsignedBigInteger('residence_province_id');
             $table->unsignedBigInteger('residence_city_id');

@@ -11,10 +11,12 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\CampusController;
 use App\Http\Controllers\CardsController;
 use App\Http\Controllers\CollaboratorAcademicAchievementController;
+use App\Http\Controllers\CollaboratorBankAccountController;
 use App\Http\Controllers\CollaboratorDocumentController;
 use App\Http\Controllers\CollaboratorFamilyController;
 use App\Http\Controllers\CollaboratorHomeVisitController;
 use App\Http\Controllers\CollaboratorMedicalExaminationController;
+use App\Http\Controllers\CollaboratorSocialSecurityController;
 use App\Http\Controllers\CompaniesController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\HomeController;
@@ -145,7 +147,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/collaborators/{company_id}', [CollaboratorController::class, 'getCollaborators']);
     Route::get('/collaborators-data/{company_id}', [CollaboratorController::class, 'getCollaboratorsData']);
     Route::get('/collaborators', [CollaboratorController::class, 'index'])->name('collaborators.index');
-    Route::get('/collaborators/create', [CollaboratorController::class, 'create'])->name('collaborators.create');
+    Route::get('/collaborators-data', [CollaboratorController::class, 'create'])->name('collaborators.create');
     Route::post('/collaborators', [CollaboratorController::class, 'store'])->name('collaborators.store');
     // Route::get('/collaborators/{collaborator}-{message?}', [CollaboratorController::class, 'show'])->name('collaborators.show');
     Route::get('/collaborators/{collaborator}/show', [CollaboratorController::class, 'show'])->name('collaborators.show');
@@ -163,6 +165,24 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/contracts/{collaborator}', [ContractController::class, 'store']);
     Route::put('/contracts/{contract}', [ContractController::class, 'update']);
     Route::delete('/contracts/{contract}', [ContractController::class, 'destroy']);
+
+    // SOCIAL SECURITY
+    Route::get('/social-security-information', [CollaboratorSocialSecurityController::class, 'getSocialSecurityInformation']);
+    Route::get('/social-security-information/{collaborator_id}', [CollaboratorSocialSecurityController::class, 'getSocialSecurityByCollaborator']);
+    Route::post('/social-security-information', [CollaboratorSocialSecurityController::class, 'store']);
+    Route::get('/download-eps-certificate/{social_security_id}', [CollaboratorSocialSecurityController::class, 'downloadEpsCertificate']);
+    Route::get('/download-afp-pension-certificate/{social_security_id}', [CollaboratorSocialSecurityController::class, 'downloadAfpPensionCertificate']);
+    Route::get('/download-afp-saving-certificate/{social_security_id}', [CollaboratorSocialSecurityController::class, 'downloadAfpSavingCertificate']);
+    Route::put('/social-security-information/{social_security_id}', [CollaboratorSocialSecurityController::class, 'update']);
+    Route::delete('/social-security-information/{social_security_id}', [CollaboratorSocialSecurityController::class, 'destroy']);
+
+    // BANK INFORMATION
+    Route::get('/bank-account-information', [CollaboratorBankAccountController::class, 'getBankAccountInformation']);
+    Route::get('/bank-account-information/{collaborator_id}', [CollaboratorBankAccountController::class, 'getBankAccountByCollaborator']);
+    Route::post('/bank-account-information', [CollaboratorBankAccountController::class, 'store']);
+    Route::get('/download-bank-account-certificate/{bank_account_id}', [CollaboratorBankAccountController::class, 'downloadCertificate']);
+    Route::put('/bank-account-information/{bank_account}', [CollaboratorBankAccountController::class, 'update']);
+    Route::delete('/bank-account-information/{bank_account}', [CollaboratorBankAccountController::class, 'destroy']);
 
     // ROLES AND PERMISSIONS
     Route::resource('permissions', PermissionController::class);

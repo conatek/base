@@ -2,22 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CollaboratorContractCreateRequest;
-use App\Http\Requests\CollaboratorContractEditRequest;
-use App\Models\AfpType;
-use App\Models\ArlType;
-use App\Models\BankType;
-use App\Models\CcfType;
-use App\Models\Collaborator;
-use App\Models\CollaboratorContract;
-use App\Models\Company;
-use App\Models\ContractType;
-use App\Models\EpsType;
-use App\Models\Position;
-use Carbon\Carbon;
 use Exception;
+use Carbon\Carbon;
+use App\Models\Position;
+use App\Models\Collaborator;
+use App\Models\ContractType;
 use Illuminate\Http\Request;
+use App\Models\CollaboratorContract;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\CollaboratorContractEditRequest;
+use App\Http\Requests\CollaboratorContractCreateRequest;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ContractController extends Controller
 {
@@ -27,19 +22,9 @@ class ContractController extends Controller
 
         $position_types = Position::all();
         $contract_types = ContractType::all();
-        $bank_types = BankType::all();
-        $eps_types = EpsType::all();
-        $arl_types = ArlType::all();
-        $afp_types = AfpType::all();
-        $ccf_types = CcfType::all();
 
         $results['position_types'] = $position_types;
         $results['contract_types'] = $contract_types;
-        $results['bank_types'] = $bank_types;
-        $results['eps_types'] = $eps_types;
-        $results['arl_types'] = $arl_types;
-        $results['afp_types'] = $afp_types;
-        $results['ccf_types'] = $ccf_types;
 
         return $results;
     }
@@ -53,12 +38,6 @@ class ContractController extends Controller
             ->with([
                 'position',
                 'contractType',
-                'bank',
-                'eps',
-                'afpPension',
-                'afpSaving',
-                'arl',
-                'ccf',
             ])
             ->orderByDesc('contract_start_date')
             ->get();
@@ -77,38 +56,45 @@ class ContractController extends Controller
         return $results;
     }
 
-    public function store(CollaboratorContractCreateRequest $request, $id)
+    public function store(CollaboratorContractCreateRequest $request, $collaborator_id)
     {
         // Las validaciones se realizan en CollaboratorContractCreateRequest
 
-        // $user = Auth::user();
-        // $company = Company::where('id', $user->company_id)->first();
+        try {
+            $company_id = Auth::user()->company_id;
 
-        $data = array(
-            'collaborator_id' => $id,
-            'position_id' => $request->position_id,
-            'salary' => $request->salary,
-            'contract_type_id' => $request->contract_type_id,
-            'contract_start_date' => $request->contract_start_date,
-            'contract_end_date' => $request->contract_end_date,
-            'test_period_end_date' => $request->test_period_end_date,
-            'corporate_email' => $request->corporate_email,
-            'corporate_cellphone' => $request->corporate_cellphone,
-            'bank_id' => $request->bank_id,
-            'bank_account' => $request->bank_account,
-            'eps_id' => $request->eps_id,
-            'afp_pension_id' => $request->afp_pension_id,
-            'afp_saving_id' => $request->afp_saving_id,
-            'arl_id' => $request->arl_id,
-            'ccf_id' => $request->ccf_id,
-        );
+            $folderPath = 'mh/' . env("APP_ENV", "local") . '/' . $company_id . '/collaborators/' . $collaborator_id . '/contracts';
 
-        $contract = CollaboratorContract::create($data);
+            $data = array(
+                'collaborator_id' => $collaborator_id,
+                'position_id' => $request->position_id,
+                'salary' => $request->salary,
+                'contract_type_id' => $request->contract_type_id,
+                'contract_start_date' => $request->contract_start_date,
+                'contract_end_date' => $request->contract_end_date,
+                'test_period_end_date' => $request->test_period_end_date,
+                'observations' => $request->observations,
+            );
 
-        return response()->json([
-            'message' => 'Contrato creado exitosamente!',
-            'contract' => $contract
-        ]);
+            if ($request->hasFile('contract_file')) {
+                $file = $request->file('contract_file');
+                $cloudinary_object = Cloudinary::upload($file->getRealPath(), ['folder' => $folderPath]);
+
+                $data['contract_file_public_id'] = $cloudinary_object->getPublicId();
+                $data['contract_file_url'] = $cloudinary_object->getSecurePath();
+            }
+
+            $contract = CollaboratorContract::create($data);
+
+            return response()->json([
+                'message' => 'Contrato creado exitosamente!',
+                'contract' => $contract
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function update(CollaboratorContractEditRequest $request, $id)
@@ -116,27 +102,32 @@ class ContractController extends Controller
         // Las validaciones se realizan en CollaboratorContractEditRequest
 
         try {
-            // $collaborator_contract = CollaboratorContract::where('collaborator_id', $id)->first();
+            $company_id = Auth::user()->company_id;
             $contract = CollaboratorContract::findOrFail($id);
 
+            $folderPath = 'mh/' . env("APP_ENV", "local") . '/' . $company_id . '/collaborators/' . $contract->collaborator_id . '/contracts';
+
             $data = array(
-                // 'collaborator_id' => $id,
                 'position_id' => $request->position_id,
                 'salary' => $request->salary,
                 'contract_type_id' => $request->contract_type_id,
                 'contract_start_date' => $request->contract_start_date,
                 'contract_end_date' => $request->contract_end_date,
                 'test_period_end_date' => $request->test_period_end_date,
-                'corporate_email' => $request->corporate_email,
-                'corporate_cellphone' => $request->corporate_cellphone,
-                'bank_id' => $request->bank_id,
-                'bank_account' => $request->bank_account,
-                'eps_id' => $request->eps_id,
-                'afp_pension_id' => $request->afp_pension_id,
-                'afp_saving_id' => $request->afp_saving_id,
-                'arl_id' => $request->arl_id,
-                'ccf_id' => $request->ccf_id,
+                'observations' => $request->observations,
             );
+
+            if ($request->hasFile('contract_file')) {
+                if ($contract->contract_file_public_id) {
+                    Cloudinary::destroy($contract->contract_file_public_id);
+                }
+
+                $file = $request->file('contract_file');
+                $cloudinary_object = Cloudinary::upload($file->getRealPath(), ['folder' => $folderPath]);
+
+                $data['contract_file_public_id'] = $cloudinary_object->getPublicId();
+                $data['contract_file_url'] = $cloudinary_object->getSecurePath();
+            }
 
             $contract->update($data);
 

@@ -19,24 +19,17 @@ class CollaboratorContractCreateRequest extends FormRequest
         return [
             'position_id'          => 'required|integer',
             'salary'               => 'required|numeric|min:0',
-            'contract_type_id'     => 'required|integer',
+            'contract_type_id'     => 'required|integer|exists:contract_types,id',
             'contract_start_date'  => 'required|date',
             'contract_end_date'    => 'nullable|date|after_or_equal:contract_start_date',
             'test_period_end_date' => 'required|date|after_or_equal:contract_start_date',
-
-            'bank_id'              => 'required|integer',
-            'bank_account'         => 'required|string',
-            'eps_id'               => 'required|integer',
-            'afp_pension_id'       => 'required|integer',
-            'afp_saving_id'        => 'required|integer',
-            'arl_id'               => 'required|integer',
-            'ccf_id'               => 'required|integer',
         ];
     }
 
     public function messages(): array
     {
         return [
+            'contract_type_id.exists' => 'El tipo de contrato seleccionado no es válido.',
             'position_id.required' => 'El cargo es requerido.',
             'position_id.integer'  => 'El cargo debe ser un número entero.',
             'salary.required' => 'El salario es requerido.',
@@ -51,22 +44,6 @@ class CollaboratorContractCreateRequest extends FormRequest
             'test_period_end_date.required' => 'La fecha de fin de periodo de prueba es requerida.',
             'test_period_end_date.date'     => 'La fecha de fin de periodo de prueba no es una fecha válida.',
             'test_period_end_date.after_or_equal' => 'La fecha de fin de periodo de prueba debe ser igual o posterior a la fecha de inicio.',
-            // 'corporate_email.required' => 'El correo corporativo es requerido.',
-            // 'corporate_cellphone.required' => 'El celular corporativo es requerido.',
-            'bank_id.required' => 'El banco es requerido.',
-            'bank_id.integer'  => 'El banco debe ser un número entero.',
-            'bank_account.required' => 'La cuenta bancaria es requerida.',
-            'bank_account.string'   => 'La cuenta bancaria debe ser una cadena de texto.',
-            'eps_id.required' => 'La EPS es requerida.',
-            'eps_id.integer'  => 'La EPS debe ser un número entero.',
-            'afp_pension_id.required' => 'La AFP de pensiones es requerida.',
-            'afp_pension_id.integer'  => 'La AFP de pensiones debe ser un número entero.',
-            'afp_saving_id.required' => 'La AFP de cesantías es requerida.',
-            'afp_saving_id.integer'  => 'La AFP de cesantías debe ser un número entero.',
-            'arl_id.required' => 'La ARL es requerida.',
-            'arl_id.integer'  => 'La ARL debe ser un número entero.',
-            'ccf_id.required' => 'La caja de compensación familiar es requerida.',
-            'ccf_id.integer'  => 'La caja de compensación familiar debe ser un número entero.',
         ];
     }
 
@@ -149,7 +126,7 @@ class CollaboratorContractCreateRequest extends FormRequest
         }
 
         // Calcular la duración real del período de prueba en días
-        $actualTestPeriodDays = $contractStartDate->diffInDays($testPeriodEndDate);
+        $actualTestPeriodDays = $contractStartDate->diffInDays($testPeriodEndDate) + 1;
 
         // Validar que no exceda el máximo permitido
         if ($actualTestPeriodDays > $maxTestPeriod) {
@@ -172,7 +149,7 @@ class CollaboratorContractCreateRequest extends FormRequest
 
         // Contratos a término fijo: depende de la duración del contrato
         if ($endDate) {
-            $contractDurationDays = $startDate->diffInDays($endDate);
+            $contractDurationDays = $startDate->diffInDays($endDate) + 1;
             $contractDurationMonths = $startDate->diffInMonths($endDate);
 
             // Si el contrato es menor a 1 año (365 días)

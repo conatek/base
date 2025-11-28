@@ -2,47 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CollaboratorContractCreateRequest;
-use App\Http\Requests\CollaboratorContractEditRequest;
-use App\Http\Requests\CollaboratorCreateRequest;
-use App\Http\Requests\CollaboratorEditRequest;
-use App\Models\Absence;
-use App\Models\AbsenceSubtype;
-use App\Models\AbsenceType;
-use App\Models\AcademicAchievementType;
+
+use Exception;
+use App\Models\City;
+use App\Models\RhType;
+use App\Models\CcfType;
 use App\Models\AfpType;
 use App\Models\ArlType;
-use App\Models\BankType;
-use App\Models\CcfType;
-use App\Models\City;
-use App\Models\CivilStatusType;
-use App\Models\Collaborator;
-use App\Models\CollaboratorAcademicAchievement;
-use App\Models\CollaboratorContract;
 use App\Models\Company;
-use App\Models\ContractType;
-use App\Models\ContractualDocumentType;
-use App\Models\DocumentType;
 use App\Models\EpsType;
-use App\Models\HomeVisitType;
-use App\Models\HousingTenure;
-use App\Models\MedicalExaminationType;
-use App\Models\Occupation;
+use App\Models\SexType;
+use App\Models\BankType;
 use App\Models\Position;
 use App\Models\Province;
+use App\Models\Occupation;
 use App\Models\Relationship;
-use App\Models\RhType;
 use App\Models\Scholarship;
-use App\Models\SexType;
 use App\Models\SocialStratum;
 use App\Models\StaffProvider;
-use Carbon\Carbon;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use Exception;
-use Illuminate\Http\Request;
+use App\Models\AbsenceType;
+use App\Models\Collaborator;
+use App\Models\DocumentType;
+use App\Models\HomeVisitType;
+use App\Models\HousingTenure;
+use App\Models\ContractType;
+use App\Models\AbsenceSubtype;
+use App\Models\CivilStatusType;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
+use App\Models\MedicalExaminationType;
+use App\Models\AcademicAchievementType;
+use App\Models\ContractualDocumentType;
+use App\Http\Requests\CollaboratorEditRequest;
+use App\Models\CollaboratorAcademicAchievement;
+use App\Http\Requests\CollaboratorCreateRequest;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class CollaboratorController extends Controller
 {
@@ -72,6 +66,7 @@ class CollaboratorController extends Controller
 
     public function getCollaborators()
     {
+        // dd('getCollaborators');
         $user = Auth::user();
         $today = now()->toDateString();
 
@@ -144,6 +139,7 @@ class CollaboratorController extends Controller
 
     public function create()
     {
+        // dd('create');
         $result = [];
 
         $user = Auth::user();
@@ -178,87 +174,66 @@ class CollaboratorController extends Controller
 
     public function store(CollaboratorCreateRequest $request)
     {
-        // Las validaciones se realizan en CollaboratorCreateRequest
+        try {
+            // 1. Obtenemos los datos validados automáticamente del Request
+            // Esto crea un array con todos los campos definidos en rules()
+            $data = $request->validated();
 
-        try{
+            // 2. Agregamos datos que no vienen del formulario (Company ID)
             $company_id = Auth::user()->company_id;
+            $data['company_id'] = $company_id;
 
-            if($request->hasFile('image')) {
-                $file = request()->file('image');
-
-                $cloudinary_object = Cloudinary::upload($file->getRealPath(), ['folder' =>  'mh/' . env("APP_ENV", "local") . '/' . $company_id . '/collaborators']); // => mh/local/1/collaborators/qxrcxytjrwufqjij9ix3
-                $image_public_id = $cloudinary_object->getPublicId();
-                $image_url = $cloudinary_object->getSecurePath();
-
-                $data = array(
-                    'company_id' => $company_id,
-                    'staff_provider_id' => $request->staff_provider_id,
-                    'name' => $request->name,
-                    'first_surname' => $request->first_surname,
-                    'second_surname' => $request->second_surname,
-                    'document_type_id' => $request->document_type_id,
-                    'document_number' => $request->document_number,
-                    'document_province_id' => $request->document_province_id,
-                    'document_city_id' => $request->document_city_id,
-                    'expedition_date' => $request->expedition_date,
-                    'birth_province_id' => $request->birth_province_id,
-                    'birth_city_id' => $request->birth_city_id,
-                    'birth_date' => $request->birth_date,
-                    'civil_status_type_id' => $request->civil_status_type_id,
-                    'sex_type_id' => $request->sex_type_id,
-                    'rh_type_id' => $request->rh_type_id,
-                    'observations' => $request->observations,
-                    'residence_province_id' => $request->residence_province_id,
-                    'residence_city_id' => $request->residence_city_id,
-                    'stratum_type_id' => $request->stratum_type_id,
-                    'housing_tenure_id' => $request->housing_tenure_id,
-                    'address' => $request->address,
-                    'phone' => $request->phone,
-                    'cellphone' => $request->cellphone,
-                    'email' => $request->email,
-                    'image_public_id' => $image_public_id,
-                    'image_url' => $image_url,
-                );
+            // 3. Lógica de Extranjero (Sanitización de datos)
+            // Convertimos a booleano real para evaluar
+            if ($request->boolean('is_foreigner')) {
+                // Forzamos NULL aunque el frontend envíe algo
+                $data['birth_province_id'] = null;
+                $data['birth_city_id'] = null;
+                $data['is_foreigner'] = 1;
             } else {
-                $data = array(
-                    'company_id' => $company_id,
-                    'staff_provider_id' => $request->staff_provider_id,
-                    'name' => $request->name,
-                    'first_surname' => $request->first_surname,
-                    'second_surname' => $request->second_surname,
-                    'document_type_id' => $request->document_type_id,
-                    'document_number' => $request->document_number,
-                    'document_province_id' => $request->document_province_id,
-                    'document_city_id' => $request->document_city_id,
-                    'expedition_date' => $request->expedition_date,
-                    'birth_province_id' => $request->birth_province_id,
-                    'birth_city_id' => $request->birth_city_id,
-                    'birth_date' => $request->birth_date,
-                    'civil_status_type_id' => $request->civil_status_type_id,
-                    'sex_type_id' => $request->sex_type_id,
-                    'rh_type_id' => $request->rh_type_id,
-                    'observations' => $request->observations,
-                    'residence_province_id' => $request->residence_province_id,
-                    'residence_city_id' => $request->residence_city_id,
-                    'stratum_type_id' => $request->stratum_type_id,
-                    'housing_tenure_id' => $request->housing_tenure_id,
-                    'address' => $request->address,
-                    'phone' => $request->phone,
-                    'cellphone' => $request->cellphone,
-                    'email' => $request->email,
-                );
+                $data['is_foreigner'] = 0;
             }
 
+            // 4. Manejo de Imagen con Cloudinary
+            // Sacamos la lógica del array para no repetir código
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+
+                // Buena práctica: usar config() en lugar de env()
+                $environment = config('app.env', 'local');
+                $folderPath = "mh/{$environment}/{$company_id}/collaborators";
+
+                // Subida a Cloudinary
+                $cloudinary_object = Cloudinary::upload($file->getRealPath(), [
+                    'folder' => $folderPath
+                ]);
+
+                // Agregamos las URLs al array de datos
+                $data['image_public_id'] = $cloudinary_object->getPublicId();
+                $data['image_url'] = $cloudinary_object->getSecurePath();
+            }
+
+            // IMPORTANTE: El $request->validated() incluye el campo 'image' (el archivo binario).
+            // Si tu tabla NO tiene una columna llamada 'image', debes quitarla del array
+            // para evitar error de SQL "Column not found".
+            unset($data['image']);
+
+            // 5. Creación
             $collaborator = Collaborator::create($data);
 
             return response()->json([
-                'message'=>'Colaborador creado exitosamente!',
-                'collaborator'=>$collaborator
-            ]);
-        } catch(Exception $e) {
+                'message' => 'Colaborador creado exitosamente!',
+                'collaborator' => $collaborator
+            ], 201); // 201 Created es el código HTTP correcto para creación
+
+        } catch (\Exception $e) {
+            // Loguear el error es buena práctica para depurar sin exponer info al usuario
+            Log::error('Error creando colaborador: ' . $e->getMessage());
+
             return response()->json([
-                'message' => $e->getMessage()
-            ]);
+                'message' => 'Hubo un error al guardar el colaborador.'
+                // 'error' => $e->getMessage() // Descomenta solo en desarrollo
+            ], 500);
         }
     }
 
@@ -359,14 +334,10 @@ class CollaboratorController extends Controller
         $document_types = DocumentType::all();
         $sex_types = SexType::all();
         $rh_types = RhType::all();
-        // $academic_achievement_types = AcademicAchievementType::all();
         $stratum_types = SocialStratum::all();
         $civil_status_types = CivilStatusType::all();
         $housing_tenure_types = HousingTenure::all();
         $provinces = Province::all();
-        // $contractual_information = CollaboratorContract::where('collaborator_id', $collaborator->id)->first();
-
-        // dd($contractual_information);
 
         $position_types = Position::where('company_id',$company->id)->get();
         $contract_types = ContractType::all();
@@ -377,27 +348,6 @@ class CollaboratorController extends Controller
         $ccf_types = CcfType::all();
         $staff_providers = StaffProvider::where('company_id', $company->id)->orderBy('id', 'asc')->get();
 
-        // return view('back.collaborators.edit', compact(
-        //     'company',
-        //     'collaborator',
-        //     'document_types',
-        //     'sex_types',
-        //     'rh_types',
-        //     'stratum_types',
-        //     'civil_status_types',
-        //     'housing_tenure_types',
-        //     'provinces',
-        //     'position_types',
-        //     'contract_types',
-        //     'bank_types',
-        //     'eps_types',
-        //     'afp_types',
-        //     'arl_types',
-        //     'ccf_types',
-        // ));
-
-        // $result['company'] = $company;
-        // $result['collaborator'] = $collaborator;
         $result['document_types'] = $document_types;
         $result['sex_types'] = $sex_types;
         $result['rh_types'] = $rh_types;
@@ -418,71 +368,65 @@ class CollaboratorController extends Controller
     }
 
     public function update(CollaboratorEditRequest $request, Collaborator $collaborator)
-    // public function update(Request $request, Collaborator $collaborator)
     {
-        // Las validaciones se realizan en CollaboratorEditRequest
-
         try {
-            $company_id = Auth::user()->company_id;
+            // 1. Obtenemos datos validados (limpieza automática)
+            $data = $request->validated();
 
-            $data = array(
-                'company_id' => $company_id,
-                'staff_provider_id' => $request->staff_provider_id,
-                'name' => $request->name,
-                'first_surname' => $request->first_surname,
-                'second_surname' => $request->second_surname,
-                'document_type_id' => $request->document_type_id,
-                'document_number' => $request->document_number,
-                'document_province_id' => $request->document_province_id,
-                'document_city_id' => $request->document_city_id,
-                'expedition_date' => $request->expedition_date,
-                'birth_province_id' => $request->birth_province_id,
-                'birth_city_id' => $request->birth_city_id,
-                'birth_date' => $request->birth_date,
-                'civil_status_type_id' => $request->civil_status_type_id,
-                'sex_type_id' => $request->sex_type_id,
-                'rh_type_id' => $request->rh_type_id,
-                'observations' => $request->observations,
-                'residence_province_id' => $request->residence_province_id,
-                'residence_city_id' => $request->residence_city_id,
-                'stratum_type_id' => $request->stratum_type_id,
-                'housing_tenure_id' => $request->housing_tenure_id,
-                'address' => $request->address,
-                'phone' => $request->phone,
-                'cellphone' => $request->cellphone,
-                'email' => $request->email,
-            );
+            // 2. Company ID (generalmente no se actualiza, pero si es necesario, se deja)
+            $data['company_id'] = Auth::user()->company_id;
 
-            $url = isset($collaborator['image_url']) ? $collaborator['image_url'] : null;
-            $public_id = isset($collaborator['image_public_id']) ? $collaborator['image_public_id'] : null;
-            if($request->hasFile('image')) {
-                if($public_id != null) {
-                    Cloudinary::destroy($public_id);
-                }
-                $file = request()->file('image');
-                $cloudinary_object = Cloudinary::upload($file->getRealPath(), ['folder' =>  'mh/' . env("APP_ENV", "local") . '/' . $company_id . '/collaborators']); // => mh/local/1/collaborators/qxrcxytjrwufqjij9ix3
-                $image_public_id = $cloudinary_object->getPublicId();
-                $image_url = $cloudinary_object->getSecurePath();
-
-                $data['image_public_id'] = $image_public_id;
-                $data['image_url'] = $image_url;
+            // 3. Lógica de Extranjero
+            if ($request->boolean('is_foreigner')) {
+                $data['birth_province_id'] = null;
+                $data['birth_city_id'] = null;
+                $data['is_foreigner'] = 1;
             } else {
-                $data['image_public_id'] = $public_id;
-                $data['image_url'] = $url;
+                $data['is_foreigner'] = 0;
             }
 
+            // 4. Manejo de Imagen
+            if ($request->hasFile('image')) {
+                // A. Borrar imagen anterior de Cloudinary si existe
+                if ($collaborator->image_public_id) {
+                    Cloudinary::destroy($collaborator->image_public_id);
+                }
+
+                // B. Subir nueva imagen
+                $file = $request->file('image');
+                $company_id = Auth::user()->company_id;
+                $environment = config('app.env', 'local'); // Uso correcto de config
+
+                $cloudinary_object = Cloudinary::upload($file->getRealPath(), [
+                    'folder' => "mh/{$environment}/{$company_id}/collaborators"
+                ]);
+
+                $data['image_public_id'] = $cloudinary_object->getPublicId();
+                $data['image_url'] = $cloudinary_object->getSecurePath();
+            }
+
+            // IMPORTANTE: Quitamos el objeto 'image' binario del array para que no rompa el SQL
+            unset($data['image']);
+
+            // NOTA: Si NO se subió imagen, $data no tiene las llaves 'image_url' ni 'image_public_id',
+            // por lo que el método update() de Eloquent simplemente no tocará esas columnas en la BD.
+            // Esto es mucho más limpio que asignar manualmente $old_url.
+
+            // 5. Actualizar
             $collaborator->update($data);
 
-            // return redirect()->route('collaborators.show', $collaborator->id)->with('success', 'Colaborador actualizado correctamente.');
+            return response()->json([
+                'message' => 'Colaborador actualizado exitosamente!',
+                'collaborator' => $collaborator
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Error actualizando colaborador ID {$collaborator->id}: " . $e->getMessage());
 
             return response()->json([
-                'message'=>'Colaborador actualizado exitosamente!',
-                'collaborator'=>$collaborator
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage()
-            ]);
+                'message' => 'Hubo un error al actualizar el colaborador.'
+                // 'error' => $e->getMessage()
+            ], 500);
         }
     }
 

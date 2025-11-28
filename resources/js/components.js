@@ -33,6 +33,7 @@ const components = {
     'collaborator-absence': defineAsyncComponent(() => import('./components/collaborators/CollaboratorAbsence.vue')),
     'collaborator-contract': defineAsyncComponent(() => import('./components/collaborators/CollaboratorContract.vue')),
     'collaborator-provision': defineAsyncComponent(() => import('./components/collaborators/CollaboratorProvision.vue')),
+    'collaborator-social-security': defineAsyncComponent(() => import('./components/collaborators/CollaboratorSocialSecurity.vue')),
 
     'user-index': defineAsyncComponent(() => import('./components/users/UserIndex.vue')),
     'user-profile': defineAsyncComponent(() => import('./components/users/UserProfile.vue')),

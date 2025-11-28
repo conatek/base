@@ -678,5 +678,5 @@ export default {
 </script>
 
 <style>
-    @import './../../assets/css/custom.css';
+    @import './../../assets/css/custom-companies.css';
 </style>

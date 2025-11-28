@@ -23,14 +23,6 @@ class CollaboratorContractEditRequest extends FormRequest
             'contract_start_date'  => 'required|date',
             'contract_end_date'    => 'nullable|date|after_or_equal:contract_start_date',
             'test_period_end_date' => 'required|date|after_or_equal:contract_start_date',
-
-            'bank_id'              => 'required|integer',
-            'bank_account'         => 'required|string',
-            'eps_id'               => 'required|integer',
-            'afp_pension_id'       => 'required|integer',
-            'afp_saving_id'        => 'required|integer',
-            'arl_id'               => 'required|integer',
-            'ccf_id'               => 'required|integer',
         ];
     }
 
@@ -51,22 +43,6 @@ class CollaboratorContractEditRequest extends FormRequest
             'test_period_end_date.required' => 'La fecha de fin de periodo de prueba es requerida.',
             'test_period_end_date.date'     => 'La fecha de fin de periodo de prueba no es una fecha válida.',
             'test_period_end_date.after_or_equal' => 'La fecha de fin de periodo de prueba debe ser igual o posterior a la fecha de inicio.',
-            // 'corporate_email.required' => 'El correo corporativo es requerido.',
-            // 'corporate_cellphone.required' => 'El celular corporativo es requerido.',
-            'bank_id.required' => 'El banco es requerido.',
-            'bank_id.integer'  => 'El banco debe ser un número entero.',
-            'bank_account.required' => 'La cuenta bancaria es requerida.',
-            'bank_account.string'   => 'La cuenta bancaria debe ser una cadena de texto.',
-            'eps_id.required' => 'La EPS es requerida.',
-            'eps_id.integer'  => 'La EPS debe ser un número entero.',
-            'afp_pension_id.required' => 'La AFP de pensiones es requerida.',
-            'afp_pension_id.integer'  => 'La AFP de pensiones debe ser un número entero.',
-            'afp_saving_id.required' => 'La AFP de cesantías es requerida.',
-            'afp_saving_id.integer'  => 'La AFP de cesantías debe ser un número entero.',
-            'arl_id.required' => 'La ARL es requerida.',
-            'arl_id.integer'  => 'La ARL debe ser un número entero.',
-            'ccf_id.required' => 'La caja de compensación familiar es requerida.',
-            'ccf_id.integer'  => 'La caja de compensación familiar debe ser un número entero.',
         ];
     }
 
@@ -142,8 +118,6 @@ class CollaboratorContractEditRequest extends FormRequest
 
         // Calcular la duración máxima permitida para el período de prueba
         $maxTestPeriod = $this->calculateMaxTestPeriod($contractStartDate, $contractEndDate, $contractType);
-
-        // dd($maxTestPeriod);
 
         if ($maxTestPeriod === null) {
             $validator->errors()->add('test_period_end_date', 'No se pudo calcular el período de prueba máximo para este tipo de contrato.');
