@@ -168,7 +168,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
+                                    <!-- <div class="row">
                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                             <div class="position-relative mb-3">
                                                 <label for="birth_province_id" class="form-label">Dpto De Nacimiento*</label>
@@ -187,6 +187,52 @@
                                                     <option v-for="city in birth_cities" :value="city.id">{{ city.name }}</option>
                                                 </select>
                                                 <span v-if="errors && errors.birth_city_id" class="error text-danger" for="birth_city_id">{{ errors.birth_city_id[0] }}</span>
+                                            </div>
+                                        </div>
+                                    </div> -->
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-6 col-lg-6 mb-3">
+                                            <div class="form-group clearfix">
+                                                <div class="icheck-primary">
+                                                    <input type="checkbox" id="checkbox_is_foreigner_edit" v-model="is_foreigner">
+                                                    <label for="checkbox_is_foreigner_edit">Es extranjero</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-6 col-lg-6">
+                                            <div class="position-relative mb-3">
+                                                <label for="birth_province_id" class="form-label">Dpto De Nacimiento*</label>
+                                                <select
+                                                    v-model="birth_province_id"
+                                                    :disabled="is_foreigner"
+                                                    @change="getCities(birth_province_id, 'birth')"
+                                                    class="form-control"
+                                                    name="birth_province_id"
+                                                    id="birth_province_id"
+                                                >
+                                                    <option value="" disabled selected hidden>Seleccionar Dpto</option>
+                                                    <option v-for="province in provinces" :value="province.id">{{ province.name }}</option>
+                                                </select>
+                                                <span v-if="errors && errors.birth_province_id" class="error text-danger">{{ errors.birth_province_id[0] }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-6">
+                                            <div class="position-relative mb-3">
+                                                <label for="birth_city_id" class="form-label">Municipio de Nacimiento*</label>
+                                                <select
+                                                    v-model="birth_city_id"
+                                                    :disabled="is_foreigner"
+                                                    class="form-control"
+                                                    name="birth_city_id"
+                                                    id="birth_city_id"
+                                                >
+                                                    <option value="" disabled selected hidden>Seleccionar Municipio</option>
+                                                    <option v-for="city in birth_cities" :value="city.id">{{ city.name }}</option>
+                                                </select>
+                                                <span v-if="errors && errors.birth_city_id" class="error text-danger">{{ errors.birth_city_id[0] }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -381,6 +427,7 @@ export default {
             document_province_id: '',
             document_city_id: '',
 
+            is_foreigner: this.collaborator.is_foreigner == 1 ? true : false,
             birth_date: this.collaborator.birth_date,
             birth_province_id: '',
             birth_city_id: '',
@@ -417,6 +464,30 @@ export default {
     mounted () {
         this.loadInitialData()
     },
+    watch: {
+        async is_foreigner(newValue) {
+            if (newValue === true) {
+                // CASO 1: Es extranjero -> Limpiamos campos
+                this.birth_province_id = '';
+                this.birth_city_id = '';
+                this.birth_cities = [];
+            } else {
+                // CASO 2: No es extranjero -> Restauramos desde la BD (this.collaborator)
+
+                // 1. Restaurar Departamento
+                this.birth_province_id = this.collaborator.birth_province_id ? this.collaborator.birth_province_id : '';
+
+                // 2. Si tenía un departamento guardado, cargamos sus ciudades
+                if (this.birth_province_id !== '') {
+                    // Esperamos a que lleguen las ciudades de la API
+                    await this.getCities(this.birth_province_id, 'birth');
+
+                    // 3. Restaurar Municipio (solo después de tener la lista de ciudades)
+                    this.birth_city_id = this.collaborator.birth_city_id ? this.collaborator.birth_city_id : '';
+                }
+            }
+        }
+    },
     methods: {
         selectImage() {
             this.$refs.imageInput.click();
@@ -429,25 +500,39 @@ export default {
                 this.image_src = URL.createObjectURL(file);
             }
         },
-        loadInitialData() {
-            this.document_province_id = this.collaborator.document_province_id
-            this.getCities(this.document_province_id, 'document')
-            this.document_city_id = this.collaborator.document_city_id
+        async loadInitialData() { // <--- 1. Agrega 'async' aquí
+            // --- Carga de Documento ---
+            if (this.collaborator.document_province_id) {
+                this.document_province_id = this.collaborator.document_province_id;
 
-            this.birth_province_id = this.collaborator.birth_province_id
-            this.getCities(this.birth_province_id, 'birth')
-            this.birth_city_id = this.collaborator.birth_city_id
+                // 2. Agrega 'await' para esperar a que lleguen las ciudades
+                await this.getCities(this.document_province_id, 'document');
 
-            this.residence_province_id = this.collaborator.residence_province_id
-            this.getCities(this.residence_province_id, 'residence')
-            this.residence_city_id = this.collaborator.residence_city_id
+                // 3. Ahora es seguro asignar el ID, porque la lista ya existe
+                this.document_city_id = this.collaborator.document_city_id;
+            }
+
+            // --- Carga de Nacimiento (Solo si no es extranjero y tiene datos) ---
+            if (!this.is_foreigner && this.collaborator.birth_province_id) {
+                this.birth_province_id = this.collaborator.birth_province_id;
+                await this.getCities(this.birth_province_id, 'birth');
+                this.birth_city_id = this.collaborator.birth_city_id;
+            }
+
+            // --- Carga de Residencia ---
+            if (this.collaborator.residence_province_id) {
+                this.residence_province_id = this.collaborator.residence_province_id;
+                await this.getCities(this.residence_province_id, 'residence');
+                this.residence_city_id = this.collaborator.residence_city_id;
+            }
         },
         getCities(province, type) {
             let dataSend = {
                 "province": province,
             }
 
-            axios.post('/get-cities', dataSend).then(
+            // AGREGAR 'return' AQUÍ
+            return axios.post('/get-cities', dataSend).then(
                 ({data}) => {
                     if(type == 'document') {
                         this.document_cities = data.cities
@@ -475,6 +560,7 @@ export default {
                 this.appendIfNotEmpty(formData, 'expedition_date', this.expedition_date);
                 this.appendIfNotEmpty(formData, 'document_province_id', this.document_province_id);
                 this.appendIfNotEmpty(formData, 'document_city_id', this.document_city_id);
+                this.appendIfNotEmpty(formData, 'is_foreigner', this.is_foreigner ? 1 : 0);
                 this.appendIfNotEmpty(formData, 'birth_province_id', this.birth_province_id);
                 this.appendIfNotEmpty(formData, 'birth_city_id', this.birth_city_id);
                 this.appendIfNotEmpty(formData, 'birth_date', this.birth_date);

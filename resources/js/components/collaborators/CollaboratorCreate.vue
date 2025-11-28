@@ -152,7 +152,17 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
+                                        <div class="col-sm-12 col-md-6 col-lg-6 mb-3">
+                                            <div class="form-group clearfix">
+                                                <div class="icheck-primary">
+                                                    <input type="checkbox" id="checkbox_is_foreigner" v-model="is_foreigner">
+                                                    <label for="checkbox_is_foreigner">Es extranjero</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <!-- <div class="col-sm-12 col-md-6 col-lg-6">
                                             <div class="position-relative mb-3">
                                                 <label for="birth_province_id" class="form-label">Dpto De Nacimiento*</label>
                                                 <select v-model="birth_province_id" @change="getCities(birth_province_id, 'birth')" class="form-control" name="province" id="birth_province_id">
@@ -170,6 +180,45 @@
                                                     <option v-for="city in birth_cities" :value="city.id">{{ city.name }}</option>
                                                 </select>
                                                 <span v-if="errors && errors.birth_city_id" class="error text-danger" for="birth_city_id">{{ errors.birth_city_id[0] }}</span>
+                                            </div>
+                                        </div> -->
+
+                                        <div class="col-sm-12 col-md-6 col-lg-6">
+                                            <div class="position-relative mb-3">
+                                                <label for="birth_province_id" class="form-label">Dpto De Nacimiento*</label>
+
+                                                <select
+                                                    v-model="birth_province_id"
+                                                    :disabled="is_foreigner"
+                                                    @change="getCities(birth_province_id, 'birth')"
+                                                    class="form-control"
+                                                    name="birth_province_id"
+                                                    id="birth_province_id"
+                                                >
+                                                    <option value="" disabled selected hidden>Seleccionar Dpto</option>
+                                                    <option v-for="province in provinces" :value="province.id">{{ province.name }}</option>
+                                                </select>
+
+                                                <span v-if="errors && errors.birth_province_id" class="error text-danger">{{ errors.birth_province_id[0] }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-6 col-lg-6">
+                                            <div class="position-relative mb-3">
+                                                <label for="birth_city_id" class="form-label">Municipio de Nacimiento*</label>
+
+                                                <select
+                                                    v-model="birth_city_id"
+                                                    :disabled="is_foreigner"
+                                                    class="form-control"
+                                                    name="birth_city_id"
+                                                    id="birth_city_id"
+                                                >
+                                                    <option value="" disabled selected hidden>Seleccionar Municipio</option>
+                                                    <option v-for="city in birth_cities" :value="city.id">{{ city.name }}</option>
+                                                </select>
+
+                                                <span v-if="errors && errors.birth_city_id" class="error text-danger">{{ errors.birth_city_id[0] }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -347,6 +396,7 @@ export default {
     data() {
         return {
             tab_collaborator_status: 'general',
+            is_foreigner: false,
 
             name: '',
             first_surname: '',
@@ -387,6 +437,16 @@ export default {
             image_src: null,
 
             errors: null,
+        }
+    },
+    watch: {
+        is_foreigner(newValue) {
+            if (newValue === true) {
+                // Si marca que es extranjero, limpiamos los campos de nacimiento locales
+                this.birth_province_id = '';
+                this.birth_city_id = '';
+                this.birth_cities = []; // Opcional: limpia la lista de ciudades cargadas
+            }
         }
     },
     mounted () {
@@ -436,6 +496,7 @@ export default {
                 this.appendIfNotEmpty(formData, 'expedition_date', this.expedition_date);
                 this.appendIfNotEmpty(formData, 'document_province_id', this.document_province_id);
                 this.appendIfNotEmpty(formData, 'document_city_id', this.document_city_id);
+                this.appendIfNotEmpty(formData, 'is_foreigner', this.is_foreigner ? 1 : 0);
                 this.appendIfNotEmpty(formData, 'birth_province_id', this.birth_province_id);
                 this.appendIfNotEmpty(formData, 'birth_city_id', this.birth_city_id);
                 this.appendIfNotEmpty(formData, 'birth_date', this.birth_date);

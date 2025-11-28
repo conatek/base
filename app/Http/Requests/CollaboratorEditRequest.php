@@ -14,6 +14,9 @@ class CollaboratorEditRequest extends FormRequest
     public function rules()
     {
         return [
+            // Validamos que is_foreigner sea booleano (o 0/1)
+            'is_foreigner' => 'nullable|boolean',
+
             'staff_provider_id' => 'required',
             'name' => 'required',
             'first_surname' => 'required',
@@ -22,9 +25,15 @@ class CollaboratorEditRequest extends FormRequest
             'document_province_id' => 'required',
             'document_city_id' => 'required',
             'expedition_date' => 'required',
-            'birth_province_id' => 'required',
-            'birth_city_id' => 'required',
+
+            // --- CAMBIO CLAVE AQUÍ ---
+            // Si is_foreigner es 0 (falso), estos campos son requeridos.
+            // Si is_foreigner es 1 (verdadero), se vuelven nullable.
+            'birth_province_id' => 'required_if:is_foreigner,0|nullable',
+            'birth_city_id' => 'required_if:is_foreigner,0|nullable',
             'birth_date' => 'required',
+            // -------------------------
+
             'civil_status_type_id' => 'required',
             'sex_type_id' => 'required',
             'rh_type_id' => 'required',
@@ -55,21 +64,26 @@ class CollaboratorEditRequest extends FormRequest
             'document_province_id.required' => 'El departamento de expedición es requerido.',
             'document_city_id.required' => 'El municipio de expedición es requerido.',
             'expedition_date.required' => 'La fecha de expedición es requerida.',
-            'birth_province_id' => 'El departamento de nacimiento es requerido.',
-            'birth_city_id' => 'El municipio de nacimiento es requerido.',
-            'birth_date' => 'La fecha de nacimiento es requerida.',
-            'civil_status_type_id' => 'El estado civil es requerido.',
-            'sex_type_id' => 'El sexo es requerido.',
-            'rh_type_id' => 'El tipo de sangre es requerido.',
-            'observations' => '',
-            'residence_province_id' => 'El departamento de residencia es requerido.',
-            'residence_city_id' => 'El municipio de residencia es requerido.',
-            'stratum_type_id' => 'El estrato social es requerido.',
-            'housing_tenure_id' => 'El tipo de tenencia de vivienda es requerido.',
-            'address' => 'La dirección es requerida.',
-            'phone' => '',
-            'cellphone' => 'El número de celular es requerido.',
-            'email' => 'El correo electrónico es requerido.',
+
+            // --- AJUSTE DE MENSAJES ---
+            // required_if lanzará el error si falta, pero podemos personalizar el mensaje
+            // para que no suene confuso.
+            'birth_province_id.required_if' => 'El departamento de nacimiento es requerido para nacionales.',
+            'birth_city_id.required_if' => 'El municipio de nacimiento es requerido para nacionales.',
+            // --------------------------
+
+            'birth_date.required' => 'La fecha de nacimiento es requerida.',
+            'civil_status_type_id.required' => 'El estado civil es requerido.',
+            'sex_type_id.required' => 'El sexo es requerido.',
+            'rh_type_id.required' => 'El tipo de sangre es requerido.',
+            'residence_province_id.required' => 'El departamento de residencia es requerido.',
+            'residence_city_id.required' => 'El municipio de residencia es requerido.',
+            'stratum_type_id.required' => 'El estrato social es requerido.',
+            'housing_tenure_id.required' => 'El tipo de tenencia de vivienda es requerido.',
+            'address.required' => 'La dirección es requerida.',
+            'cellphone.required' => 'El número de celular es requerido.',
+            'email.required' => 'El correo electrónico es requerido.',
+            'email.email' => 'Ingrese un correo electrónico válido.',
         ];
     }
 }

@@ -26,6 +26,7 @@ class Collaborator extends Model
         'birth_province_id',
         'birth_city_id',
         'birth_date',
+        'is_foreigner',
         'civil_status_type_id',
         'sex_type_id',
         'rh_type_id',
