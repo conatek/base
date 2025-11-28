@@ -139,7 +139,8 @@
                                         <p class="">{{ collaborator.expedition_date }}</p>
                                     </div>
                                 </div>
-                                <div class="data-pair">
+
+                                <div v-if="birth_province && birth_city" class="data-pair">
                                     <div class="box-label lb-6">
                                         <p class="">Lugar de nacimiento:</p>
                                     </div>
@@ -147,6 +148,15 @@
                                         <p class="">{{ birth_city.name }} ({{ birth_province.name }})</p>
                                     </div>
                                 </div>
+                                <div v-else class="data-pair">
+                                    <div class="box-label lb-6">
+                                        <p class="">Lugar de nacimiento:</p>
+                                    </div>
+                                    <div class="box-value vl-6">
+                                        <p class="">No disponible</p>
+                                    </div>
+                                </div>
+
                                 <div class="data-pair">
                                     <div class="box-label lb-7">
                                         <p class="">Fecha de nacimiento:</p>
