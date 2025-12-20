@@ -1,5 +1,13 @@
 <template>
     <div>
+        <Teleport to="body">
+            <div v-if="is_loading" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Procesando...</span>
+                </div>
+                <p class="loading-text mt-3">Procesando, por favor espera...</p>
+            </div>
+        </Teleport>
         <div v-if="origin == 'updated'" class="mbg-3 alert alert-success alert-dismissible fade show" role="alert">
             <span class="pe-2">
                 <i class="fa fa-star"></i>
@@ -104,7 +112,7 @@
                                         <p class="">Nombre completo:</p>
                                     </div>
                                     <div class="box-value vl-1">
-                                        <p class="">{{ collaborator.name }} {{ collaborator.first_surname }} {{ collaborator.second_surname }}</p>
+                                        <p class="">{{ collaborator.name }} {{ collaborator.first_surname }} {{ collaborator.second_surname ?? '' }}</p>
                                     </div>
                                 </div>
                                 <div class="data-pair">
@@ -292,147 +300,149 @@
                     </div>
                 </div>
             </div>
-
         </div>
         <div v-else-if="card_selected == 'contract'">
-            <div class="row">
-                <div class="col-12">
-                    <div v-if="contractual_information !== null && contractual_information !== ''" class="main-card mb-3 card">
-                        <div class="card-header">
-                            Información Contractual
-                        </div>
-                        <div class="card-body">
-                            <div class="wrapper-contract mt-3">
-                                <div class="data-pair">
-                                    <div class="box-label lb-25">
-                                        <p class="">Cargo:</p>
+            <div v-if="contractual_information !== null && contractual_information !== ''">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="main-card mb-3 card">
+                            <div class="card-header">
+                                <!-- <i class="header-icon lnr-license icon-gradient bg-plum-plate"> </i> -->
+                                Información Contractual
+                            </div>
+                            <div class="card-body">
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <div class="data-pair">
+                                            <div class="box-label"><p>Cargo:</p></div>
+                                            <div class="box-value"><p>{{ contract_info.position.name }}</p></div>
+                                        </div>
+                                        <div class="data-pair">
+                                            <div class="box-label"><p>Salario:</p></div>
+                                            <div class="box-value"><p>$ {{ numberFormat(contract_info.salary) }}</p></div>
+                                        </div>
+                                        <div class="data-pair">
+                                            <div class="box-label"><p>Tipo de contrato:</p></div>
+                                            <div class="box-value"><p>{{ contract_info.contract_type.name }}</p></div>
+                                        </div>
                                     </div>
-                                    <div class="box-value vl-25">
-                                        <p v-if="contractual_information && contractual_information.position && contractual_information.position.name" class="">{{ contractual_information.position.name }}</p>
+                                    <div class="col-md-6">
+                                        <div class="data-pair">
+                                            <div class="box-label"><p>Fecha inicio:</p></div>
+                                            <div class="box-value"><p>{{ contract_info.contract_start_date }}</p></div>
+                                        </div>
+                                        <div class="data-pair">
+                                            <div class="box-label"><p>Fecha fin:</p></div>
+                                            <div class="box-value"><p>{{ contract_info.contract_end_date || 'Sin asignar' }}</p></div>
+                                        </div>
+                                        <div class="data-pair">
+                                            <div class="box-label"><p>Fin periodo prueba:</p></div>
+                                            <div class="box-value"><p>{{ contract_info.test_period_end_date }}</p></div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-26">
-                                        <p class="">Salario:</p>
-                                    </div>
-                                    <div class="box-value vl-26">
-                                        <p v-if="contractual_information && contractual_information.salary" class="">$ {{ numberFormat(Math.round(contractual_information.salary)) }}</p>
-                                    </div>
-                                </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-27">
-                                        <p class="">Tipo de contrato:</p>
-                                    </div>
-                                    <div class="box-value vl-27">
-                                        <p v-if="contractual_information && contractual_information.contract_type && contractual_information.contract_type.name" class="">{{ contractual_information.contract_type.name }}</p>
-                                    </div>
-                                </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-28">
-                                        <p class="">Fecha inicio:</p>
-                                    </div>
-                                    <div class="box-value vl-28">
-                                        <p v-if="contractual_information && contractual_information.contract_start_date" class="">{{ contractual_information.contract_start_date }}</p>
-                                    </div>
-                                </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-29">
-                                        <p class="">Fecha fin:</p>
-                                    </div>
-                                    <div class="box-value vl-29">
-                                        <p v-if="contractual_information && contractual_information.contract_end_date" class="">{{ contractual_information.contract_end_date }}</p>
+                                    <div class="col-12">
+                                        <div class="data-pair full-width" style="border: none;">
+                                            <div class="box-label"><p>Observaciones:</p></div>
+                                            <div class="box-value"><p>{{ contract_info.observations || 'Sin asignar' }}</p></div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-30">
-                                        <p class="">Fecha fin prueba:</p>
-                                    </div>
-                                    <div class="box-value vl-30">
-                                        <p v-if="contractual_information && contractual_information.test_period_end_date" class="">{{ contractual_information.test_period_end_date }}</p>
-                                    </div>
-                                </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-31">
-                                        <p class="">Caja de compensación:</p>
-                                    </div>
-                                    <div class="box-value vl-31">
-                                        <p v-if="contractual_information && contractual_information.ccf && contractual_information.ccf.name" class="">{{ contractual_information.ccf.name }}</p>
-                                    </div>
-                                </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-32">
-                                        <p class="">EPS:</p>
-                                    </div>
-                                    <div class="box-value vl-32">
-                                        <p v-if="contractual_information && contractual_information.eps && contractual_information.eps.name" class="">{{ contractual_information.eps.name }}</p>
-                                    </div>
-                                </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-33">
-                                        <p class="">AFP Pensiones:</p>
-                                    </div>
-                                    <div class="box-value vl-33">
-                                        <p v-if="contractual_information && contractual_information.afp_pension && contractual_information.afp_pension.name" class="">{{ contractual_information.afp_pension.name }}</p>
-                                    </div>
-                                </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-34">
-                                        <p class="">AFP Cesantías:</p>
-                                    </div>
-                                    <div class="box-value vl-34">
-                                        <p v-if="contractual_information && contractual_information.afp_saving && contractual_information.afp_saving.name" class="">{{ contractual_information.afp_saving.name }}</p>
-                                    </div>
-                                </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-35">
-                                        <p class="">ARL:</p>
-                                    </div>
-                                    <div class="box-value vl-35">
-                                        <p v-if="contractual_information && contractual_information.arl && contractual_information.arl.name" class="">{{ contractual_information.arl.name }}</p>
-                                    </div>
-                                </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-36">
-                                        <p class="">Email corporativo:</p>
-                                    </div>
-                                    <div class="box-value vl-36">
-                                        <p v-if="contractual_information && contractual_information.corporate_email" class="">{{ contractual_information.corporate_email }}</p>
-                                    </div>
-                                </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-37">
-                                        <p class="">Celular corporativo:</p>
-                                    </div>
-                                    <div class="box-value vl-37">
-                                        <p v-if="contractual_information && contractual_information.corporate_cellphone" class="">{{ contractual_information.corporate_cellphone }}</p>
-                                    </div>
-                                </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-38">
-                                        <p class="">Banco:</p>
-                                    </div>
-                                    <div class="box-value vl-38">
-                                        <p v-if="contractual_information && contractual_information.bank && contractual_information.bank.name" class="">{{ contractual_information.bank.name }}</p>
-                                    </div>
-                                </div>
-                                <div class="data-pair">
-                                    <div class="box-label lb-39">
-                                        <p class="">Número de cuenta:</p>
-                                    </div>
-                                    <div class="box-value vl-39">
-                                        <p v-if="contractual_information && contractual_information.bank_account" class="">{{ contractual_information.bank_account }}</p>
-                                    </div>
+                            </div>
+                            <div v-if="contractual_information && contractual_information.contract_file_url" class="card-footer">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button @click="downloadContract()" class="btn-icon btn btn-primary btn-sm">
+                                        <font-awesome-icon :icon="['fas', 'download']" /> Descargar Contrato
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div v-else class="main-card mb-3 card">
-                        <div class="card-header">
-                            Información Contractual No Disponible
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="main-card mb-3 card">
+                            <div class="card-header">
+                                <!-- <i class="header-icon lnr-heart-pulse icon-gradient bg-love-kiss"> </i> -->
+                                Seguridad Social
+                            </div>
+                            <div class="card-body">
+                                <div class="mt-2">
+                                    <div class="data-pair">
+                                        <div class="box-label"><p>EPS:</p></div>
+                                        <div class="box-value"><p>{{ social_info.eps && social_info.eps.name ? social_info.eps.name : 'Sin asignar' }}</p></div>
+                                    </div>
+                                    <div class="data-pair">
+                                        <div class="box-label"><p>AFP Pensiones:</p></div>
+                                        <div class="box-value"><p>{{ social_info.afp_pension && social_info.afp_pension.name ? social_info.afp_pension.name : 'Sin asignar' }}</p></div>
+                                    </div>
+                                    <div class="data-pair">
+                                        <div class="box-label"><p>AFP Cesantías:</p></div>
+                                        <div class="box-value"><p>{{ social_info.afp_saving && social_info.afp_saving.name ? social_info.afp_saving.name : 'Sin asignar' }}</p></div>
+                                    </div>
+                                    <div class="data-pair">
+                                        <div class="box-label"><p>ARL:</p></div>
+                                        <div class="box-value"><p>{{ social_info.arl && social_info.arl.name ? social_info.arl.name : 'Sin asignar' }}</p></div>
+                                    </div>
+                                    <div class="data-pair" style="border: none;">
+                                        <div class="box-label"><p>Caja Compensación Familiar:</p></div>
+                                        <div class="box-value"><p>{{ social_info.ccf && social_info.ccf.name ? social_info.ccf.name : 'Sin asignar' }}</p></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="social_securities && (social_securities.eps_certificate_url || social_securities.afp_pension_certificate_url || social_securities.afp_saving_certificate_url)" class="card-footer">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button v-if="social_securities.eps_certificate_url" @click="downloadEpsCertificate(social_securities.id)" class="btn-icon btn btn-primary btn-sm">
+                                        <font-awesome-icon :icon="['fas', 'download']" /> EPS
+                                    </button>
+                                    <button v-if="social_securities.afp_pension_certificate_url" @click="downloadAfpPensionCertificate(social_securities.id)" class="btn-icon btn btn-primary btn-sm">
+                                        <font-awesome-icon :icon="['fas', 'download']" /> Pensiones
+                                    </button>
+                                    <button v-if="social_securities.afp_saving_certificate_url" @click="downloadAfpSavingCertificate(social_securities.id)" class="btn-icon btn btn-primary btn-sm">
+                                        <font-awesome-icon :icon="['fas', 'download']" /> Cesantías
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
+                    <div class="col-md-6">
+                        <div class="main-card mb-3 card"> <div class="card-header">
+                                <!-- <i class="header-icon lnr-apartment icon-gradient bg-sunny-morning"> </i> -->
+                                Información Bancaria
+                            </div>
+                            <div class="card-body">
+                                <div class="mt-2">
+                                    <div class="data-pair">
+                                        <div class="box-label"><p>Banco:</p></div>
+                                        <div class="box-value"><p>{{ bank_info.bank && bank_info.bank.name ? bank_info.bank.name : 'Sin asignar' }}</p></div>
+                                    </div>
+                                    <div class="data-pair">
+                                        <div class="box-label"><p>Nº Cuenta:</p></div>
+                                        <div class="box-value"><p>{{ bank_info.bank_account ? bank_info.bank_account : 'Sin asignar' }}</p></div>
+                                    </div>
+                                    <div class="data-pair full-width" style="border: none;">
+                                        <div class="box-label"><p>Observaciones:</p></div>
+                                        <div class="box-value"><p>{{ bank_info.observations ? bank_info.observations : 'Sin asignar' }}</p></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="bank_account && bank_account.bank_certificate_url" class="card-footer">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button @click="downloadBankAccountCertificate(bank_account.id)" class="btn-icon btn btn-primary btn-sm">
+                                        <font-awesome-icon :icon="['fas', 'download']" /> Certificado Bancario
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <div v-else>
+                <div class="col-12">
+                    <div class="alert alert-info">Información contractual no disponible</div>
+                 </div>
             </div>
         </div>
         <div v-else-if="card_selected == 'additional'" >
@@ -709,7 +719,7 @@
                                                                     <p class="">Nombre:</p>
                                                                 </div>
                                                                 <div class="box-value vl-20">
-                                                                    <p class="">{{ selected_relative_data.name }} {{ selected_relative_data.first_surname }} {{ selected_relative_data.second_surname }}</p>
+                                                                    <p class="">{{ selected_relative_data.name }} {{ selected_relative_data.first_surname }} {{ selected_relative_data.second_surname ?? '' }}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="data-pair">
@@ -856,8 +866,25 @@
                                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                                     <div class="position-relative mb-3">
                                                                         <label for="certificate" class="form-label">Certificado</label>
+                                                                        <input
+                                                                            ref="certificateFileInput"
+                                                                            @change="onChangeCertificate"
+                                                                            type="file"
+                                                                            accept=".pdf"
+                                                                            class="form-control d-none"
+                                                                        >
                                                                         <div class="input-group">
-                                                                            <input @change="onChangeCertificate" type="file" name="certificate" id="certificate" class="form-control">
+                                                                            <button type="button" class="btn btn-primary" @click="selectCertificateFile">
+                                                                                <i class="fa fa-upload"></i> Seleccionar
+                                                                            </button>
+                                                                            <input
+                                                                                @click="selectCertificateFile"
+                                                                                type="text"
+                                                                                class="form-control"
+                                                                                :value="certificate ? certificate.name : ''"
+                                                                                readonly
+                                                                                placeholder="Sin archivo"
+                                                                            />
                                                                         </div>
                                                                         <span v-if="errors_academic_data && errors_academic_data.certificate" class="error text-danger" for="certificate">{{ errors_academic_data.certificate[0] }}</span>
                                                                     </div>
@@ -924,8 +951,25 @@
                                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                                     <div class="position-relative mb-3">
                                                                         <label for="certificate" class="form-label">Certificado</label>
+                                                                        <input
+                                                                            ref="certificateFileInput"
+                                                                            @change="onChangeCertificate"
+                                                                            type="file"
+                                                                            accept=".pdf"
+                                                                            class="form-control d-none"
+                                                                        >
                                                                         <div class="input-group">
-                                                                            <input @change="onChangeCertificate" type="file" name="certificate" id="certificate" class="form-control">
+                                                                            <button type="button" class="btn btn-primary" @click="selectCertificateFile">
+                                                                                <i class="fa fa-upload"></i> Seleccionar
+                                                                            </button>
+                                                                            <input
+                                                                                @click="selectCertificateFile"
+                                                                                type="text"
+                                                                                class="form-control"
+                                                                                :value="certificate ? certificate.name : ''"
+                                                                                readonly
+                                                                                placeholder="Sin archivo"
+                                                                            />
                                                                         </div>
                                                                         <span v-if="errors_academic_data && errors_academic_data.certificate" class="error text-danger" for="certificate">{{ errors_academic_data.certificate[0] }}</span>
                                                                     </div>
@@ -1079,8 +1123,25 @@
                                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                                     <div class="position-relative mb-3">
                                                                         <label for="examination_result" class="form-label">Resultado</label>
+                                                                        <input
+                                                                            ref="examinationResultFileInput"
+                                                                            @change="onChangeExaminationResult"
+                                                                            type="file"
+                                                                            accept=".pdf"
+                                                                            class="form-control d-none"
+                                                                        >
                                                                         <div class="input-group">
-                                                                            <input @change="onChangeExaminationResult" type="file" name="examination_result" id="examination_result" class="form-control">
+                                                                            <button type="button" class="btn btn-primary" @click="selectExaminationResultFile">
+                                                                                <i class="fa fa-upload"></i> Seleccionar
+                                                                            </button>
+                                                                            <input
+                                                                                @click="selectExaminationResultFile"
+                                                                                type="text"
+                                                                                class="form-control"
+                                                                                :value="examination_result ? examination_result.name : ''"
+                                                                                readonly
+                                                                                placeholder="Sin archivo"
+                                                                            />
                                                                         </div>
                                                                         <span v-if="errors_medical_examination_data && errors_medical_examination_data.examination_result" class="error text-danger" for="examination_result">{{ errors_medical_examination_data.examination_result[0] }}</span>
                                                                     </div>
@@ -1112,7 +1173,7 @@
                                                 <div class="col-12">
                                                     <div class="card-hover-shadow card-border mb-3 card frame-information-card">
                                                         <div class="card-header">
-                                                            Editar Información de Salud
+                                                            Editar Examen Médico
                                                         </div>
                                                         <div class="card-body">
                                                             <div class="row">
@@ -1138,8 +1199,25 @@
                                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                                     <div class="position-relative mb-3">
                                                                         <label for="examination_result" class="form-label">Resultado</label>
+                                                                        <input
+                                                                            ref="examinationResultFileInput"
+                                                                            @change="onChangeExaminationResult"
+                                                                            type="file"
+                                                                            accept=".pdf"
+                                                                            class="form-control d-none"
+                                                                        >
                                                                         <div class="input-group">
-                                                                            <input @change="onChangeExaminationResult" type="file" name="examination_result" id="examination_result" class="form-control">
+                                                                            <button type="button" class="btn btn-primary" @click="selectExaminationResultFile">
+                                                                                <i class="fa fa-upload"></i> Seleccionar
+                                                                            </button>
+                                                                            <input
+                                                                                @click="selectExaminationResultFile"
+                                                                                type="text"
+                                                                                class="form-control"
+                                                                                :value="examination_result ? examination_result.name : ''"
+                                                                                readonly
+                                                                                placeholder="Sin archivo"
+                                                                            />
                                                                         </div>
                                                                         <span v-if="errors_medical_examination_data && errors_medical_examination_data.examination_result" class="error text-danger" for="examination_result">{{ errors_medical_examination_data.examination_result[0] }}</span>
                                                                     </div>
@@ -1312,8 +1390,25 @@
                                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                                     <div class="position-relative mb-3">
                                                                         <label for="home_visit_report" class="form-label">Reporte</label>
+                                                                        <input
+                                                                            ref="homeVisitReportFileInput"
+                                                                            @change="onChangeHomeVisitReport"
+                                                                            type="file"
+                                                                            accept=".pdf"
+                                                                            class="form-control d-none"
+                                                                        >
                                                                         <div class="input-group">
-                                                                            <input @change="onChangeHomeVisitReport" type="file" name="home_visit_report" id="home_visit_report" class="form-control">
+                                                                            <button type="button" class="btn btn-primary" @click="selectHomeVisitReportFile">
+                                                                                <i class="fa fa-upload"></i> Seleccionar
+                                                                            </button>
+                                                                            <input
+                                                                                @click="selectHomeVisitReportFile"
+                                                                                type="text"
+                                                                                class="form-control"
+                                                                                :value="home_visit_report ? home_visit_report.name : ''"
+                                                                                readonly
+                                                                                placeholder="Sin archivo"
+                                                                            />
                                                                         </div>
                                                                         <span v-if="errors_home_visit_data && errors_home_visit_data.home_visit_report" class="error text-danger" for="home_visit_report">{{ errors_home_visit_data.home_visit_report[0] }}</span>
                                                                     </div>
@@ -1380,8 +1475,25 @@
                                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                                     <div class="position-relative mb-3">
                                                                         <label for="home_visit_report" class="form-label">Reporte</label>
+                                                                        <input
+                                                                            ref="homeVisitReportFileInput"
+                                                                            @change="onChangeHomeVisitReport"
+                                                                            type="file"
+                                                                            accept=".pdf"
+                                                                            class="form-control d-none"
+                                                                        >
                                                                         <div class="input-group">
-                                                                            <input @change="onChangeHomeVisitReport" type="file" name="home_visit_report" id="home_visit_report" class="form-control">
+                                                                            <button type="button" class="btn btn-primary" @click="selectHomeVisitReportFile">
+                                                                                <i class="fa fa-upload"></i> Seleccionar
+                                                                            </button>
+                                                                            <input
+                                                                                @click="selectHomeVisitReportFile"
+                                                                                type="text"
+                                                                                class="form-control"
+                                                                                :value="home_visit_report ? home_visit_report.name : ''"
+                                                                                readonly
+                                                                                placeholder="Sin archivo"
+                                                                            />
                                                                         </div>
                                                                         <span v-if="errors_home_visit_data && errors_home_visit_data.home_visit_report" class="error text-danger" for="home_visit_report">{{ errors_home_visit_data.home_visit_report[0] }}</span>
                                                                     </div>
@@ -1536,8 +1648,25 @@
                                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                                             <div class="position-relative mb-3">
                                                                 <label for="document" class="form-label">Documento</label>
+                                                                <input
+                                                                    ref="documentFileInput"
+                                                                    @change="onChangeDocument"
+                                                                    type="file"
+                                                                    accept=".pdf"
+                                                                    class="form-control d-none"
+                                                                >
                                                                 <div class="input-group">
-                                                                    <input @change="onChangeDocument" type="file" name="document" id="document" class="form-control">
+                                                                    <button type="button" class="btn btn-primary" @click="selectDocumentFile">
+                                                                        <i class="fa fa-upload"></i> Seleccionar
+                                                                    </button>
+                                                                    <input
+                                                                        @click="selectDocumentFile"
+                                                                        type="text"
+                                                                        class="form-control"
+                                                                        :value="document ? document.name : ''"
+                                                                        readonly
+                                                                        placeholder="Sin archivo"
+                                                                    />
                                                                 </div>
                                                                 <span v-if="errors_document_data && errors_document_data.document" class="error text-danger" for="document">{{ errors_document_data.document[0] }}</span>
                                                             </div>
@@ -1589,8 +1718,25 @@
                                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                                             <div class="position-relative mb-3">
                                                                 <label for="document" class="form-label">Documento</label>
+                                                                <input
+                                                                    ref="documentFileInput"
+                                                                    @change="onChangeDocument"
+                                                                    type="file"
+                                                                    accept=".pdf"
+                                                                    class="form-control d-none"
+                                                                >
                                                                 <div class="input-group">
-                                                                    <input @change="onChangeDocument" type="file" name="document" id="document" class="form-control">
+                                                                    <button type="button" class="btn btn-primary" @click="selectDocumentFile">
+                                                                        <i class="fa fa-upload"></i> Seleccionar
+                                                                    </button>
+                                                                    <input
+                                                                        @click="selectDocumentFile"
+                                                                        type="text"
+                                                                        class="form-control"
+                                                                        :value="document ? document.name : ''"
+                                                                        readonly
+                                                                        placeholder="Sin archivo"
+                                                                    />
                                                                 </div>
                                                                 <span v-if="errors_document_data && errors_document_data.document" class="error text-danger" for="document">{{ errors_document_data.document[0] }}</span>
                                                             </div>
@@ -1680,6 +1826,7 @@ export default {
     },
     data() {
         return {
+            is_loading: false,
             tab_additional_info_status: 'family_information',
             card_selected: 'basic',
 
@@ -1715,21 +1862,24 @@ export default {
             document: null,
 
             contractual_information: '',
-            position_id: '',
-            salary: '',
-            contract_type_id: '',
-            contract_start_date: '',
-            contract_end_date: '',
-            test_period_end_date: '',
-            corporate_email: '',
-            corporate_cellphone: '',
-            bank_id: '',
+            social_securities: '',
             bank_account: '',
-            eps_id: '',
-            afp_pension_id: '',
-            afp_saving_id: '',
-            arl_id: '',
-            ccf_id: '',
+
+            // position_id: '',
+            // salary: '',
+            // contract_type_id: '',
+            // contract_start_date: '',
+            // contract_end_date: '',
+            // test_period_end_date: '',
+            // corporate_email: '',
+            // corporate_cellphone: '',
+            // bank_id: '',
+            // bank_account: '',
+            // eps_id: '',
+            // afp_pension_id: '',
+            // afp_saving_id: '',
+            // arl_id: '',
+            // ccf_id: '',
 
 
             relatives_data: [],
@@ -1777,6 +1927,30 @@ export default {
             successfully_deleted_message: false,
 
             origin: '',
+
+            contract_info: {
+                position: null,
+                salary: '',
+                contract_type: null,
+                contract_start_date: '',
+                contract_end_date: '',
+                test_period_end_date: '',
+                observations: '',
+            },
+
+            social_info: {
+                eps: null,
+                afp_pension: null,
+                afp_saving: null,
+                arl: null,
+                ccf: null
+            },
+
+            bank_info: {
+                bank: null,
+                bank_account: '',
+                observations: ''
+            },
         }
     },
     mounted () {
@@ -1786,7 +1960,7 @@ export default {
         this.getAcademicData(this.collaborator.id)
         this.getMedicalExaminationData(this.collaborator.id)
         this.getHomeVisitData(this.collaborator.id)
-        this.getContractualInformation(this.collaborator.id)
+        this.getContractByCollaborator(this.collaborator.id)
         this.getDocumentData(this.collaborator.id)
     },
     methods: {
@@ -1822,6 +1996,25 @@ export default {
             }
             });
         },
+        // Método para Información Académica
+        selectCertificateFile() {
+            this.$refs.certificateFileInput.click();
+        },
+
+        // Método para Información Médica
+        selectExaminationResultFile() {
+            this.$refs.examinationResultFileInput.click();
+        },
+
+        // Método para Visitas Domiciliarias
+        selectHomeVisitReportFile() {
+            this.$refs.homeVisitReportFileInput.click();
+        },
+
+        // Método para Documentos
+        selectDocumentFile() {
+            this.$refs.documentFileInput.click();
+        },
         emitEditCollaborator() {
             this.$emit('editCollaborator', this.collaborator.id)
         },
@@ -1847,6 +2040,45 @@ export default {
             setTimeout(() => {
                 this.origin = '';
             }, 3000);
+        },
+        downloadContract() {
+            window.open(this.contractual_information.contract_file_url, '_blank');
+        },
+        downloadEpsCertificate(eps_id) {
+            axios.get(`/download-eps-certificate/${eps_id}`)
+            .then(response => {
+                window.open(response.data.certificate_download_url, '_blank');
+            })
+            .catch(e => {
+                console.error('Error descargando certificado EPS:', e);
+            })
+        },
+        downloadAfpPensionCertificate(afp_pension_id) {
+            axios.get(`/download-afp-pension-certificate/${afp_pension_id}`)
+            .then(response => {
+                window.open(response.data.certificate_download_url, '_blank');
+            })
+            .catch(e => {
+                console.error('Error descargando certificado Pensiones:', e);
+            })
+        },
+        downloadAfpSavingCertificate(afp_saving_id) {
+            axios.get(`/download-afp-saving-certificate/${afp_saving_id}`)
+            .then(response => {
+                window.open(response.data.certificate_download_url, '_blank');
+            })
+            .catch(e => {
+                console.error('Error descargando certificado Cesantías:', e);
+            })
+        },
+        downloadBankAccountCertificate(bank_account_id) {
+            axios.get(`/download-bank-account-certificate/${bank_account_id}`)
+            .then(response => {
+                window.open(response.data.certificate_download_url, '_blank');
+            })
+            .catch(e => {
+                console.error('Error descargando certificado Bancario:', e);
+            })
         },
         downloadAcademicCertificate(academic_achievement_id) {
             axios.get(`/download-academic-certificate/${academic_achievement_id}`)
@@ -1884,27 +2116,22 @@ export default {
                 console.error('Error:', e);
             })
         },
-        getContractualInformation(collaborator_id) {
+        getContractByCollaborator(collaborator_id) {
             axios.get(`/contractual-information/${collaborator_id}`)
             .then(response => {
-                this.contractual_information = response.data.contractual_information;
+                this.contractual_information = response.data.active_contract;
 
                 if(this.contractual_information !== null) {
-                    this.position_id = this.contractual_information.position_id;
-                    this.salary = this.contractual_information.salary;
-                    this.contract_type_id = this.contractual_information.contract_type_id;
-                    this.contract_start_date = this.contractual_information.contract_start_date;
-                    this.contract_end_date = this.contractual_information.contract_end_date;
-                    this.test_period_end_date = this.contractual_information.test_period_end_date;
-                    this.corporate_email = this.contractual_information.corporate_email;
-                    this.corporate_cellphone = this.contractual_information.corporate_cellphone;
-                    this.bank_id = this.contractual_information.bank_id;
-                    this.bank_account = this.contractual_information.bank_account;
-                    this.eps_id = this.contractual_information.eps_id;
-                    this.afp_pension_id = this.contractual_information.afp_pension_id;
-                    this.afp_saving_id = this.contractual_information.afp_saving_id;
-                    this.arl_id = this.contractual_information.arl_id;
-                    this.ccf_id = this.contractual_information.ccf_id;
+                    this.contract_info.position = this.contractual_information.position;
+                    this.contract_info.salary = this.contractual_information.salary;
+                    this.contract_info.contract_type = this.contractual_information.contract_type;
+                    this.contract_info.contract_start_date = this.contractual_information.contract_start_date;
+                    this.contract_info.contract_end_date = this.contractual_information.contract_end_date;
+                    this.contract_info.test_period_end_date = this.contractual_information.test_period_end_date;
+                    this.contract_info.observations = this.contractual_information.observations;
+
+                    this.getSocialSecuritysByCollaborator(collaborator_id)
+                    this.getBankAccountByCollaborator(collaborator_id)
                 }
 
                 // this.card_selected = 'contract';
@@ -1913,6 +2140,38 @@ export default {
                 console.error('Error:', e);
 
                 // this.card_selected = 'contract';
+            })
+        },
+        getSocialSecuritysByCollaborator(collaborator_id) {
+            axios.get(`/social-security-information/${collaborator_id}`)
+            .then(response => {
+                this.social_securities = response.data.social_security;
+
+                if(this.social_securities !== null) {
+                    this.social_info.eps = this.social_securities.eps;
+                    this.social_info.afp_pension = this.social_securities.afp_pension;
+                    this.social_info.afp_saving = this.social_securities.afp_saving;
+                    this.social_info.arl = this.social_securities.arl;
+                    this.social_info.ccf = this.social_securities.ccf;
+                }
+            })
+            .catch(e => {
+                console.error('Error:', e);
+            })
+        },
+        getBankAccountByCollaborator(collaborator_id) {
+            axios.get(`/bank-account-information/${collaborator_id}`)
+            .then(response => {
+                this.bank_account = response.data.bank_account;
+
+                if(this.bank_account !== null) {
+                    this.bank_info.bank = this.bank_account.bank;
+                    this.bank_info.bank_account = this.bank_account.bank_account;
+                    this.bank_info.observations = this.bank_account.observations;
+                }
+            })
+            .catch(e => {
+                console.error('Error:', e);
             })
         },
         addRelativeData() {
@@ -2077,7 +2336,7 @@ export default {
         changeMainTab(tab) {
             this.card_selected = tab
             // if(tab == 'contract') {
-            //     this.getContractualInformation(this.collaborator.id)
+            //     this.getContractByCollaborator(this.collaborator.id)
             // }
             this.message = ''
         },
@@ -2227,7 +2486,7 @@ export default {
             this.document = e.target.files[0]
         },
         storeRelativeData() {
-
+            this.is_loading = true;
             let dataSend = {
                 'collaborator_id': this.collaborator.id,
                 'name': this.name,
@@ -2260,9 +2519,10 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_relative_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         storeAcademicData() {
+            this.is_loading = true;
             let fd = new FormData()
 
             fd.append('collaborator_id', this.collaborator.id)
@@ -2294,9 +2554,10 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_academic_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         storeMedicalExaminationData() {
+            this.is_loading = true;
             let fd = new FormData()
 
             fd.append('collaborator_id', this.collaborator.id)
@@ -2326,9 +2587,10 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_medical_examination_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         storeHomeVisitData() {
+            this.is_loading = true;
             let fd = new FormData()
 
             fd.append('collaborator_id', this.collaborator.id)
@@ -2359,9 +2621,10 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_home_visit_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         storeDocumentData() {
+            this.is_loading = true;
             let fd = new FormData()
 
             fd.append('collaborator_id', this.collaborator.id)
@@ -2392,7 +2655,7 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_document_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         editRelativeData(item, index) {
             let new_selection_relative_data;
@@ -2529,6 +2792,7 @@ export default {
             this.errors_document_data = null
         },
         updateRelativeData(){
+            this.is_loading = true;
             let dataSend = {
                 'id': this.relative_data_to_edit.id,
                 'collaborator_id': this.collaborator.id,
@@ -2562,9 +2826,10 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_relative_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         updateAcademicData(){
+            this.is_loading = true;
             let fd = new FormData()
 
             fd.append('collaborator_id', this.collaborator.id)
@@ -2596,9 +2861,10 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_academic_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         updateMedicalExaminationData(){
+            this.is_loading = true;
             let fd = new FormData()
 
             fd.append('collaborator_id', this.collaborator.id)
@@ -2629,9 +2895,10 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_medical_examination_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         updateHomeVisitData(){
+            this.is_loading = true;
             let fd = new FormData()
 
             fd.append('collaborator_id', this.collaborator.id)
@@ -2663,9 +2930,10 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_home_visit_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         updateDocumentData(){
+            this.is_loading = true;
             let fd = new FormData()
 
             fd.append('collaborator_id', this.collaborator.id)
@@ -2695,9 +2963,10 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_document_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         deleteRelativeData(item, index) {
+            this.is_loading = true;
 
             axios.delete(`/relative-data-delete/${item.id}`).then(
                 (response) => {
@@ -2720,9 +2989,10 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_relative_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         deleteAcademicData(item, index) {
+            this.is_loading = true;
             axios.delete(`/academic-data-delete/${item.id}`).then(
                 (response) => {
                     this.getAcademicData(this.collaborator.id)
@@ -2744,9 +3014,10 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_academic_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         deleteMedicalExaminationData(item, index) {
+            this.is_loading = true;
             axios.delete(`/medical-examination-data-delete/${item.id}`).then(
                 (response) => {
                     this.getMedicalExaminationData(this.collaborator.id)
@@ -2768,9 +3039,10 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_medical_examination_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         deleteHomeVisitData(item, index) {
+            this.is_loading = true;
             axios.delete(`/home-visit-data-delete/${item.id}`).then(
                 (response) => {
                     this.getHomeVisitData(this.collaborator.id)
@@ -2792,9 +3064,10 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_home_visit_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         deleteDocumentData(item, index) {
+            this.is_loading = true;
             axios.delete(`/document-data-delete/${item.id}`).then(
                 (response) => {
                     this.getDocumentData(this.collaborator.id)
@@ -2816,7 +3089,7 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors_document_data = error.response.data.errors
                     }
-                })
+                }).finally(() => this.is_loading = false);
         },
         getAge(dateString) {
             let hoy = new Date()
@@ -2846,4 +3119,23 @@ export default {
     @import './../../assets/css/collaborator_show.css';
     @import './../../assets/css/message.css';
     @import './../../assets/css/custom.css';
+
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.85);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .loading-text {
+        font-weight: 500;
+        color: #333;
+    }
 </style>

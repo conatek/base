@@ -1,10 +1,13 @@
 <template>
-    <div style="position: relative;"> <div v-if="is_loading" class="loading-overlay">
-            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                <span class="visually-hidden">Procesando...</span>
+    <div style="position: relative;">
+        <Teleport to="body">
+            <div v-if="is_loading" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Procesando...</span>
+                </div>
+                <p class="loading-text mt-3">Procesando, por favor espera...</p>
             </div>
-            <p class="loading-text mt-3">Procesando, por favor espera...</p>
-        </div>
+        </Teleport>
         <div class="row">
             <div class="col-12">
                 <div v-if="message !== ''" class="mbg-3 alert alert-success alert-dismissible fade show" role="alert">
@@ -83,13 +86,13 @@
                     <div v-if="social_security_data && (social_security_data.eps_certificate_url || social_security_data.afp_pension_certificate_url || social_security_data.afp_saving_certificate_url)" class="card-footer">
                         <div class="buttons-container">
                             <button v-if="social_security_data.eps_certificate_url" @click="downloadEpsCertificate(social_security_data.id)" class="mr-2 btn-icon btn btn-primary">
-                                <font-awesome-icon :icon="['fas', 'download']" /> Certificado de EPS
+                                <font-awesome-icon :icon="['fas', 'download']" /> EPS
                             </button>
                             <button v-if="social_security_data.afp_pension_certificate_url" @click="downloadAfpPensionCertificate(social_security_data.id)" class="mr-2 btn-icon btn btn-primary">
-                                <font-awesome-icon :icon="['fas', 'download']" /> Certificado de Pensiones
+                                <font-awesome-icon :icon="['fas', 'download']" /> Pensiones
                             </button>
                             <button v-if="social_security_data.afp_saving_certificate_url" @click="downloadAfpSavingCertificate(social_security_data.id)" class="mr-2 btn-icon btn btn-primary">
-                                <font-awesome-icon :icon="['fas', 'download']" /> Certificado de Cesantías
+                                <font-awesome-icon :icon="['fas', 'download']" /> Cesantías
                             </button>
                         </div>
                     </div>
@@ -801,12 +804,12 @@ export default {
         },
         getBankAccountByCollaborator() {
             axios.get(`/bank-account-information/${this.collaborator.id}`)
-            .then(response => {
-                this.bank_information_data = response.data.bank_account;
-            })
-            .catch(e => {
-                //
-            })
+                .then(response => {
+                    this.bank_information_data = response.data.bank_account;
+                })
+                .catch(e => {
+                    // Manejo de errores
+                })
         },
         addSocialSecurityData(){
             if (this.social_security_data === null && this.add_social_security_data === true && this.edit_social_security_data === false && this.show_social_security_data === false) {
@@ -914,11 +917,10 @@ export default {
                 })
         },
         storeBankInformation() {
-            this.is_loading = true;
+            this.is_loading = true; // ACTIVAR
             this.errors_bank_information = null;
 
             let fd = new FormData()
-
             fd.append('collaborator_id', this.collaborator.id)
             fd.append('bank_id', this.bank_id)
             fd.append('bank_account', this.bank_account)
@@ -936,7 +938,7 @@ export default {
                         this.errors_bank_information = error.response.data.errors
                     }
                 }).finally(() => {
-                    this.is_loading = false;
+                    this.is_loading = false; // DESACTIVAR
                 })
         },
         updateSocialSecurityInformation() {
@@ -972,11 +974,10 @@ export default {
                 })
         },
         updateBankInformation(){
-            this.is_loading = true;
+            this.is_loading = true; // ACTIVAR
             this.errors_bank_information = null;
 
             let fd = new FormData()
-
             fd.append('collaborator_id', this.collaborator.id)
             fd.append('bank_id', this.bank_information_data.bank_id)
             fd.append('bank_account', this.bank_information_data.bank_account)
@@ -987,9 +988,7 @@ export default {
             axios.post(`/bank-account-information/${this.bank_information_data.id}`, fd).then(
                 (response) => {
                     this.getBankAccountByCollaborator()
-
                     this.getMessage(response.data.message)
-
                     this.resetBankInformation();
                 }).catch(
                 (error) => {
@@ -997,7 +996,7 @@ export default {
                         this.errors_bank_information = error.response.data.errors
                     }
                 }).finally(() => {
-                    this.is_loading = false;
+                    this.is_loading = false; // DESACTIVAR
                 })
         },
         deleteSocialSecurity(id){
@@ -1018,7 +1017,7 @@ export default {
                 })
         },
         deleteBankAccount(id){
-            this.is_loading = true;
+            this.is_loading = true; // ACTIVAR
 
             axios.delete(`/bank-account-information/${id}`).then(
                 (res) => {
@@ -1031,7 +1030,7 @@ export default {
                         this.errors_bank_information = error.response.data.errors
                     }
                 }).finally(() => {
-                    this.is_loading = false;
+                    this.is_loading = false; // DESACTIVAR
                 })
         },
         resetSocialSecurity(){
@@ -1053,19 +1052,34 @@ export default {
 </script>
 
 <style scoped>
-.loading-overlay {
-    position: absolute; /* Se posiciona relativo al div raíz */
+/* .loading-overlay {
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.85); /* Fondo blanco semi-transparente */
+    background-color: rgba(255, 255, 255, 0.85);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 1050; /* Asegura que esté por encima del contenido */
-    border-radius: 12px; /* Opcional: para que coincida con tus cards */
+    z-index: 1050;
+    border-radius: 12px;
+} */
+
+.loading-overlay {
+    position: fixed; /* Cambiado de absolute a fixed */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Asegura que esté por encima de todo el sitio web */
+    /* border-radius: 12px; <- Elimina esto para que no se vean bordes redondeados en pantalla completa */
 }
 
 .loading-text {

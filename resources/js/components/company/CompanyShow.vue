@@ -1,5 +1,13 @@
 <template>
     <div>
+        <Teleport to="body">
+            <div v-if="is_loading" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Procesando...</span>
+                </div>
+                <p class="loading-text mt-3">Procesando, por favor espera...</p>
+            </div>
+        </Teleport>
         <div class="app-page-title">
             <div class="page-title-wrapper">
                 <div class="page-title-heading">
@@ -1071,6 +1079,7 @@ export default {
     },
     data() {
         return {
+            is_loading: false,
             card_selected: 'general',
             message: '',
 
@@ -1172,12 +1181,12 @@ export default {
             });
         },
         returnToOriginalUser() {
-            axios.post('/return-to-original-user').then(
-                (response) => {
-                    window.open('/home');
-                }
-            ).catch((error) => {
-                console.error('Error al volver al usuario original', error);
+            this.is_loading = true;
+            axios.post('/return-to-original-user').then((response) => {
+                window.open('/home');
+            }).catch((error) => {
+                console.error('Error', error);
+                this.is_loading = false;
             });
         },
         changeMainTab(tab) {
@@ -1202,16 +1211,13 @@ export default {
             }, 3000)
         },
         getCities(province) {
-            let dataSend = {
-                "province": province,
-            }
-
+            let dataSend = { "province": province }
             this.city_id = ''
 
-            axios.post('/get-cities', dataSend).then(
-                ({data}) => {
-                    this.cities = data.cities
-                })
+            this.is_loading = true; // ACTIVAR
+            axios.post('/get-cities', dataSend).then(({data}) => {
+                this.cities = data.cities
+            }).finally(() => this.is_loading = false); // DESACTIVAR
         },
         addCampusData() {
             if(this.add_campus_data == false) {
@@ -1421,6 +1427,7 @@ export default {
             this.showMessagePosition = false
         },
         storeCampus() {
+            this.is_loading = true; // ACTIVAR
             let dataSend = {
                 'company_id': this.company.id,
                 'province_id': this.province_id,
@@ -1431,37 +1438,29 @@ export default {
                 'email': this.email,
             }
 
-            let url = ''
-            axios.post('/campuses', dataSend).then(
-                (response) => {
-                    this.getCampusesData(this.company.id)
-                    this.selected_campus_data = response.data.campus;
-                    // this.campus_data = response.data.campus_data;
-                    this.add_campus_data = false
-                    this.edit_campus_data = false
-
-                    this.successfully_created_message = true
-                    this.successfully_updated_message = false
-                    this.successfully_deleted_message = false
-
-                    this.showMessageCampus = true
-                    this.showMessageArea = false
-                    this.showMessagePosition = false
-
-                    this.getMessage(response.data.message)
-
-                    this.errors_campus_data = null
-
-                }).catch(
-                (error) => {
-                    if(error && error.response && error.response.data && error.response.data.errors) {
-                        console.log('//////////////////////////////////////////////');
-                        console.log(error.response.data.errors)
-                        this.errors_campus_data = error.response.data.errors
-                    }
-                })
+            axios.post('/campuses', dataSend).then((response) => {
+                this.getCampusesData(this.company.id)
+                this.selected_campus_data = response.data.campus;
+                this.add_campus_data = false
+                this.edit_campus_data = false
+                this.successfully_created_message = true
+                this.successfully_updated_message = false
+                this.successfully_deleted_message = false
+                this.showMessageCampus = true
+                this.showMessageArea = false
+                this.showMessagePosition = false
+                this.getMessage(response.data.message)
+                this.errors_campus_data = null
+            }).catch((error) => {
+                if(error && error.response && error.response.data && error.response.data.errors) {
+                    this.errors_campus_data = error.response.data.errors
+                }
+            }).finally(() => {
+                this.is_loading = false; // DESACTIVAR
+            })
         },
         storeArea() {
+            this.is_loading = true; // ACTIVAR
             let dataSend = {
                 'company_id': this.company.id,
                 'campus_id': this.area_campus_id,
@@ -1470,37 +1469,29 @@ export default {
                 'description': this.area_description,
             }
 
-            let url = ''
-            axios.post('/areas', dataSend).then(
-                (response) => {
-                    this.getAreasData(this.company.id)
-                    this.selected_area_data = response.data.area;
-
-                    this.add_area_data = false
-                    this.edit_area_data = false
-
-                    this.successfully_created_message = true
-                    this.successfully_updated_message = false
-                    this.successfully_deleted_message = false
-
-                    this.showMessageCampus = false
-                    this.showMessageArea = true
-                    this.showMessagePosition = false
-
-                    this.getMessage(response.data.message)
-
-                    this.errors_area_data = null
-
-                }).catch(
-                (error) => {
-                    if(error && error.response && error.response.data && error.response.data.errors) {
-                        console.log('//////////////////////////////////////////////');
-                        console.log(error.response.data.errors)
-                        this.errors_area_data = error.response.data.errors
-                    }
-                })
+            axios.post('/areas', dataSend).then((response) => {
+                this.getAreasData(this.company.id)
+                this.selected_area_data = response.data.area;
+                this.add_area_data = false
+                this.edit_area_data = false
+                this.successfully_created_message = true
+                this.successfully_updated_message = false
+                this.successfully_deleted_message = false
+                this.showMessageCampus = false
+                this.showMessageArea = true
+                this.showMessagePosition = false
+                this.getMessage(response.data.message)
+                this.errors_area_data = null
+            }).catch((error) => {
+                if(error && error.response && error.response.data && error.response.data.errors) {
+                    this.errors_area_data = error.response.data.errors
+                }
+            }).finally(() => {
+                this.is_loading = false; // DESACTIVAR
+            })
         },
         storePosition() {
+            this.is_loading = true; // ACTIVAR
             let dataSend = {
                 'company_id': this.company.id,
                 'area_id': this.position_area_id,
@@ -1511,35 +1502,26 @@ export default {
                 'description': this.position_description,
             }
 
-            let url = ''
-            axios.post('/positions', dataSend).then(
-                (response) => {
-                    this.getPositionsData(this.company.id)
-                    this.selected_position_data = response.data.position;
-
-                    this.add_position_data = false
-                    this.edit_position_data = false
-
-                    this.successfully_created_message = true
-                    this.successfully_updated_message = false
-                    this.successfully_deleted_message = false
-
-                    this.showMessageCampus = false
-                    this.showMessageArea = false
-                    this.showMessagePosition = true
-
-                    this.getMessage(response.data.message)
-
-                    this.errors_position_data = null
-
-                }).catch(
-                (error) => {
-                    if(error && error.response && error.response.data && error.response.data.errors) {
-                        console.log('//////////////////////////////////////////////');
-                        console.log(error.response.data.errors)
-                        this.errors_position_data = error.response.data.errors
-                    }
-                })
+            axios.post('/positions', dataSend).then((response) => {
+                this.getPositionsData(this.company.id)
+                this.selected_position_data = response.data.position;
+                this.add_position_data = false
+                this.edit_position_data = false
+                this.successfully_created_message = true
+                this.successfully_updated_message = false
+                this.successfully_deleted_message = false
+                this.showMessageCampus = false
+                this.showMessageArea = false
+                this.showMessagePosition = true
+                this.getMessage(response.data.message)
+                this.errors_position_data = null
+            }).catch((error) => {
+                if(error && error.response && error.response.data && error.response.data.errors) {
+                    this.errors_position_data = error.response.data.errors
+                }
+            }).finally(() => {
+                this.is_loading = false; // DESACTIVAR
+            })
         },
         editCampusData(item, index) {
             let new_selection_campus_data;
@@ -1625,6 +1607,7 @@ export default {
             this.errors_position_data = null
         },
         updateCampus() {
+            this.is_loading = true; // ACTIVAR
             let dataSend = {
                 'id': this.campus_data_to_edit.id,
                 'company_id': this.company.id,
@@ -1636,35 +1619,29 @@ export default {
                 'email': this.email,
             }
 
-            let url = ''
-            axios.put(`/campuses/${this.campus_data_to_edit.id}`, dataSend).then(
-                (response) => {
-                    this.getCampusesData(this.company.id)
-                    this.selected_campus_data = response.data.campus
-
-                    this.add_campus_data = false
-                    this.edit_campus_data = false
-
-                    this.successfully_created_message = false
-                    this.successfully_updated_message = true
-                    this.successfully_deleted_message = false
-
-                    this.showMessageCampus = true
-                    this.showMessageArea = false
-                    this.showMessagePosition = false
-
-                    this.getMessage(response.data.message)
-
-                    this.errors_campus_data = null
-                }).catch(
-                (error) => {
-                    if(error && error.response && error.response.data && error.response.data.errors) {
-                        console.log(error.response.data.errors)
-                        this.errors_campus_data = error.response.data.errors
-                    }
-                })
+            axios.put(`/campuses/${this.campus_data_to_edit.id}`, dataSend).then((response) => {
+                this.getCampusesData(this.company.id)
+                this.selected_campus_data = response.data.campus
+                this.add_campus_data = false
+                this.edit_campus_data = false
+                this.successfully_created_message = false
+                this.successfully_updated_message = true
+                this.successfully_deleted_message = false
+                this.showMessageCampus = true
+                this.showMessageArea = false
+                this.showMessagePosition = false
+                this.getMessage(response.data.message)
+                this.errors_campus_data = null
+            }).catch((error) => {
+                if(error && error.response && error.response.data && error.response.data.errors) {
+                    this.errors_campus_data = error.response.data.errors
+                }
+            }).finally(() => {
+                this.is_loading = false; // DESACTIVAR
+            })
         },
         updateArea() {
+            this.is_loading = true; // ACTIVAR
             let dataSend = {
                 'id': this.area_data_to_edit.id,
                 'company_id': this.company.id,
@@ -1674,35 +1651,29 @@ export default {
                 'description': this.area_description,
             }
 
-            let url = ''
-            axios.put(`/areas/${this.area_data_to_edit.id}`, dataSend).then(
-                (response) => {
-                    this.getAreasData(this.company.id)
-                    this.selected_area_data = response.data.area
-
-                    this.add_area_data = false
-                    this.edit_area_data = false
-
-                    this.successfully_created_message = false
-                    this.successfully_updated_message = true
-                    this.successfully_deleted_message = false
-
-                    this.showMessageCampus = false
-                    this.showMessageArea = true
-                    this.showMessagePosition = false
-
-                    this.getMessage(response.data.message)
-
-                    this.errors_area_data = null
-                }).catch(
-                (error) => {
-                    if(error && error.response && error.response.data && error.response.data.errors) {
-                        console.log(error.response.data.errors)
-                        this.errors_area_data = error.response.data.errors
-                    }
-                })
+            axios.put(`/areas/${this.area_data_to_edit.id}`, dataSend).then((response) => {
+                this.getAreasData(this.company.id)
+                this.selected_area_data = response.data.area
+                this.add_area_data = false
+                this.edit_area_data = false
+                this.successfully_created_message = false
+                this.successfully_updated_message = true
+                this.successfully_deleted_message = false
+                this.showMessageCampus = false
+                this.showMessageArea = true
+                this.showMessagePosition = false
+                this.getMessage(response.data.message)
+                this.errors_area_data = null
+            }).catch((error) => {
+                if(error && error.response && error.response.data && error.response.data.errors) {
+                    this.errors_area_data = error.response.data.errors
+                }
+            }).finally(() => {
+                this.is_loading = false; // DESACTIVAR
+            })
         },
         updatePosition() {
+            this.is_loading = true; // ACTIVAR
             let dataSend = {
                 'id': this.position_data_to_edit.id,
                 'company_id': this.company.id,
@@ -1714,120 +1685,95 @@ export default {
                 'description': this.position_description,
             }
 
-            let url = ''
-            axios.put(`/positions/${this.position_data_to_edit.id}`, dataSend).then(
-                (response) => {
-                    this.getPositionsData(this.company.id)
-                    this.selected_position_data = response.data.position;
-
-                    this.add_position_data = false
-                    this.edit_position_data = false
-
-                    this.successfully_created_message = false
-                    this.successfully_updated_message = true
-                    this.successfully_deleted_message = false
-
-                    this.showMessageCampus = false
-                    this.showMessageArea = false
-                    this.showMessagePosition = true
-
-                    this.getMessage(response.data.message)
-
-                    this.errors_position_data = null
-                }).catch(
-                (error) => {
-                    if(error && error.response && error.response.data && error.response.data.errors) {
-                        console.log(error.response.data.errors)
-                        this.errors_position_data = error.response.data.errors
-                    }
-                })
+            axios.put(`/positions/${this.position_data_to_edit.id}`, dataSend).then((response) => {
+                this.getPositionsData(this.company.id)
+                this.selected_position_data = response.data.position;
+                this.add_position_data = false
+                this.edit_position_data = false
+                this.successfully_created_message = false
+                this.successfully_updated_message = true
+                this.successfully_deleted_message = false
+                this.showMessageCampus = false
+                this.showMessageArea = false
+                this.showMessagePosition = true
+                this.getMessage(response.data.message)
+                this.errors_position_data = null
+            }).catch((error) => {
+                if(error && error.response && error.response.data && error.response.data.errors) {
+                    this.errors_position_data = error.response.data.errors
+                }
+            }).finally(() => {
+                this.is_loading = false; // DESACTIVAR
+            })
         },
         deleteCampusData(item, index) {
-
-            axios.delete(`/campus-data-delete/${item.id}`).then(
-                (response) => {
-                    this.getCampusesData(this.company.id)
-
-                    this.add_campus_data = false
-                    this.edit_campus_data = false
-
-                    this.successfully_created_message = false
-                    this.successfully_updated_message = false
-                    this.successfully_deleted_message = true
-
-                    this.showMessageCampus = true
-                    this.showMessageArea = false
-                    this.showMessagePosition = false
-
-                    this.getMessage(response.data.message)
-
-                    this.selected_campus_data = null
-                    this.errors_campus_data = null
-                }).catch(
-                (error) => {
-                    if(error && error.response && error.response.data && error.response.data.errors) {
-                        console.log(error.response.data.errors)
-                        this.errors_campus_data = error.response.data.errors
-                    }
-                })
+            this.is_loading = true; // ACTIVAR
+            axios.delete(`/campus-data-delete/${item.id}`).then((response) => {
+                this.getCampusesData(this.company.id)
+                this.add_campus_data = false
+                this.edit_campus_data = false
+                this.successfully_created_message = false
+                this.successfully_updated_message = false
+                this.successfully_deleted_message = true
+                this.showMessageCampus = true
+                this.showMessageArea = false
+                this.showMessagePosition = false
+                this.getMessage(response.data.message)
+                this.selected_campus_data = null
+                this.errors_campus_data = null
+            }).catch((error) => {
+                if(error && error.response && error.response.data && error.response.data.errors) {
+                    this.errors_campus_data = error.response.data.errors
+                }
+            }).finally(() => {
+                this.is_loading = false; // DESACTIVAR
+            })
         },
         deleteAreaData(item, index) {
-
-            axios.delete(`/area-data-delete/${item.id}`).then(
-                (response) => {
-                    this.getAreasData(this.company.id)
-
-                    this.add_area_data = false
-                    this.edit_area_data = false
-
-                    this.successfully_created_message = false
-                    this.successfully_updated_message = false
-                    this.successfully_deleted_message = true
-
-                    this.showMessageCampus = false
-                    this.showMessageArea = true
-                    this.showMessagePosition = false
-
-                    this.getMessage(response.data.message)
-
-                    this.selected_area_data = null
-                    this.errors_area_data = null
-                }).catch(
-                (error) => {
-                    if(error && error.response && error.response.data && error.response.data.errors) {
-                        console.log(error.response.data.errors)
-                        this.errors_area_data = error.response.data.errors
-                    }
-                })
+            this.is_loading = true; // ACTIVAR
+            axios.delete(`/area-data-delete/${item.id}`).then((response) => {
+                this.getAreasData(this.company.id)
+                this.add_area_data = false
+                this.edit_area_data = false
+                this.successfully_created_message = false
+                this.successfully_updated_message = false
+                this.successfully_deleted_message = true
+                this.showMessageCampus = false
+                this.showMessageArea = true
+                this.showMessagePosition = false
+                this.getMessage(response.data.message)
+                this.selected_area_data = null
+                this.errors_area_data = null
+            }).catch((error) => {
+                if(error && error.response && error.response.data && error.response.data.errors) {
+                    this.errors_area_data = error.response.data.errors
+                }
+            }).finally(() => {
+                this.is_loading = false; // DESACTIVAR
+            })
         },
         deletePositionData(item, index) {
-
-            axios.delete(`/position-data-delete/${item.id}`).then(
-                (response) => {
-                    this.getPositionsData(this.company.id)
-
-                    this.add_position_data = false
-                    this.edit_position_data = false
-
-                    this.successfully_created_message = false
-                    this.successfully_updated_message = false
-                    this.successfully_deleted_message = true
-
-                    this.showMessageCampus = false
-                    this.showMessageArea = false
-                    this.showMessagePosition = true
-
-                    this.getMessage(response.data.message)
-
-                    this.selected_position_data = null
-                    this.errors_position_data = null
-                }).catch(
-                (error) => {
-                    if(error && error.response && error.response.data && error.response.data.errors) {
-                        console.log(error.response.data.errors)
-                        this.errors_position_data = error.response.data.errors
-                    }
-                })
+            this.is_loading = true; // ACTIVAR
+            axios.delete(`/position-data-delete/${item.id}`).then((response) => {
+                this.getPositionsData(this.company.id)
+                this.add_position_data = false
+                this.edit_position_data = false
+                this.successfully_created_message = false
+                this.successfully_updated_message = false
+                this.successfully_deleted_message = true
+                this.showMessageCampus = false
+                this.showMessageArea = false
+                this.showMessagePosition = true
+                this.getMessage(response.data.message)
+                this.selected_position_data = null
+                this.errors_position_data = null
+            }).catch((error) => {
+                if(error && error.response && error.response.data && error.response.data.errors) {
+                    this.errors_position_data = error.response.data.errors
+                }
+            }).finally(() => {
+                this.is_loading = false; // DESACTIVAR
+            })
         },
         numberFormat(number) {
             const exp = /(\d)(?=(\d{3})+(?!\d))/g
@@ -1843,4 +1789,23 @@ export default {
 <style>
     @import './../../assets/css/company_show.css';
     @import './../../assets/css/custom.css';
+
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.85);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .loading-text {
+        font-weight: 500;
+        color: #333;
+    }
 </style>

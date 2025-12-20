@@ -1,5 +1,14 @@
 <template>
     <div>
+        <Teleport to="body">
+            <div v-if="is_loading" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Procesando...</span>
+                </div>
+                <p class="loading-text mt-3">Procesando, por favor espera...</p>
+            </div>
+        </Teleport>
+
         <div v-if="message !== ''" class="mbg-3 alert alert-success alert-dismissible fade show" role="alert">
             <span class="pe-2">
                 <i class="fa fa-star"></i>
@@ -317,7 +326,7 @@
                     <div class="modal-body">
                         <div v-if="selected_contract" class="data-grid">
                             <div class="label">Colaborador:</div>
-                            <div class="value">{{ collaborator.name }} {{ collaborator.first_surname }} {{ collaborator.second_surname }}</div>
+                            <div class="value">{{ collaborator.name }} {{ collaborator.first_surname }} {{ collaborator.second_surname ?? '' }}</div>
 
                             <div class="label">Cargo:</div>
                             <div class="value">{{ selected_contract.position.name }}</div>
@@ -370,6 +379,7 @@ export default {
     },
     data() {
         return {
+            is_loading: false,
             contracts: [],
 
             position_types: [],
@@ -484,12 +494,12 @@ export default {
         },
         getContracts(collaborator_id) {
             axios.get(`/contracts/${collaborator_id}`)
-            .then(response => {
-                this.contracts = response.data.contracts;
-            })
-            .catch(e => {
-                //
-            })
+                .then(response => {
+                    this.contracts = response.data.contracts;
+                })
+                .catch(e => {
+                    //
+                })
         },
         getContractualInformation() {
             axios.get(`/contractual-information`)
@@ -542,8 +552,10 @@ export default {
             // modal.removeAttribute('aria-hidden');
         },
         storeContract() {
+            this.is_loading = true; // ACTIVAR
             let fd = new FormData()
 
+            // ... (tus appends del FormData se mantienen igual) ...
             fd.append('collaborator_id', this.collaborator.id)
             fd.append('position_id', this.position_id)
             fd.append('salary', this.salary)
@@ -559,30 +571,25 @@ export default {
             }
             fd.append('observations', this.observations)
 
-            // Visualizar contenido
-            // console.log('=== CONTENIDO DEL FORMDATA ===')
-            // for (let [key, value] of fd.entries()) {
-            //     console.log(`${key}:`, value)
-            // }
-            // console.log('==============================')
-
             axios.post(`/contracts/${this.collaborator.id}`, fd).then(
                 (res) => {
                     this.getContracts(this.collaborator.id);
-
                     this.getMessage(res.data.message);
-
                     this.reset();
                 }).catch(
                 (error) => {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors = error.response.data.errors
                     }
+                }).finally(() => {
+                    this.is_loading = false; // DESACTIVAR
                 })
         },
         updateContract() {
+            this.is_loading = true; // ACTIVAR
             let fd = new FormData()
 
+            // ... (tus appends del FormData se mantienen igual) ...
             fd.append('collaborator_id', this.collaborator.id)
             fd.append('position_id', this.selected_contract.position_id)
             fd.append('salary', this.selected_contract.salary)
@@ -601,15 +608,15 @@ export default {
             axios.post(`/contracts/${this.selected_contract.id}`, fd).then(
                 (res) => {
                     this.getContracts(this.collaborator.id);
-
                     this.getMessage(res.data.message);
-
                     this.reset();
                 }).catch(
                 (error) => {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors = error.response.data.errors
                     }
+                }).finally(() => {
+                    this.is_loading = false; // DESACTIVAR
                 })
         },
         downloadContract(contract_id) {
@@ -619,18 +626,19 @@ export default {
             }
         },
         deleteContract(id){
+            this.is_loading = true; // ACTIVAR
             axios.delete(`/contracts/${id}`).then(
                 (res) => {
                     this.getContracts(this.collaborator.id);
-
                     this.getMessage(res.data.message);
-
                     this.reset();
                 }).catch(
                 (error) => {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors = error.response.data.errors
                     }
+                }).finally(() => {
+                    this.is_loading = false; // DESACTIVAR
                 })
         },
         reset(){
@@ -680,5 +688,24 @@ export default {
 }
 .empty-state__actions .btn {
     min-width: 160px;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-text {
+    font-weight: 500;
+    color: #333;
 }
 </style>

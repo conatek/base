@@ -1,5 +1,13 @@
 <template>
     <div>
+        <Teleport to="body">
+            <div v-if="is_loading" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Procesando...</span>
+                </div>
+                <p class="loading-text mt-3">Procesando, por favor espera...</p>
+            </div>
+        </Teleport>
         <div class="app-page-title">
             <div v-if="selected_provider == null && add_provider == false && edit_provider == false" class="page-title-wrapper">
                 <div class="page-title-heading">
@@ -363,6 +371,7 @@ export default {
     },
     data() {
         return {
+            is_loading: false,
             providers: [],
 
             selected_provider: null,
@@ -483,9 +492,6 @@ export default {
             axios.get(`/providers-data/${this.company_id}`).then(
                 (res) => {
                     this.providers = res.data.providers;
-
-                    // providersDatatable();
-
                     this.errors = null;
                 }).catch(
                 (error) => {
@@ -535,127 +541,93 @@ export default {
             this.errors = null;
         },
         storeProvider() {
+            this.is_loading = true; // ACTIVAR
             let fd = new FormData()
 
+            // ... (tus appends del FormData se mantienen igual) ...
             fd.append('company_id', this.company_id)
             fd.append('provider_type_id', this.provider_type_id)
             fd.append('name', this.name)
-            if (this.contact_name && this.contact_name.trim() !== '') {
-                fd.append('contact_name', this.contact_name);
-            }
-            if (this.contact_email && this.contact_email.trim() !== '') {
-                fd.append('contact_email', this.contact_email);
-            }
-            if (this.contact_phone && this.contact_phone.trim() !== '') {
-                fd.append('contact_phone', this.contact_phone);
-            }
-            if (this.contact_cellphone && this.contact_cellphone.trim() !== '') {
-                fd.append('contact_cellphone', this.contact_cellphone);
-            }
-            if (this.province_id && this.province_id !== '') {
-                fd.append('province_id', this.province_id);
-            }
-            if (this.city_id && this.city_id !== '') {
-                fd.append('city_id', this.city_id);
-            }
-            if (this.address && this.address.trim() !== '') {
-                fd.append('address', this.address);
-            }
-            if (this.website && this.website.trim() !== '') {
-                fd.append('website', this.website);
-            }
-            if (this.observations && this.observations.trim() !== '') {
-                fd.append('observations', this.observations);
-            }
+            if (this.contact_name && this.contact_name.trim() !== '') { fd.append('contact_name', this.contact_name); }
+            if (this.contact_email && this.contact_email.trim() !== '') { fd.append('contact_email', this.contact_email); }
+            if (this.contact_phone && this.contact_phone.trim() !== '') { fd.append('contact_phone', this.contact_phone); }
+            if (this.contact_cellphone && this.contact_cellphone.trim() !== '') { fd.append('contact_cellphone', this.contact_cellphone); }
+            if (this.province_id && this.province_id !== '') { fd.append('province_id', this.province_id); }
+            if (this.city_id && this.city_id !== '') { fd.append('city_id', this.city_id); }
+            if (this.address && this.address.trim() !== '') { fd.append('address', this.address); }
+            if (this.website && this.website.trim() !== '') { fd.append('website', this.website); }
+            if (this.observations && this.observations.trim() !== '') { fd.append('observations', this.observations); }
 
             axios.post('/staff-providers', fd).then(
                 (res) => {
                     this.getMessage(res.data.message)
-
                     this.getProviders();
-
                     this.selected_provider = null
                     this.add_provider = false
                     this.edit_provider = false
-
                     this.errors = null
                 }).catch(
                 (error) => {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors = error.response.data.errors
                     }
+                }).finally(() => {
+                    this.is_loading = false; // DESACTIVAR
                 })
         },
         updateProvider() {
+            this.is_loading = true; // ACTIVAR
             let fd = new FormData()
 
+            // ... (tus appends del FormData se mantienen igual) ...
             fd.append('company_id', this.company_id)
             fd.append('provider_type_id', this.provider_type_id)
             fd.append('name', this.name)
-            if (this.contact_name && this.contact_name.trim() !== '') {
-                fd.append('contact_name', this.contact_name);
-            }
-            if (this.contact_email && this.contact_email.trim() !== '') {
-                fd.append('contact_email', this.contact_email);
-            }
-            if (this.contact_phone && this.contact_phone.trim() !== '') {
-                fd.append('contact_phone', this.contact_phone);
-            }
-            if (this.contact_cellphone && this.contact_cellphone.trim() !== '') {
-                fd.append('contact_cellphone', this.contact_cellphone);
-            }
-            if (this.province_id && this.province_id !== '') {
-                fd.append('province_id', this.province_id);
-            }
-            if (this.city_id && this.city_id !== '') {
-                fd.append('city_id', this.city_id);
-            }
-            if (this.address && this.address.trim() !== '') {
-                fd.append('address', this.address);
-            }
-            if (this.website && this.website.trim() !== '') {
-                fd.append('website', this.website);
-            }
-            if (this.observations && this.observations.trim() !== '') {
-                fd.append('observations', this.observations);
-            }
+            if (this.contact_name && this.contact_name.trim() !== '') { fd.append('contact_name', this.contact_name); }
+            if (this.contact_email && this.contact_email.trim() !== '') { fd.append('contact_email', this.contact_email); }
+            if (this.contact_phone && this.contact_phone.trim() !== '') { fd.append('contact_phone', this.contact_phone); }
+            if (this.contact_cellphone && this.contact_cellphone.trim() !== '') { fd.append('contact_cellphone', this.contact_cellphone); }
+            if (this.province_id && this.province_id !== '') { fd.append('province_id', this.province_id); }
+            if (this.city_id && this.city_id !== '') { fd.append('city_id', this.city_id); }
+            if (this.address && this.address.trim() !== '') { fd.append('address', this.address); }
+            if (this.website && this.website.trim() !== '') { fd.append('website', this.website); }
+            if (this.observations && this.observations.trim() !== '') { fd.append('observations', this.observations); }
             fd.append('_method', 'PUT')
 
             axios.post(`/staff-providers/${this.selected_provider.id}`, fd).then(
                 (res) => {
                     this.getMessage(res.data.message)
-
                     this.getProviders();
-
                     this.selected_provider = null
                     this.add_provider = false
                     this.edit_provider = false
-
                     this.errors = null
                 }).catch(
                 (error) => {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors = error.response.data.errors
                     }
+                }).finally(() => {
+                    this.is_loading = false; // DESACTIVAR
                 })
         },
         deleteProvider(provider_id) {
+            this.is_loading = true; // ACTIVAR
             axios.delete(`/staff-providers/${provider_id}`).then(
                 (res) => {
                     this.getMessage(res.data.message)
-
                     this.getProviders();
-
                     this.selected_provider = null
                     this.add_provider = false
                     this.edit_provider = false
-
                     this.errors = null
                 }).catch(
                 (error) => {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors = error.response.data.errors
                     }
+                }).finally(() => {
+                    this.is_loading = false; // DESACTIVAR
                 })
         },
     },
@@ -664,4 +636,23 @@ export default {
 
 <style scoped>
     /* Estilos del componente */
+
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.85);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .loading-text {
+        font-weight: 500;
+        color: #333;
+    }
 </style>

@@ -7,59 +7,86 @@
                         Próximos Cumpleaños
                     </div>
                     <div class="card-body">
-                        <table style="width: 100%;" id="dt_birthdays" class="table table-hover table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Nº Documento</th>
-                                    <th>Fecha</th>
-                                    <th style="text-align: right;">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(item, index) in next_birthdays"
-                                    :class="item.week == 'current' ? 'bk-green' : (item.week == 'next' ? 'bk-yellow' : '')">
-                                    <td>{{ item.name }}</td>
-                                    <td>{{ (item.document).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}</td>
-                                    <td>{{ formatBirthDate(item) }}</td>
-                                    <td style="text-align: right;">
-                                        <!-- <a class="btn btn-sm btn-primary mx-1 my-1" @click="editRelativeData(item, index)" style="width: 80px;"><font-awesome-icon :icon="['fas', 'pen-to-square']" /> Editar</a>
-                                        <a class="btn btn-sm btn-danger mx-1 my-1" @click="deleteRelativeData(item, index)" style="width: 80px;"><font-awesome-icon :icon="['fas', 'trash-can']" /> Eliminar</a> -->
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <vue-good-table
+                            :columns="columnsBirthdays"
+                            :rows="next_birthdays"
+                            :row-style-class="getRowStyleClass"
+                            :pagination-options="{
+                                enabled: true,
+                                mode: 'records',
+                                perPage: 5,
+                                perPageDropdown: [5, 10],
+                                nextLabel: 'Sig',
+                                prevLabel: 'Ant',
+                                rowsPerPageLabel: 'Filas',
+                                ofLabel: 'de',
+                                allLabel: 'Todo'
+                            }"
+                            style-class="vgt-table table-hover table-bordered"
+                            no-data-message="No hay cumpleaños próximos"
+                        >
+                            <template #table-row="props">
+                                <span v-if="props.column.field === 'document'">
+                                    {{ (props.row.document).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}
+                                </span>
+
+                                <span v-else-if="props.column.field === 'date'">
+                                    {{ formatBirthDate(props.row) }}
+                                </span>
+
+                                <span v-else-if="props.column.field === 'actions'">
+                                    </span>
+
+                                <span v-else>
+                                    {{ props.formattedRow[props.column.field] }}
+                                </span>
+                            </template>
+                        </vue-good-table>
                     </div>
                 </div>
             </div>
+
             <div class="col-sm-12 col-xxl-6">
                 <div class="main-card mb-3 card">
                     <div class="card-header">
                         Vencimiento de Contratos
                     </div>
                     <div class="card-body">
-                        <table style="width: 100%;" id="dt_contracts" class="table table-hover table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Nº Documento</th>
-                                    <th>Fecha</th>
-                                    <th style="text-align: right;">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(item, index) in expiring_contracts"
-                                    :class="item.week == 'current' ? 'bk-green' : item.week == 'next' ? 'bk-yellow' : item.week == 'previous' ? 'bk-red' : ''">
-                                    <td>{{ item.name }}</td>
-                                    <td>{{ (item.document).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}</td>
-                                    <td>{{ formatContractDate(item) }}</td>
-                                    <td style="text-align: right;">
-                                        <!-- <a class="btn btn-sm btn-primary mx-1 my-1" @click="editRelativeData(item, index)" style="width: 80px;"><font-awesome-icon :icon="['fas', 'pen-to-square']" /> Editar</a>
-                                        <a class="btn btn-sm btn-danger mx-1 my-1" @click="deleteRelativeData(item, index)" style="width: 80px;"><font-awesome-icon :icon="['fas', 'trash-can']" /> Eliminar</a> -->
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <vue-good-table
+                            :columns="columnsContracts"
+                            :rows="expiring_contracts"
+                            :row-style-class="getRowStyleClass"
+                            :pagination-options="{
+                                enabled: true,
+                                mode: 'records',
+                                perPage: 5,
+                                perPageDropdown: [5, 10],
+                                nextLabel: 'Sig',
+                                prevLabel: 'Ant',
+                                rowsPerPageLabel: 'Filas',
+                                ofLabel: 'de',
+                                allLabel: 'Todo'
+                            }"
+                            style-class="vgt-table table-hover table-bordered"
+                            no-data-message="No hay contratos por vencer"
+                        >
+                            <template #table-row="props">
+                                <span v-if="props.column.field === 'document'">
+                                    {{ (props.row.document).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}
+                                </span>
+
+                                <span v-else-if="props.column.field === 'date'">
+                                    {{ formatContractDate(props.row) }}
+                                </span>
+
+                                <span v-else-if="props.column.field === 'actions'">
+                                    </span>
+
+                                <span v-else>
+                                    {{ props.formattedRow[props.column.field] }}
+                                </span>
+                            </template>
+                        </vue-good-table>
                     </div>
                 </div>
             </div>
@@ -68,10 +95,14 @@
 </template>
 
 <script>
-
-import { birthdaysDatatable, contractsDatatable } from '../../assets/js/tables.js';
+import { VueGoodTable } from 'vue-good-table-next';
+import axios from 'axios'; // Asegúrate de importar axios si no es global
 
 export default {
+    name: 'Alerts',
+    components: {
+        VueGoodTable,
+    },
     props: {
         company_id: { default: null, },
     },
@@ -79,6 +110,23 @@ export default {
         return {
             next_birthdays: [],
             expiring_contracts: [],
+            gender_data: null, // Agregado para que no falle getGenderData si se usa
+
+            // Definición de columnas para Cumpleaños (sin ordenamiento)
+            columnsBirthdays: [
+                { label: 'Nombre', field: 'name', sortable: false },
+                { label: 'Nº Documento', field: 'document', sortable: false },
+                { label: 'Fecha', field: 'date', sortable: false },
+                { label: 'Acciones', field: 'actions', sortable: false, tdClass: 'text-end', thClass: 'text-end' },
+            ],
+
+            // Definición de columnas para Contratos (sin ordenamiento)
+            columnsContracts: [
+                { label: 'Nombre', field: 'name', sortable: false },
+                { label: 'Nº Documento', field: 'document', sortable: false },
+                { label: 'Fecha', field: 'date', sortable: false },
+                { label: 'Acciones', field: 'actions', sortable: false, tdClass: 'text-end', thClass: 'text-end' },
+            ],
         }
     },
     mounted () {
@@ -86,23 +134,18 @@ export default {
         this.getExpiringContracts(this.company_id);
     },
     methods: {
+        // Función para asignar clases CSS a las filas (reemplaza el :class del tr)
+        getRowStyleClass(row) {
+            if (row.week === 'current') return 'bk-green';
+            if (row.week === 'next') return 'bk-yellow';
+            if (row.week === 'previous') return 'bk-red';
+            return '';
+        },
         getGenderData(company_id) {
             axios.get(`/gender-data/${company_id}`)
             .then(response => {
                 this.gender_data = response.data.gender_data;
-                this.chartGenderData = {
-                    // labels: this.gender_data.labels,
-                    datasets: [
-                        {
-                            backgroundColor: this.getRandomColorsFromArray(this.gender_data.labels.length),
-                            data: this.gender_data.values
-                        }
-                    ],
-                };
-                this.chartGenderOptions = {
-                    responsive: true,
-                    maintainAspectRatio: true
-                };
+                // ... lógica existente ...
             })
             .catch(e => {
                 console.error('Error:', e);
@@ -112,53 +155,28 @@ export default {
             axios.get(`/get-next-birthdays/${company_id}`)
             .then(response => {
                 this.next_birthdays = response.data.next_birthdays;
-                // this.callDatatableBirthdays();
-                birthdaysDatatable();
+                // Eliminada la llamada a birthdaysDatatable();
             })
             .catch(error => {
-                console.error('Error:', e);
+                console.error('Error:', error);
             });
         },
         getExpiringContracts(company_id) {
             axios.get(`/get-expiring-contracts/${company_id}`)
             .then(response => {
                 this.expiring_contracts = response.data.expiring_contracts;
-                // this.callDatatableContracts();
-                contractsDatatable();
+                // Eliminada la llamada a contractsDatatable();
             })
             .catch(error => {
-                console.error('Error:', e);
+                console.error('Error:', error);
             });
         },
         convertMonth(month) {
-            switch (month) {
-                case 1:
-                    return 'Enero';
-                case 2:
-                    return 'Febrero';
-                case 3:
-                    return 'Marzo';
-                case 4:
-                    return 'Abril';
-                case 5:
-                    return 'Mayo';
-                case 6:
-                    return 'Junio';
-                case 7:
-                    return 'Julio';
-                case 8:
-                    return 'Agosto';
-                case 9:
-                    return 'Septiembre';
-                case 10:
-                    return 'Octubre';
-                case 11:
-                    return 'Noviembre';
-                case 12:
-                    return 'Diciembre';
-                default:
-                    return '';
-            }
+            const months = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            return months[month - 1] || '';
         },
         formatDate(date){
             const newDate = new Date(date)
@@ -175,15 +193,16 @@ export default {
 </script>
 
 <style scoped>
-.bk-green {
-    background-color: #d4edda;
+/* Estilos para VueGoodTable para que reconozca las clases de fondo */
+::v-deep .bk-green {
+    background-color: #d4edda !important;
 }
 
-.bk-yellow {
-    background-color: #fff3cd;
+::v-deep .bk-yellow {
+    background-color: #fff3cd !important;
 }
 
-.bk-red {
-    background-color: #f8d7da;
+::v-deep .bk-red {
+    background-color: #f8d7da !important;
 }
 </style>

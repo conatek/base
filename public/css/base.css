@@ -12255,7 +12255,7 @@ a.avatar-icon-wrapper:hover .avatar-icon {
   height: 44px;
   transition: all .2s;
   opacity: 1;
-  border-radius: 50px; }
+  border-radius: 10px; }
   .avatar-icon.rounded {
     border-radius: 0.39rem !important; }
 

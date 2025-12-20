@@ -1,5 +1,14 @@
 <template>
     <div class="container-fluid">
+        <Teleport to="body">
+            <div v-if="is_loading" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Procesando...</span>
+                </div>
+                <p class="loading-text mt-3">Procesando, por favor espera...</p>
+            </div>
+        </Teleport>
+
         <div class="app-page-title">
             <div class="page-title-wrapper">
                 <div class="page-title-heading">
@@ -219,60 +228,60 @@
                 <div class="main-card mb-3 card">
                     <div class="card-header">Incapacidades</div>
                     <div class="card-body table-responsive">
-                        <table style="width: 100%;" id="dt_disabilities" class="table table-cntk table-hover table-bordered display">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">Documento</th>
-                                    <th class="text-center">Colaborador</th>
-                                    <th class="text-center">EPS</th>
-                                    <th class="text-center">Tipo</th>
-                                    <th class="text-center">Periodo</th>
-                                    <th class="text-center">Duración</th>
-                                    <th class="text-end">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="absenceChain in consolidatedAbsences">
-                                    <td class="text-center">{{ numberFormat(absenceChain.document_number) }}</td>
-                                    <td class="text-start">{{ absenceChain.name }} <br> {{ absenceChain.first_surname }} {{ absenceChain.second_surname }}</td>
-                                    <td class="text-center">{{ absenceChain.eps_name }}</td>
-                                    <td class="text-center">{{ absenceChain.absence_type }}</td>
+                        <vue-good-table
+                            :columns="columnsDisabilities"
+                            :rows="consolidatedAbsences"
+                            :search-options="{ enabled: true, placeholder: 'Buscar...' }"
+                            :pagination-options="{
+                                enabled: true,
+                                mode: 'records',
+                                perPage: 5,
+                                perPageDropdown: [5, 10, 20],
+                                nextLabel: 'Siguiente',
+                                prevLabel: 'Anterior',
+                                rowsPerPageLabel: 'Filas por pág',
+                                ofLabel: 'de',
+                                pageLabel: 'Página',
+                                allLabel: 'Todo'
+                            }"
+                            style-class="vgt-table bordered condensed"
+                            no-data-message="No hay resultados que coincidan"
+                        >
+                            <template #table-row="props">
+                                <span v-if="props.column.field === 'document_number'">
+                                    {{ numberFormat(props.row.document_number) }}
+                                </span>
 
-                                    <td class="text-center align-middle">
-                                        <div class="d-flex justify-content-start">
-                                            <div class="text-start">
-                                                <div class="d-flex">
-                                                    <strong class="me-2">Inicio:</strong>
-                                                    <span>{{ absenceChain.start_date }}</span>
-                                                </div>
-                                                <div class="d-flex">
-                                                    <strong class="me-2">Fin:</strong>
-                                                    <span>{{ absenceChain.end_date }}</span>
-                                                </div>
-                                            </div>
+                                <span v-else-if="props.column.field === 'collaborator_info'">
+                                    {{ props.row.name }} <br> {{ props.row.first_surname }} {{ props.row.second_surname ?? '' }}
+                                </span>
+
+                                <span v-else-if="props.column.field === 'period'">
+                                    <div class="d-flex justify-content-center flex-column align-items-center">
+                                        <div class="d-flex gap-2">
+                                            <strong>Inicio:</strong> <span>{{ props.row.start_date }}</span>
                                         </div>
-                                    </td>
-
-                                    <td class="text-center">{{ absenceChain.total_days }} días</td>
-
-                                    <td class="text-end">
-                                        <div class="d-flex flex-row align-items-center justify-content-end gap-1">
-                                            <!-- <button @click="showPayments(absence)"
-                                                    type="button"
-                                                    class="btn btn-sm btn-warning"
-                                                    style="color: white;">
-                                                <i class="fa fa-dollar-sign"></i> Pagos EPS
-                                            </button> -->
-                                            <button @click="showAbsenceChainDetail(absenceChain)"
-                                                    type="button"
-                                                    class="btn-icon btn btn-sm btn-success">
-                                                <i class="fa fa-eye"></i> Mostrar Cadena
-                                            </button>
+                                        <div class="d-flex gap-2">
+                                            <strong>Fin:</strong> <span>{{ props.row.end_date }}</span>
                                         </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                    </div>
+                                </span>
+
+                                <span v-else-if="props.column.field === 'total_days'">
+                                    {{ props.row.total_days }} días
+                                </span>
+
+                                <span v-else-if="props.column.field === 'actions'">
+                                    <button @click="showAbsenceChainDetail(props.row)" type="button" class="btn-icon btn btn-sm btn-success">
+                                        <i class="fa fa-eye"></i> Mostrar Cadena
+                                    </button>
+                                </span>
+
+                                <span v-else>
+                                    {{ props.formattedRow[props.column.field] }}
+                                </span>
+                            </template>
+                        </vue-good-table>
                     </div>
                 </div>
             </div>
@@ -281,45 +290,54 @@
                 <div class="main-card mb-3 card">
                     <div class="card-header">Detalle de Cadena</div>
                     <div class="card-body table-responsive">
-                        <table style="width: 100%;" id="dt_disability_detail" class="table table-cntk table-hover table-bordered display">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">ID</th>
-                                    <th class="text-center">Clasificación</th>
-                                    <th class="text-center">Inicio</th>
-                                    <th class="text-center">Finalización</th>
-                                    <th class="text-center">Duración</th>
-                                    <th class="text-center">Estado</th>
-                                    <th class="text-end">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="absence in selected_absence_chain.absences_in_chain">
-                                    <td class="text-center">{{ absence.id }}</td>
-                                    <td class="text-center">{{ absence.disease_classification_code }} - {{ absence.description }}</td>
-                                    <td class="text-center">{{ absence.start_date }}</td>
-                                    <td class="text-center">{{ absence.end_date }}</td>
-                                    <td class="text-center">{{ absence.days }} días</td>
-                                    <td class="text-center">
-                                        <span class="badge bg-success" style="min-width: 100px;">{{ absence.absence_status.absence_status_type.type }}</span>
-                                    </td>
-                                    <td class="text-end">
-                                        <div class="d-flex flex-row align-items-center justify-content-end gap-1">
-                                            <button @click="showDisabilityDetail(absence)"
-                                                    type="button"
-                                                    class="btn btn-sm btn-success">
-                                                <i class="fa fa-eye"></i> Ver Detalle
-                                            </button>
-                                            <button @click="editDisability(absence)"
-                                                    type="button"
-                                                    class="btn btn-sm btn-primary">
-                                                <i class="fa fa-edit"></i> Editar
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <vue-good-table
+                            :columns="columnsDetail"
+                            :rows="selected_absence_chain.absences_in_chain"
+                            :search-options="{ enabled: true, placeholder: 'Buscar...' }"
+                            :pagination-options="{
+                                enabled: true,
+                                perPage: 5,
+                                mode: 'records',
+                                nextLabel: 'Sig',
+                                prevLabel: 'Ant',
+                                rowsPerPageLabel: 'Filas',
+                                ofLabel: 'de',
+                                allLabel: 'Todo'
+                            }"
+                            style-class="vgt-table bordered condensed"
+                            no-data-message="No hay detalles disponibles"
+                        >
+                            <template #table-row="props">
+                                <span v-if="props.column.field === 'classification'">
+                                    {{ props.row.disease_classification_code }} - {{ props.row.description }}
+                                </span>
+
+                                <span v-else-if="props.column.field === 'days'">
+                                    {{ props.row.days }} días
+                                </span>
+
+                                <span v-else-if="props.column.field === 'status'">
+                                    <span class="badge bg-success" style="min-width: 100px;">
+                                        {{ props.row.absence_status?.absence_status_type?.type || 'Sin estado' }}
+                                    </span>
+                                </span>
+
+                                <span v-else-if="props.column.field === 'actions'">
+                                    <div class="d-flex flex-row align-items-center justify-content-end gap-1">
+                                        <button @click="showDisabilityDetail(props.row)" type="button" class="btn btn-sm btn-success" title="Ver Detalle">
+                                            <i class="fa fa-eye"></i>
+                                        </button>
+                                        <button @click="editDisability(props.row)" type="button" class="btn btn-sm btn-primary" title="Editar">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </span>
+
+                                <span v-else>
+                                    {{ props.formattedRow[props.column.field] }}
+                                </span>
+                            </template>
+                        </vue-good-table>
                     </div>
                 </div>
             </div>
@@ -544,22 +562,22 @@
 
                         <div class="data-grid">
                             <div class="label">Estado:</div>
-                            <div class="value">{{ selectedAbsence.absence_status.absence_status_type.type }}</div>
+                            <div class="value">{{ selectedAbsence.absence_status.absence_status_type.type ?? 'Sin definir' }}</div>
 
                             <div class="label">Valor Autorizado:</div>
-                            <div class="value">{{ selectedAbsence.absence_status.authorized_value }}</div>
+                            <div class="value">{{ selectedAbsence.absence_status.authorized_value ?? 'Sin definir' }}</div>
 
                             <div class="label">Valor Pagado:</div>
-                            <div class="value">{{ selectedAbsence.absence_status.paid_value }}</div>
+                            <div class="value">{{ selectedAbsence.absence_status.paid_value ?? 'Sin definir' }}</div>
 
                             <div class="label">Días Pagados:</div>
-                            <div class="value">{{ selectedAbsence.absence_status.paid_days }}</div>
+                            <div class="value">{{ selectedAbsence.absence_status.paid_days ?? 'Sin definir' }}</div>
 
                             <div class="label">Fecha de Pago:</div>
-                            <div class="value">{{ selectedAbsence.absence_status.payment_date }}</div>
+                            <div class="value">{{ selectedAbsence.absence_status.payment_date ?? 'Sin definir' }}</div>
 
                             <div class="label">Observaciones:</div>
-                            <div class="value">{{ selectedAbsence.absence_status.observations }}</div>
+                            <div class="value">{{ selectedAbsence.absence_status.observations ?? 'Sin definir' }}</div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -598,20 +616,46 @@
                             <div class="col-sm-12 col-md-6 col-lg-6">
                                 <div class="position-relative mb-3">
                                     <label for="support_file" class="form-label">Soporte de Pago</label>
+
+                                    <input
+                                        @change="changeSupportFile"
+                                        ref="supportFileInput"
+                                        type="file"
+                                        name="support_file"
+                                        id="support_file"
+                                        class="form-control d-none"
+                                    >
+
                                     <div class="input-group">
-                                        <input @change="changeSupportFile" ref="support_file" type="file" name="support_file" id="support_file" class="form-control">
+                                        <button type="button" class="btn btn-primary" @click="selectSupportFile">
+                                            <i class="fa fa-upload"></i> Seleccionar
+                                        </button>
+
+                                        <input
+                                            @click="selectSupportFile"
+                                            type="text"
+                                            class="form-control"
+                                            :value="support_file ? support_file.name : ''"
+                                            readonly
+                                            placeholder="Sin archivo seleccionado"
+                                            style="cursor: pointer; background-color: #fff;"
+                                        >
+
                                         <button
                                             v-if="selectedAbsence && selectedAbsence.absence_status && selectedAbsence.absence_status.support_url"
                                             @click="downloadSupportFile(selectedAbsence.id)"
                                             type="button"
                                             class="btn btn-warning"
-                                            title="Descargar archivo actual"
+                                            title="Descargar archivo actual guardado"
                                             style="border: 1px solid #ced4da;"
                                         >
                                             <i class="fa fa-download"></i>
                                         </button>
                                     </div>
-                                    <span v-if="errors && errors.support_file" class="error text-danger" for="support_file">{{ errors.support_file[0] }}</span>
+
+                                    <span v-if="errors && errors.support_file" class="error text-danger" for="support_file">
+                                        {{ errors.support_file[0] }}
+                                    </span>
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-6 col-lg-6">
@@ -693,7 +737,7 @@ import {
     setAbsenceResponsibleData,
     absenceResponsibleOptions } from '../../assets/js/dataAbsenceGeneralGraphics.js';
 
-import { disabilitiesDatatable, disabilityDetailDatatable } from '../../assets/js/tables.js';
+import { VueGoodTable } from 'vue-good-table-next';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale)
 
@@ -704,7 +748,8 @@ export default {
 
     components: {
         Bar,
-        Doughnut
+        Doughnut,
+        VueGoodTable,
     },
     props: {
         eps: {
@@ -725,6 +770,7 @@ export default {
     },
     data() {
         return {
+            is_loading: false,
             areas: null,
             area_id: '',
             campus_id: '',
@@ -787,6 +833,110 @@ export default {
             observations: '',
             support_file: null,
 
+            columnsDisabilities: [
+                {
+                    label: 'Documento',
+                    field: 'document_number',
+                    sortable: false,
+                    tdClass: 'text-center',
+                    thClass: 'text-center'
+                },
+                {
+                    label: 'Colaborador',
+                    field: 'collaborator_info',
+                    sortable: false,
+                    tdClass: 'text-start',
+                    thClass: 'text-center'
+                },
+                {
+                    label: 'EPS',
+                    field: 'eps_name',
+                    sortable: false,
+                    tdClass: 'text-center',
+                    thClass: 'text-center'
+                },
+                {
+                    label: 'Tipo',
+                    field: 'absence_type',
+                    sortable: false,
+                    tdClass: 'text-center',
+                    thClass: 'text-center'
+                },
+                {
+                    label: 'Periodo',
+                    field: 'period',
+                    sortable: false,
+                    tdClass: 'text-center',
+                    thClass: 'text-center'
+                },
+                {
+                    label: 'Duración',
+                    field: 'total_days',
+                    sortable: false,
+                    tdClass: 'text-center',
+                    thClass: 'text-center'
+                },
+                {
+                    label: 'Acciones',
+                    field: 'actions',
+                    sortable: false,
+                    tdClass: 'text-end',
+                    thClass: 'text-end'
+                },
+            ],
+
+            columnsDetail: [
+                {
+                    label: 'ID',
+                    field: 'id',
+                    sortable: false,
+                    tdClass: 'text-center',
+                    thClass: 'text-center'
+                },
+                {
+                    label: 'Clasificación',
+                    field: 'classification',
+                    sortable: false,
+                    tdClass: 'text-center',
+                    thClass: 'text-center'
+                },
+                {
+                    label: 'Inicio',
+                    field: 'start_date',
+                    sortable: false,
+                    tdClass: 'text-center',
+                    thClass: 'text-center'
+                },
+                {
+                    label: 'Finalización',
+                    field: 'end_date',
+                    sortable: false,
+                    tdClass: 'text-center',
+                    thClass: 'text-center'
+                },
+                {
+                    label: 'Duración',
+                    field: 'days',
+                    sortable: false,
+                    tdClass: 'text-center',
+                    thClass: 'text-center'
+                },
+                {
+                    label: 'Estado',
+                    field: 'status',
+                    sortable: false,
+                    tdClass: 'text-center',
+                    thClass: 'text-center'
+                },
+                {
+                    label: 'Acciones',
+                    field: 'actions',
+                    sortable: false,
+                    tdClass: 'text-end',
+                    thClass: 'text-end'
+                },
+            ],
+
             errors: null,
         };
     },
@@ -799,10 +949,6 @@ export default {
             handler(newValue) {
                 this.absences = newValue;
                 this.filteredAbsences = cloneDeep(this.absences);
-
-                this.$nextTick(() => {
-                    disabilitiesDatatable();
-                });
             },
             deep: true
         },
@@ -851,6 +997,17 @@ export default {
         },
     },
     methods: {
+        selectSupportFile() {
+            this.$refs.supportFileInput.click();
+        },
+        changeSupportFile(e) {
+            if (e.target.files && e.target.files[0]) {
+                this.support_file = e.target.files[0];
+            } else {
+                // Opcional: si cancelan la selección y quieres mantener el anterior o limpiar
+                this.support_file = null;
+            }
+        },
         getAbsences() {
             axios.get(`/absences`)
                 .then((response) => {
@@ -881,10 +1038,6 @@ export default {
                 this.absence_indicators = false;
                 this.disability_control = true;
                 this.eps_payments = false;
-
-                this.$nextTick(() => {
-                    disabilitiesDatatable();
-                });
             } else if (view === 'eps_payments') {
                 this.absence_indicators = false;
                 this.disability_control = false;
@@ -1374,10 +1527,10 @@ export default {
         },
         showAbsenceChainDetail(absenceChain) {
             // Primero, destruye la tabla si ya existe
-            let table = $('#dt_disability_detail');
-            if ($.fn.DataTable.isDataTable(table)) {
-                table.DataTable().destroy();
-            }
+            // let table = $('#dt_disability_detail');
+            // if ($.fn.DataTable.isDataTable(table)) {
+            //     table.DataTable().destroy();
+            // }
 
             // Luego actualiza los datos
             this.selected_absence_chain = absenceChain;
@@ -1460,10 +1613,10 @@ export default {
             });
         },
         updateAbsenceStatus() {
+            this.is_loading = true; // ACTIVAR
             const modal = document.querySelector('.absence-chain-edit-modal');
 
             let fd = new FormData()
-
             fd.append('absence_id', this.selectedAbsence.id)
             fd.append('absence_status_type_id', this.absence_status_type_id)
             fd.append('authorized_value', this.authorized_value)
@@ -1471,7 +1624,9 @@ export default {
             fd.append('paid_days', this.paid_days)
             fd.append('payment_date', this.payment_date)
             fd.append('observations', this.observations)
-            fd.append('support_file', this.support_file)
+            if(this.support_file) {
+                fd.append('support_file', this.support_file)
+            }
             fd.append('_method', 'PUT')
 
             axios.post(`/absence-status/${this.absence_status_id}/update`, fd)
@@ -1479,17 +1634,21 @@ export default {
                     this.getAbsences();
                     this.show_absence_chain_detail = false;
 
-                    modal.style.display = 'none';
+                    // Lógica manual de cierre de modal que tenías
+                    if(modal) modal.style.display = 'none';
                     document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                     document.body.classList.remove('modal-open');
                     document.body.style = '';
 
                     $('.absence-chain-edit-modal').modal('hide');
-                    this.$refs.support_file.value = '';
+                    if(this.$refs.support_file) this.$refs.support_file.value = '';
                 })
                 .catch(error => {
                     console.error('Error al actualizar la ausencia:', error);
                     this.errors = error.response.data.errors;
+                })
+                .finally(() => {
+                    this.is_loading = false; // DESACTIVAR
                 });
         },
         downloadSupportFile(absence_id) {
@@ -1547,5 +1706,24 @@ export default {
     .btn-mh-dark-blue.active {
         background-color: #0dacff;
         color: #fff;
+    }
+
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.85);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .loading-text {
+        font-weight: 500;
+        color: #333;
     }
 </style>

@@ -1,5 +1,13 @@
 <template>
     <div>
+        <Teleport to="body">
+            <div v-if="is_loading" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Procesando...</span>
+                </div>
+                <p class="loading-text mt-3">Procesando, por favor espera...</p>
+            </div>
+        </Teleport>
         <div class="main-card mb-3 card">
             <div class="card-body">
                 <form @submit.prevent="storeCollaborator" enctype="multipart/form-data">
@@ -113,7 +121,17 @@
                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                             <div class="position-relative mb-3">
                                                 <label for="document_province_id" class="form-label">Dpto De Expedición*</label>
-                                                <select v-model="document_province_id" @change="getCities(document_province_id, 'document')" class="form-control" name="province" id="document_province_id">
+                                                <!-- <select v-model="document_province_id" @change="getCities(document_province_id, 'document')" class="form-control" name="province" id="document_province_id">
+                                                    <option value="" disabled selected hidden>Seleccionar Dpto</option>
+                                                    <option v-for="province in provinces" :value="province.id">{{ province.name }}</option>
+                                                </select> -->
+                                                <select 
+                                                    v-model="document_province_id" 
+                                                    @change="changeProvince(document_province_id, 'document')" 
+                                                    class="form-control" 
+                                                    name="province" 
+                                                    id="document_province_id"
+                                                >
                                                     <option value="" disabled selected hidden>Seleccionar Dpto</option>
                                                     <option v-for="province in provinces" :value="province.id">{{ province.name }}</option>
                                                 </select>
@@ -162,35 +180,26 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <!-- <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="birth_province_id" class="form-label">Dpto De Nacimiento*</label>
-                                                <select v-model="birth_province_id" @change="getCities(birth_province_id, 'birth')" class="form-control" name="province" id="birth_province_id">
-                                                    <option value="" disabled selected hidden>Seleccionar Dpto</option>
-                                                    <option v-for="province in provinces" :value="province.id">{{ province.name }}</option>
-                                                </select>
-                                                <span v-if="errors && errors.birth_province_id" class="error text-danger" for="birth_province_id">{{ errors.birth_province_id[0] }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
-                                                <label for="birth_city_id" class="form-label">Municipio de Nacimiento*</label>
-                                                <select v-model="birth_city_id" class="form-control" name="birth_city_id" id="birth_city_id">
-                                                    <option value="" disabled selected hidden>Seleccionar Municipio</option>
-                                                    <option v-for="city in birth_cities" :value="city.id">{{ city.name }}</option>
-                                                </select>
-                                                <span v-if="errors && errors.birth_city_id" class="error text-danger" for="birth_city_id">{{ errors.birth_city_id[0] }}</span>
-                                            </div>
-                                        </div> -->
+
 
                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                             <div class="position-relative mb-3">
                                                 <label for="birth_province_id" class="form-label">Dpto De Nacimiento*</label>
-
-                                                <select
+                                                <!-- <select
                                                     v-model="birth_province_id"
                                                     :disabled="is_foreigner"
                                                     @change="getCities(birth_province_id, 'birth')"
+                                                    class="form-control"
+                                                    name="birth_province_id"
+                                                    id="birth_province_id"
+                                                >
+                                                    <option value="" disabled selected hidden>Seleccionar Dpto</option>
+                                                    <option v-for="province in provinces" :value="province.id">{{ province.name }}</option>
+                                                </select> -->
+                                                <select
+                                                    v-model="birth_province_id"
+                                                    :disabled="is_foreigner"
+                                                    @change="changeProvince(birth_province_id, 'birth')"
                                                     class="form-control"
                                                     name="birth_province_id"
                                                     id="birth_province_id"
@@ -263,10 +272,22 @@
                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                             <div class="position-relative mb-3">
                                                 <label for="residence_province_id" class="form-label">Dpto De Residencia*</label>
-                                                <select v-model="residence_province_id" @change="getCities(residence_province_id, 'residence')" class="form-control" name="province" id="residence_province_id">
+                                                <!-- <select v-model="residence_province_id" @change="getCities(residence_province_id, 'residence')" class="form-control" name="province" id="residence_province_id">
+                                                    <option value="" disabled selected hidden>Seleccionar Dpto</option>
+                                                    <option v-for="province in provinces" :value="province.id">{{ province.name }}</option>
+                                                </select> -->
+
+                                                <select 
+                                                    v-model="residence_province_id" 
+                                                    @change="changeProvince(residence_province_id, 'residence')" 
+                                                    class="form-control" 
+                                                    name="province" 
+                                                    id="residence_province_id"
+                                                >
                                                     <option value="" disabled selected hidden>Seleccionar Dpto</option>
                                                     <option v-for="province in provinces" :value="province.id">{{ province.name }}</option>
                                                 </select>
+
                                                 <span v-if="errors && errors.residence_province_id" class="error text-danger" for="residence_province_id">{{ errors.residence_province_id[0] }}</span>
                                             </div>
                                         </div>
@@ -285,7 +306,7 @@
                                                 <label for="stratum_type_id" class="form-label">Estrato Social*</label>
                                                 <select v-model="stratum_type_id" class="form-control" name="stratum_type_id" id="stratum_type_id">
                                                     <option value="" disabled selected hidden>Seleccionar Estrato</option>
-                                                    <option v-for="stratum in stratum_types" :value="stratum.id">{{ stratum.id }} - {{ stratum.name }}</option>
+                                                    <option v-for="stratum in stratum_types" :value="stratum.id">[{{ stratum.id }}] {{ stratum.name }}</option>
                                                 </select>
                                                 <span v-if="errors && errors.stratum_type_id" class="error text-danger" for="stratum_type_id">{{ errors.stratum_type_id[0] }}</span>
                                             </div>
@@ -395,6 +416,7 @@ export default {
     },
     data() {
         return {
+            is_loading: false,
             tab_collaborator_status: 'general',
             is_foreigner: false,
 
@@ -464,7 +486,24 @@ export default {
                 this.image_src = URL.createObjectURL(file);
             }
         },
+        changeProvince(provinceId, type) {
+            // 1. Limpiamos el modelo del municipio correspondiente según el tipo
+            if (type === 'document') {
+                this.document_city_id = '';
+            } else if (type === 'birth') {
+                this.birth_city_id = '';
+            } else if (type === 'residence') {
+                this.residence_city_id = '';
+            }
+
+            // 2. Llamamos a la función que obtiene las ciudades
+            this.getCities(provinceId, type);
+        },
+
         getCities(province, type) {
+            // Validación rápida para evitar llamadas vacías
+            if (!province) return;
+
             let dataSend = {
                 "province": province,
             }
@@ -481,6 +520,8 @@ export default {
                 })
         },
         storeCollaborator() {
+            this.is_loading = true; // ACTIVAR AL INICIO DE TODO EL PROCESO
+
             let fd = new FormData();
 
             // 1. La función interna que agrega campos y envía
@@ -525,6 +566,8 @@ export default {
                             console.log(error.response.data.errors);
                             this.errors = error.response.data.errors;
                         }
+                    }).finally(() => {
+                        this.is_loading = false; // DESACTIVAR AQUÍ (al final de la petición)
                     });
             };
 
@@ -533,37 +576,25 @@ export default {
                 const { canvas } = this.$refs.cropperRef.getResult();
 
                 if (canvas) {
-
-                    // --- NUEVO: Crear un canvas de 300x300 ---
                     const resizedCanvas = document.createElement('canvas');
                     resizedCanvas.width = 300;
                     resizedCanvas.height = 300;
 
-                    // --- NUEVO: Obtener el contexto y dibujar el recorte en 300x300 ---
                     const ctx = resizedCanvas.getContext('2d');
-                    ctx.drawImage(canvas, 0, 0, 300, 300); // Dibuja y redimensiona
+                    ctx.drawImage(canvas, 0, 0, 300, 300);
 
-                    // 5. Convertimos el *canvas redimensionado* a Blob (asíncrono)
                     resizedCanvas.toBlob((blob) => {
-
-                        // DEBUG: Verás que este tamaño es MUCHO menor (ej: 0.08 MB)
-                        console.log('Tamaño del Blob REDIMENSIONADO (MB):', (blob.size / 1024 / 1024).toFixed(2));
-
-                        // 6. Añadimos la imagen recortada
+                        // console.log('Tamaño del Blob REDIMENSIONADO (MB):', (blob.size / 1024 / 1024).toFixed(2));
                         fd.append('image', blob, 'profile_300x300.png');
-
-                        // 7. Llamamos a la función que agrega el resto y envía
                         appendFieldsAndSubmit(fd);
-
-                    }, 'image/png'); // Puedes usar 'image/jpeg' y un segundo param. (ej. 0.8) para calidad
+                    }, 'image/png');
 
                 } else {
                     // Error de canvas, solo envía los campos
                     appendFieldsAndSubmit(fd);
                 }
             } else {
-                // 8. Si NO hay imagen, llamamos a la función
-                //    directamente para que envíe los demás datos.
+                // Si NO hay imagen, llamamos a la función directamente
                 appendFieldsAndSubmit(fd);
             }
         },
@@ -584,5 +615,24 @@ export default {
     /* height: 400px; */
     margin-top: 15px;
     border: 1px solid #ccc;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-text {
+    font-weight: 500;
+    color: #333;
 }
 </style>

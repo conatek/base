@@ -1,5 +1,13 @@
 <template>
     <div>
+        <Teleport to="body">
+            <div v-if="is_loading" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Procesando...</span>
+                </div>
+                <p class="loading-text mt-3">Procesando, por favor espera...</p>
+            </div>
+        </Teleport>
         <div class="app-page-title">
             <div class="page-title-wrapper">
                 <div class="page-title-heading">
@@ -45,7 +53,7 @@
             </div>
         </div>
         <div v-if="viewState === 'list'">
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-6 col-xl-4">
                     <div class="input-group mb-3">
                         <div class="input-group-text">
@@ -54,6 +62,43 @@
                             </div>
                         </div>
                         <input v-model="search" @input="handleSearch" placeholder="Buscar Colaborador ..." type="text" class="form-control">
+                    </div>
+                </div>
+            </div> -->
+
+            <div class="row">
+                <div class="col-sm-12 col-lg-4">
+                    <div class="input-group mb-3">
+                        <div class="input-group-text"><i class="fa fa-search"></i></div>
+                        <input 
+                            v-model="search" 
+                            @input="handleSearch" 
+                            placeholder="Buscar (Nombre, Doc, Email)..." 
+                            type="text" 
+                            class="form-control"
+                        >
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                    <div class="input-group mb-3">
+                        <div class="input-group-text"><i class="fa fa-user-tag"></i></div>
+                        <select v-model="statusFilter" @change="handleSearch" class="form-select form-control">
+                            <option value="all">Todos los colaboradores</option>
+                            <option value="active">Solo Activos</option>
+                            <option value="inactive">Solo Inactivos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                    <div class="input-group mb-3">
+                        <div class="input-group-text"><i class="fa fa-file-contract"></i></div>
+                        <select v-model="contractFilter" @change="handleSearch" class="form-select form-control">
+                            <option value="all">Cualquier estado de contrato</option>
+                            <option value="vigente">Con Contrato Vigente</option>
+                            <option value="no_vigente">Sin Contrato Vigente</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -69,7 +114,7 @@
                                 <div class="icon-grid">
                                     <a @click="showCollaboratorContract(collaborator.id)" title="Contratos"> <i class="fa fa-file-contract"></i></a>
                                     <a @click="showCollaboratorSocialSecurity(collaborator.id)" title="Seguridad Social e Información Bancaria"> <i class="fa fa-handshake"></i></a>
-                                    <!-- <a @click="showCollaboratorAbsence(collaborator.id)" title="Ausentismo"> <i class="fa fa-clock"></i></a> -->
+                                    <a @click="showCollaboratorAbsence(collaborator.id)" title="Ausentismo"> <i class="fa fa-clock"></i></a>
                                 </div>
                             </div>
                             <div class="title-total">
@@ -239,7 +284,7 @@ export default {
     },
     data() {
         return {
-            loading: 0,
+            is_loading: false,
             collaborators: [],
 
             message: '',
@@ -262,6 +307,8 @@ export default {
             currentPage: 1,
             totalPages: 0,
             search: '',
+            statusFilter: 'all',
+            contractFilter: 'all',
             filteredCollaborators: [],
 
             absences: [],
@@ -283,24 +330,24 @@ export default {
                 case 'detail':
                     return {
                         title: 'Detalle del Colaborador',
-                        iconClass: 'pe-7s-user text-success',
-                        iconStyle: ''
+                        iconClass: 'fa fa-user',
+                        iconStyle: 'color: #127cb3;'
                     };
                 case 'add':
                     return {
                         title: 'Agregar Colaborador',
-                        iconClass: 'pe-7s-user text-success',
-                        iconStyle: ''
+                        iconClass: 'fa fa-user',
+                        iconStyle: 'color: #127cb3;'
                     };
                 case 'edit':
                     return {
                         title: 'Editar Colaborador',
-                        iconClass: 'pe-7s-user text-success',
-                        iconStyle: ''
+                        iconClass: 'fa fa-user',
+                        iconStyle: 'color: #127cb3;'
                     };
                 case 'absence':
                     const name = this.selected_collaborator
-                        ? `- ${this.selected_collaborator.name} ${this.selected_collaborator.first_surname} ${this.selected_collaborator.second_surname}`
+                        ? `- ${this.selected_collaborator.name} ${this.selected_collaborator.first_surname} ${this.selected_collaborator.second_surname ?? ''}`
                         : '';
                     return {
                         title: `Ausentismo de Colaborador ${name}`,
@@ -376,7 +423,6 @@ export default {
             this.viewState = 'list';
         },
         getCollaborators() {
-            this.loading++;
             axios.get(`/collaborators/${this.company_id}`)
                 .then(response => {
                     this.collaborators = response.data.collaborators;
@@ -386,9 +432,6 @@ export default {
                 .catch(error => {
                     console.error("Error fetching collaborators:", error);
                 })
-                .finally(() => {
-                    this.loading--;
-                });
         },
         getOrigin() {
             const origin = localStorage.getItem('origin');
@@ -401,27 +444,59 @@ export default {
             }, 3000);
         },
         handleSearch() {
-            if (this.search.length > 0) {
-                this.collaboratorsWithFilter = true;
+            // 1. Iniciamos con todos los datos
+            let results = this.collaborators;
 
-                this.filteredCollaborators = this.collaborators.filter(collaborator => {
+            // 2. FILTRO A: Estado del Colaborador (Activo / Inactivo)
+            if (this.statusFilter !== 'all') {
+                if (this.statusFilter === 'active') {
+                    results = results.filter(c => c.is_active == 1);
+                } else if (this.statusFilter === 'inactive') {
+                    results = results.filter(c => c.is_active != 1);
+                }
+            }
+
+            // 3. FILTRO B: Estado del Contrato (Vigente / No Vigente)
+            // Este filtro se aplica sobre los resultados del paso anterior
+            if (this.contractFilter !== 'all') {
+                if (this.contractFilter === 'vigente') {
+                    // Verifica que hasActiveContract sea verdadero
+                    results = results.filter(c => c.hasActiveContract === true || c.hasActiveContract === 1);
+                } else if (this.contractFilter === 'no_vigente') {
+                    // Verifica que sea falso o nulo
+                    results = results.filter(c => !c.hasActiveContract);
+                }
+            }
+
+            // 4. FILTRO C: Búsqueda por Texto
+            // Se aplica sobre los resultados ya filtrados por los selectores
+            if (this.search.length > 0) {
+                const term = this.search.toLowerCase();
+                results = results.filter(collaborator => {
                     return (
-                        (collaborator.name && collaborator.name.toLowerCase().includes(this.search.toLowerCase())) ||
-                        (collaborator.first_surname && collaborator.first_surname.toLowerCase().includes(this.search.toLowerCase())) ||
-                        (collaborator.second_surname && collaborator.second_surname.toLowerCase().includes(this.search.toLowerCase())) ||
-                        (collaborator.document_number && collaborator.document_number.toLowerCase().includes(this.search.toLowerCase())) ||
-                        (collaborator.email && collaborator.email.toLowerCase().includes(this.search.toLowerCase())) ||
-                        (collaborator.cellphone && collaborator.cellphone.toLowerCase().includes(this.search.toLowerCase()))
+                        (collaborator.name && collaborator.name.toLowerCase().includes(term)) ||
+                        (collaborator.first_surname && collaborator.first_surname.toLowerCase().includes(term)) ||
+                        (collaborator.second_surname && collaborator.second_surname.toLowerCase().includes(term)) ||
+                        (collaborator.document_number && collaborator.document_number.toLowerCase().includes(term)) ||
+                        (collaborator.email && collaborator.email.toLowerCase().includes(term)) ||
+                        (collaborator.cellphone && collaborator.cellphone.toLowerCase().includes(term)) ||
+                        (collaborator.position && collaborator.position.name && collaborator.position.name.toLowerCase().includes(term))
                     );
                 });
-
-                this.getTotalPages(this.filteredCollaborators);
-                this.getPageData(1); // Siempre muestra la primera página después de buscar
-            } else {
-                this.collaboratorsWithFilter = false;
-                this.getTotalPages(this.collaborators);
-                this.getPageData(1); // Muestra la primera página al limpiar la búsqueda
             }
+
+            // 5. Finalizar actualización de vista
+            this.filteredCollaborators = results;
+            
+            // Activamos la bandera de filtro si CUALQUIERA de los 3 inputs tiene valor
+            this.collaboratorsWithFilter = (
+                this.search.length > 0 || 
+                this.statusFilter !== 'all' || 
+                this.contractFilter !== 'all'
+            );
+
+            this.getTotalPages(results);
+            this.getPageData(1);
         },
         getTotalPages(data) {
             this.totalPages = Math.ceil(data.length / this.collaboratorsPerPage)
@@ -484,7 +559,6 @@ export default {
             axios.get(`/collaborators-data`).then(
                 (res) => {
                     this.selectsDataCreate = res.data
-
                     this.errors = null
                 }).catch(
                 (error) => {
@@ -509,11 +583,11 @@ export default {
                 })
         },
         deleteCollaborator(id){
+            this.is_loading = true; // ACTIVAR
             let url = ''
             axios.delete(`/collaborators/${id}/destroy`).then(
                 (res) => {
                     localStorage.setItem('origin', 'deleted');
-
                     url = `/collaborators`
                     window.location.href = url
                     this.errors = null
@@ -522,17 +596,21 @@ export default {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors = error.response.data.errors
                     }
+                }).finally(() => {
+                    this.is_loading = false; // DESACTIVAR
                 })
         },
         deactivateCollaborator(id) {
             axios.put(`/collaborators/${id}/deactivate`).then(
                 (res) => {
                     localStorage.setItem('origin', 'deactivate');
+                    // Nota: Aquí llamas a this.collaborators = this.getCollaborators(),
+                    // pero getCollaborators no retorna nada (es void), actualiza el estado internamente.
+                    // Lo correcto es simplemente llamar a la función:
+                    this.getCollaborators();
 
-                    this.collaborators = this.getCollaborators();
-
-                    url = `/collaborators`
-                    window.location.href = url
+                    let url = `/collaborators`
+                    // window.location.href = url
                     this.errors = null
                 }).catch(
                 (error) => {
@@ -546,10 +624,11 @@ export default {
                 (res) => {
                     localStorage.setItem('origin', 'activate');
 
-                    this.collaborators = this.getCollaborators();
+                    // Mismo caso que arriba, solo llamar a la función
+                    this.getCollaborators();
 
-                    url = `/collaborators`
-                    window.location.href = url
+                    let url = `/collaborators`
+                    // window.location.href = url
                     this.errors = null
                 }).catch(
                 (error) => {
@@ -612,5 +691,24 @@ export default {
 .icon-grid > a > i {
     font-size: 20px;
     color: #127cb3;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-text {
+    font-weight: 500;
+    color: #333;
 }
 </style>

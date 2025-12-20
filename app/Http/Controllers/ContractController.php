@@ -56,6 +56,29 @@ class ContractController extends Controller
         return $results;
     }
 
+    public function getActiveContractByCollaborator($collaborator_id)
+    {
+        $collaborator = Collaborator::findOrFail($collaborator_id);
+        $on = Carbon::today();
+
+        $active_contract = $collaborator->contracts()
+            ->where('contract_start_date', '<=', $on)
+            ->where(function ($query) use ($on) {
+                $query->whereNull('contract_end_date')
+                      ->orWhere('contract_end_date', '>=', $on);
+            })
+            ->with([
+                'position',
+                'contractType',
+            ])
+            ->orderByDesc('contract_start_date')
+            ->first();
+
+        return response()->json([
+            'active_contract' => $active_contract
+        ]);
+    }
+
     public function store(CollaboratorContractCreateRequest $request, $collaborator_id)
     {
         // Las validaciones se realizan en CollaboratorContractCreateRequest

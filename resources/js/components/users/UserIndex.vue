@@ -1,124 +1,123 @@
 <template>
     <div>
+        <Teleport to="body">
+            <div v-if="is_loading" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Procesando...</span>
+                </div>
+                <p class="loading-text mt-3">Procesando, por favor espera...</p>
+            </div>
+        </Teleport>
         <div class="app-page-title">
             <div v-if="selected_user == null && add_user == false && edit_user == false" class="page-title-wrapper">
                 <div class="page-title-heading">
                     <div class="page-title-icon">
                         <i class="fa fa-users" style="color: rgb(18, 124, 179)"></i>
                     </div>
-                    <div>
-                        Listado de Usuarios
-                    </div>
+                    <div>Listado de Usuarios</div>
                 </div>
                 <div class="page-title-actions">
                     <button @click="addUser()" class="btn btn-mh-dark-blue me-3">
-                        <i class="fa fa-plus"></i>
-                        Agregar
+                        <i class="fa fa-plus"></i> Agregar
                     </button>
                 </div>
             </div>
             <div v-else-if="selected_user == null && add_user == true && edit_user == false" class="page-title-wrapper">
-                <div class="page-title-heading">
-                    <div class="page-title-icon">
-                        <i class="fa fa-user-plus" style="color: rgb(18, 124, 179)"></i>
-                    </div>
-                    <div>
-                        Agregar Usuario
-                    </div>
+                 <div class="page-title-heading">
+                    <div class="page-title-icon"><i class="fa fa-user-plus" style="color: rgb(18, 124, 179)"></i></div>
+                    <div>Agregar Usuario</div>
                 </div>
                 <div class="page-title-actions">
                     <button @click="returnToList()" class="btn btn-mh-dark-blue me-3">
-                        <i class="fa fa-arrow-left"></i>
-                        Volver al listado
+                        <i class="fa fa-arrow-left"></i> Volver al listado
                     </button>
                 </div>
             </div>
             <div v-else-if="selected_user != null && add_user == false && edit_user == true" class="page-title-wrapper">
                 <div class="page-title-heading">
-                    <div class="page-title-icon">
-                        <i class="pe-7s-users text-success"></i>
-                    </div>
-                    <div>
-                        Editar Usuario
-                    </div>
+                    <div class="page-title-icon"><i class="pe-7s-users text-success"></i></div>
+                    <div>Editar Usuario</div>
                 </div>
-                <div class="page-title-actions">
+                 <div class="page-title-actions">
                     <button @click="returnToList()" class="btn btn-mh-dark-blue me-3">
-                        <i class="fa fa-arrow-left"></i>
-                        Volver al listado
+                        <i class="fa fa-arrow-left"></i> Volver al listado
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- <div v-if="message" class="message-success mb-3">
-            <div class="content d-flex align-items-start p-2">
-                <p class="mb-0" style="font-size: 14px;"> {{ message }}</p>
-            </div>
-        </div> -->
-
         <div v-if="origin === 'created'" class="message-success mb-3">
-            <div class="content d-flex align-items-start p-2">
-                <p class="mb-0">Usuario creado exitosamente</p>
-            </div>
+            <div class="content d-flex align-items-start p-2"><p class="mb-0">Usuario creado exitosamente</p></div>
         </div>
         <div v-if="origin === 'updated'" class="message-success mb-3">
-            <div class="content d-flex align-items-start p-2">
-                <p class="mb-0">Usuario actualizado exitosamente</p>
-            </div>
+            <div class="content d-flex align-items-start p-2"><p class="mb-0">Usuario actualizado exitosamente</p></div>
         </div>
         <div v-if="origin === 'deleted'" class="message-success mb-3">
-            <div class="content d-flex align-items-start p-2">
-                <p class="mb-0">Usuario eliminado exitosamente</p>
-            </div>
+            <div class="content d-flex align-items-start p-2"><p class="mb-0">Usuario eliminado exitosamente</p></div>
         </div>
 
         <div v-if="selected_user == null && add_user == false && edit_user == false" class="main-card mb-3 card">
             <div class="card-body table-responsive">
-                <table style="width: 100%;" id="dt_users" class="table table-cntk table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <th class="text-center">Nombre</th>
-                            <th class="text-center">Email</th>
-                            <th class="text-center">Roles</th>
-                            <th class="text-end">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(user, index) in users" :key="user.id">
-                            <td>{{ user.name }}</td>
-                            <td>{{ user.email }}</td>
-                            <td class="text-center">
-                                <div v-for="role in user.roles" :key="role.id">
-                                    <span v-if="role" class="badge bg-success" style="min-width: 100px;">{{ role.name }}</span>
-                                    <span v-else class="badge bg-danger" style="min-width: 100px;">Sin rol</span>
-                                </div>
-                            </td>
-                            <td class="text-end">
-                                <template v-if="user && canEdit(user)">
-                                    <button @click="editUser(user.id)" class="btn-icon btn btn-sm btn-primary me-2">
+                <vue-good-table
+                    :columns="columns"
+                    :rows="rows"
+                    :search-options="{
+                        enabled: true,
+                        placeholder: 'Buscar...',
+                        trigger: 'immediate'
+                    }"
+                    :pagination-options="{
+                        enabled: true,
+                        perPage: 5,
+                        perPageDropdown: [5, 10, 20],
+                        dropdownAllowAll: false,
+                        mode: 'records',
+                        nextLabel: 'Siguiente',
+                        prevLabel: 'Anterior',
+                        rowsPerPageLabel: 'Filas',
+                        ofLabel: 'de',
+                        pageLabel: 'Página',
+                        allLabel: 'Todo'
+                    }"
+                    :style-class="'vgt-table bordered condensed'"
+                    :no-data-message="'No hay resultados que coincidan'"
+                >
+                    <template #table-row="props">
+                        <span v-if="props.column.field === 'actions'">
+                            <template v-if="props.row && canEdit(props.row)">
+                                <button @click="editUser(props.row.id)" class="btn-icon btn btn-sm btn-primary me-2">
                                     <i class="fa fa-edit"></i> Editar
-                                    </button>
+                                </button>
+                                <button @click="showDeleteAlert(props.row.id, props.index)" class="btn-icon btn btn-sm btn-danger">
+                                    <i class="fa fa-trash"></i> Eliminar
+                                </button>
+                            </template>
+                            <template v-else>
+                                <span class="text-muted small">Sin acciones disponibles</span>
+                            </template>
+                        </span>
 
-                                    <button @click="showDeleteAlert(user.id, index)" class="btn-icon btn btn-sm btn-danger">
-                                        <i class="fa fa-trash"></i> Eliminar
-                                    </button>
-                                </template>
+                        <span v-else-if="props.column.field === 'roles'">
+                            <div v-if="props.row.roles && props.row.roles.length > 0">
+                                <div v-for="role in props.row.roles" :key="role.id" class="d-inline-block me-1">
+                                    <span class="badge bg-success">{{ role.name }}</span>
+                                </div>
+                            </div>
+                            <div v-else>
+                                <span class="badge bg-danger">Sin rol</span>
+                            </div>
+                        </span>
 
-                                <template v-else>
-                                    <span class="text-muted small" style="min-height: 38px; line-height: 1.5;">
-                                        Sin acciones disponibles
-                                    </span>
-                                </template>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                        <span v-else>
+                            {{ props.formattedRow[props.column.field] }}
+                        </span>
+                    </template>
+                </vue-good-table>
             </div>
         </div>
 
         <div v-else-if="selected_user == null && add_user == true && edit_user == false" class="main-card mb-3 card">
-            <div class="card-body">
+             <div class="card-body">
                 <form @submit.prevent="storeUser" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-md-6">
@@ -140,8 +139,32 @@
                         <div class="col-md-6">
                             <div class="position-relative mb-3">
                                 <label for="image" class="form-label">Imagen</label>
+                                <input
+                                    ref="imageFileInput"
+                                    type="file"
+                                    accept=".jpg, .jpeg, .png"
+                                    class="form-control d-none"
+                                    @change="onChangeImage"
+                                >
                                 <div class="input-group">
-                                    <input @change="onChangeImage" type="file" name="image" id="image" class="form-control">
+                                    <button type="button" class="btn btn-primary" @click="selectImageFile">
+                                        <i class="fa fa-upload"></i> Seleccionar
+                                    </button>
+                                    <input
+                                        @click="selectImageFile"
+                                        type="text"
+                                        class="form-control"
+                                        :value="image ? image.name : ''"
+                                        readonly
+                                        placeholder="Sin archivo"
+                                    />
+                                </div>
+                                <div v-if="image_src" class="cropper-container">
+                                    <cropper
+                                        ref="cropperRef"
+                                        :src="image_src"
+                                        :stencil-props="{ aspectRatio: 1/1 }"
+                                    />
                                 </div>
                                 <span v-if="errors && errors.image" class="error text-danger" for="image">{{ errors.image[0] }}</span>
                             </div>
@@ -149,7 +172,7 @@
                         <div class="col-md-6">
                             <div class="position-relative mb-3">
                                 <label for="password" class="form-label">Contraseña</label>
-                                <input v-model="password" name="password" id="password" type="password" class="form-control" placeholder="Ingresa la contraseña solo si la deseas modificar" autocomplete="new-password">
+                                <input v-model="password" name="password" id="password" type="password" class="form-control" placeholder="Ingresa la contraseña" autocomplete="new-password">
                                 <span v-if="errors && errors.password" class="error text-danger" for="password">{{ errors.password[0] }}</span>
                             </div>
                         </div>
@@ -179,9 +202,6 @@
                     <div class="card-body mx-auto">
                         <div class="avatar-icon-wrapper avatar-icon-xl d-flex mb-3 justify-content-center">
                             <div class="avatar-icon">
-                                <!-- <img v-if="userData && userData.image_url" :src="userData.image_url" :alt="userData.name">
-                                <img v-else :src="userData && userData.image_url ? userData.image_url : '/images/default-profile.jpeg'" :alt="userData.name"> -->
-
                                 <img
                                     :src="userData.image_url ? userData.image_url : '/images/default-profile.jpeg'"
                                     :alt="userData.name ? userData.name : 'Perfil predeterminado'">
@@ -190,7 +210,6 @@
                         <div>
                             <h5 class="menu-header-title text-center">{{ userData.name }}</h5>
                             <h6 class="menu-header-subtitle text-center">{{ userData.email }}</h6>
-                            <!-- <h6 class="menu-header-subtitle text-center">{{ selected_user.company.company_name }}</h6> -->
                         </div>
                     </div>
                 </div>
@@ -219,8 +238,32 @@
                             <div class="col-md-6">
                                 <div class="position-relative mb-3">
                                     <label for="image" class="form-label">Imagen</label>
+                                    <input
+                                        ref="imageFileInput"
+                                        type="file"
+                                        accept=".jpg, .jpeg, .png"
+                                        class="form-control d-none"
+                                        @change="onChangeImage"
+                                    >
                                     <div class="input-group">
-                                        <input @change="onChangeImage" type="file" name="image" id="image" class="form-control">
+                                        <button type="button" class="btn btn-primary" @click="selectImageFile">
+                                            <i class="fa fa-upload"></i> Seleccionar
+                                        </button>
+                                        <input
+                                            @click="selectImageFile"
+                                            type="text"
+                                            class="form-control"
+                                            :value="image ? image.name : ''"
+                                            readonly
+                                            placeholder="Sin archivo"
+                                        />
+                                    </div>
+                                    <div v-if="image_src" class="cropper-container">
+                                        <cropper
+                                            ref="cropperRef"
+                                            :src="image_src"
+                                            :stencil-props="{ aspectRatio: 1/1 }"
+                                        />
                                     </div>
                                     <span v-if="errors && errors.image" class="error text-danger" for="image">{{ errors.image[0] }}</span>
                                 </div>
@@ -256,34 +299,29 @@
 </template>
 
 <script>
-
-import { usersDatatable } from '../../assets/js/tables.js';
+import { VueGoodTable } from 'vue-good-table-next';
+import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
 
 export default {
+    components: {
+        VueGoodTable,
+        Cropper,
+    },
     props: {
-        current_user_id: {
-            default: null,
-        },
-        current_user_roles: {
-            default: null,
-        },
-        company_id: {
-            default: null,
-        },
-        roles: {
-            default: null,
-        },
+        current_user_id: { default: null },
+        current_user_roles: { default: null },
+        company_id: { default: null },
+        roles: { default: null },
     },
     data() {
         return {
+            is_loading: false,
             users: [],
-
             selected_user: null,
             add_user: false,
             edit_user: false,
-
             userData: null,
-
             selected_roles: [],
             rolePriority: {
                 'Master': 1,
@@ -292,54 +330,27 @@ export default {
             },
             name: '',
             email: '',
-            image: null,
-            password: null,
 
+            // Variables de Imagen
+            image: null,      // Para guardar el archivo original y mostrar el nombre
+            image_src: null,  // URL local para el cropper
+
+            password: null,
             errors: null,
             message: '',
-
             successfully_created_message: false,
             successfully_updated_message: false,
             successfully_deleted_message: false,
-
             origin: '',
+
+            // Nuevas propiedades
+            columns: [],
+            rows: [],
         };
     },
     mounted() {
         this.getOrigin()
-
         this.getUsers();
-        // usersDatatable();
-    },
-    computed: {
-        filteredRoles() {
-            // Orden de jerarquía: de mayor a menor
-            const hierarchy = ['Master', 'Super', 'Admin'];
-
-            // Encontrar el rol de mayor jerarquía que el usuario tenga
-            const userRole = hierarchy.find(role => this.current_user_roles.includes(role));
-
-            // Si el usuario no tiene ningún rol válido, devolver []
-            if (!userRole) {
-                return [];
-            }
-
-            let exclude = [];
-
-            switch (userRole) {
-                case 'Super':
-                    exclude = ['Master', 'Super'];
-                    break;
-                case 'Admin':
-                    exclude = ['Master', 'Super', 'Admin'];
-                    break;
-                // Master no excluye nada
-                default:
-                    exclude = [];
-            }
-
-            return this.roles.filter(role => !exclude.includes(role.name));
-        }
     },
     watch: {
         userData: {
@@ -349,11 +360,61 @@ export default {
                     this.selected_roles = newUserData.roles.map(role => role.name);
                 }
             }
+        },
+        users: {
+            handler() {
+                if(this.users.length > 0) {
+                    this.columns = [
+                        { label: 'Nombre', field: 'name' },
+                        { label: 'Email', field: 'email' },
+                        { label: 'Roles', field: 'roles', sortable: false },
+                        { label: 'Acciones', field: 'actions', sortable: false, tdClass: 'align-right', thClass: 'align-right' },
+                    ];
+                    this.rows = this.users;
+                }
+            },
+        },
+    },
+    computed: {
+        filteredRoles() {
+            const hierarchy = ['Master', 'Super', 'Admin'];
+            const userRole = hierarchy.find(role => this.current_user_roles.includes(role));
+
+            if (!userRole) {
+                return [];
+            }
+
+            let exclude = [];
+            switch (userRole) {
+                case 'Super':
+                    exclude = ['Master', 'Super'];
+                    break;
+                case 'Admin':
+                    exclude = ['Master', 'Super', 'Admin'];
+                    break;
+                default:
+                    exclude = [];
+            }
+            return this.roles.filter(role => !exclude.includes(role.name));
         }
     },
     methods: {
+        selectImageFile() {
+            this.$refs.imageFileInput.click();
+        },
+        onChangeImage(e) {
+            const file = e.target.files[0];
+            this.image = file; // Para mostrar el nombre en el input text
+
+            if (file) {
+                // Creamos una URL local para que el cropper la muestre
+                this.image_src = URL.createObjectURL(file);
+            } else {
+                this.image_src = null;
+            }
+        },
+
         showDeleteAlert(item, index) {
-            // Ver ejemplos en: https://sweetalert2.github.io/#examples
             this.$swal({
                 title: "¿Seguro que deseas eliminar este registro?",
                 text: "¡No podrás revertir esto!",
@@ -381,7 +442,6 @@ export default {
 
             setTimeout(() => {
                 this.message = ''
-
                 this.successfully_created_message = false
                 this.successfully_updated_message = false
                 this.successfully_deleted_message = false
@@ -402,18 +462,14 @@ export default {
             this.add_user = false
             this.edit_user = false
 
-            usersDatatable();
-        },
-        onChangeImage(e) {
-            this.image = e.target.files[0]
+            // Limpiar variables de imagen
+            this.image = null
+            this.image_src = null
         },
         getUsers() {
             axios.get(`/users-data/${this.company_id}`).then(
                 (res) => {
                     this.users = res.data.users;
-
-                    usersDatatable();
-
                     this.errors = null;
                 }).catch(
                 (error) => {
@@ -430,71 +486,85 @@ export default {
             this.name = '';
             this.email = '';
             this.image = null;
+            this.image_src = null;
             this.password = '';
             this.selected_roles = [];
-
         },
+
         storeUser() {
-            let fd = new FormData()
+            this.is_loading = true; // ACTIVAR AL INICIO
 
-            fd.append('company_id', this.company_id)
-            fd.append('name', this.name)
-            fd.append('email', this.email)
-            if (this.image) {
-                fd.append('image', this.image);
+            let fd = new FormData();
+
+            // Función interna
+            const sendRequest = (formData) => {
+                formData.append('company_id', this.company_id)
+                formData.append('name', this.name)
+                formData.append('email', this.email)
+                if (this.password) {
+                    formData.append('password', this.password);
+                }
+                this.selected_roles.forEach((role, index) => {
+                    formData.append(`roles[${index}]`, role);
+                });
+
+                axios.post('/users', formData).then(
+                    (res) => {
+                        localStorage.setItem('origin', 'created');
+                        this.successfully_created_message = true
+                        this.successfully_updated_message = false
+                        this.successfully_deleted_message = false
+                        this.getMessage(res.data.message)
+                        this.getUsers();
+                        this.returnToList();
+                        this.errors = null
+                    }).catch(
+                    (error) => {
+                        if(error && error.response && error.response.data && error.response.data.errors) {
+                            this.errors = error.response.data.errors
+                        }
+                    }).finally(() => {
+                        this.is_loading = false; // DESACTIVAR AQUÍ
+                    })
+            };
+
+            // Lógica del Cropper
+            if (this.$refs.cropperRef && this.image_src) {
+                const { canvas } = this.$refs.cropperRef.getResult();
+                if (canvas) {
+                    const resizedCanvas = document.createElement('canvas');
+                    resizedCanvas.width = 300;
+                    resizedCanvas.height = 300;
+                    const ctx = resizedCanvas.getContext('2d');
+                    ctx.drawImage(canvas, 0, 0, 300, 300);
+
+                    resizedCanvas.toBlob((blob) => {
+                        fd.append('image', blob, 'profile_300x300.png');
+                        sendRequest(fd);
+                    }, 'image/png');
+                } else {
+                    if (this.image) fd.append('image', this.image);
+                    sendRequest(fd);
+                }
+            } else {
+                sendRequest(fd);
             }
-            if (this.password) {
-                fd.append('password', this.password);
-            }
-            this.selected_roles.forEach((role, index) => {
-                fd.append(`roles[${index}]`, role);
-            });
-
-            axios.post('/users', fd).then(
-                (res) => {
-                    localStorage.setItem('origin', 'created');
-
-                    this.successfully_created_message = true
-                    this.successfully_updated_message = false
-                    this.successfully_deleted_message = false
-
-                    this.getMessage(res.data.message)
-
-                    this.getUsers();
-
-                    this.selected_user = null
-                    this.add_user = false
-                    this.edit_user = false
-
-                    // window.location.href = '/users'
-                    this.errors = null
-                }).catch(
-                (error) => {
-                    if(error && error.response && error.response.data && error.response.data.errors) {
-                        this.errors = error.response.data.errors
-                    }
-                })
         },
+
         canEdit(user) {
-            // No puede editarse a sí mismo
             if (user.id === this.current_user_id) return false;
-
-            // Si el usuario listado no tiene roles, permite editar
             if (!user.roles || user.roles.length === 0) return true;
-
-            // Obtener el rol más poderoso del usuario actual
             const currentRoleLevel = Math.min(...this.current_user_roles.map(r => this.rolePriority[r] || 99));
-
-            // Obtener el rol más poderoso del usuario listado
             const targetRoleLevel = Math.min(...user.roles.map(r => this.rolePriority[r.name] || 99));
-
-            // Solo puede editar usuarios con rol igual o menor jerarquía (número mayor o igual)
             return currentRoleLevel < targetRoleLevel;
         },
         editUser(user) {
             this.selected_user = this.users.find(u => u.id === user);
             this.add_user = false;
             this.edit_user = true;
+
+            this.image = null;
+            this.image_src = null;
 
             this.name = this.selected_user.name;
             this.email = this.selected_user.email;
@@ -510,72 +580,86 @@ export default {
                     }
                 })
         },
+
         updateUser() {
+            this.is_loading = true; // ACTIVAR AL INICIO
             let fd = new FormData()
 
-            fd.append('company_id', this.company_id)
-            fd.append('name', this.name)
-            fd.append('email', this.email)
-            if (this.image) {
-                fd.append('image', this.image);
-            }
-            if (this.password) {
-                fd.append('password', this.password);
-            }
-            this.selected_roles.forEach((role, index) => {
-                fd.append(`roles[${index}]`, role);
-            });
-            fd.append('_method', 'PUT')
+            const sendRequest = (formData) => {
+                formData.append('company_id', this.company_id)
+                formData.append('name', this.name)
+                formData.append('email', this.email)
+                if (this.password) {
+                    formData.append('password', this.password);
+                }
+                this.selected_roles.forEach((role, index) => {
+                    formData.append(`roles[${index}]`, role);
+                });
+                formData.append('_method', 'PUT')
 
-            let url = ''
-            console.log(`/users/${this.selected_user.id}`);
-            axios.post(`/users/${this.selected_user.id}`, fd).then(
+                axios.post(`/users/${this.selected_user.id}`, formData).then(
+                    (res) => {
+                        localStorage.setItem('origin', 'updated');
+                        this.successfully_created_message = false
+                        this.successfully_updated_message = true
+                        this.successfully_deleted_message = false
+
+                        this.getMessage(res.data.message)
+                        this.getUsers();
+                        this.returnToList();
+                        this.errors = null
+                    }).catch(
+                    (error) => {
+                        if(error && error.response && error.response.data && error.response.data.errors) {
+                            this.errors = error.response.data.errors
+                        }
+                    }).finally(() => {
+                        this.is_loading = false; // DESACTIVAR AQUÍ
+                    })
+            };
+
+            // Lógica del Cropper (reutilizada)
+            if (this.$refs.cropperRef && this.image_src) {
+                const { canvas } = this.$refs.cropperRef.getResult();
+                if (canvas) {
+                    const resizedCanvas = document.createElement('canvas');
+                    resizedCanvas.width = 300;
+                    resizedCanvas.height = 300;
+                    const ctx = resizedCanvas.getContext('2d');
+                    ctx.drawImage(canvas, 0, 0, 300, 300);
+
+                    resizedCanvas.toBlob((blob) => {
+                        fd.append('image', blob, 'profile_300x300.png');
+                        sendRequest(fd);
+                    }, 'image/png');
+                } else {
+                     if (this.image) fd.append('image', this.image);
+                    sendRequest(fd);
+                }
+            } else {
+                sendRequest(fd);
+            }
+        },
+        deleteUser(user) {
+            this.is_loading = true; // ACTIVAR
+            axios.delete(`/users/${user}`).then(
                 (res) => {
-                    localStorage.setItem('origin', 'updated');
-
+                    localStorage.setItem('origin', 'deleted');
                     this.successfully_created_message = false
-                    this.successfully_updated_message = true
-                    this.successfully_deleted_message = false
-
-                    // url = `/users`
-                    // window.location.href = url
-
+                    this.successfully_updated_message = false
+                    this.successfully_deleted_message = true
                     this.getMessage(res.data.message)
 
                     this.getUsers();
 
-                    this.selected_user = null
-                    this.add_user = false
-                    this.edit_user = false
-
                     this.errors = null
                 }).catch(
                 (error) => {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors = error.response.data.errors
                     }
-                })
-        },
-        deleteUser(user) {
-            console.log('El usuario es:');
-            console.log(user);
-            axios.delete(`/users/${user}`).then(
-                (res) => {
-                    localStorage.setItem('origin', 'deleted');
-
-                    this.successfully_created_message = false
-                    this.successfully_updated_message = false
-                    this.successfully_deleted_message = true
-
-                    this.getMessage(res.data.message)
-
-                    window.location.href = '/users'
-                    this.errors = null
-                }).catch(
-                (error) => {
-                    if(error && error.response && error.response.data && error.response.data.errors) {
-                        this.errors = error.response.data.errors
-                    }
+                }).finally(() => {
+                    this.is_loading = false; // DESACTIVAR
                 })
         },
     },
@@ -601,5 +685,32 @@ export default {
     .message-success .content p {
         font-size: 16px;
         line-height: 16px;
+    }
+
+    /* Estilo traido del otro componente */
+    .cropper-container {
+        width: 100%;
+        max-width: 500px;
+        margin-top: 15px;
+        border: 1px solid #ccc;
+    }
+
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.85);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .loading-text {
+        font-weight: 500;
+        color: #333;
     }
 </style>

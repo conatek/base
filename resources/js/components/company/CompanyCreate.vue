@@ -85,9 +85,24 @@
                                         </div>
 
                                         <div class="col-sm-12 col-md-6 col-lg-6">
-                                            <div class="position-relative mb-3">
+                                            <!-- <div class="position-relative mb-3">
                                                 <label for="province_id" class="form-label">Departamento*</label>
                                                 <select v-model="province_id" @change="getCities(province_id)" name="province_id" class="form-control"  id="province_id">
+                                                    <option value="" disabled selected hidden>Seleccionar Departamento</option>
+                                                    <option v-for="province in provinces" :value="province.id">{{ province.name }}</option>
+                                                </select>
+                                                <span v-if="errors && errors.province_id" class="error text-danger" for="province_id">{{ errors.province_id[0] }}</span>
+                                            </div> -->
+
+                                            <div class="position-relative mb-3">
+                                                <label for="province_id" class="form-label">Departamento*</label>
+                                                <select 
+                                                    v-model="province_id" 
+                                                    @change="changeProvince(province_id)" 
+                                                    name="province_id" 
+                                                    class="form-control" 
+                                                    id="province_id"
+                                                >
                                                     <option value="" disabled selected hidden>Seleccionar Departamento</option>
                                                     <option v-for="province in provinces" :value="province.id">{{ province.name }}</option>
                                                 </select>
@@ -325,7 +340,18 @@ export default {
         // Lógica de inicialización aquí
     },
     methods: {
+        changeProvince(province) {
+            // 1. Limpiamos el municipio para evitar inconsistencias
+            this.city_id = '';
+            
+            // 2. Cargamos las nuevas ciudades
+            this.getCities(province);
+        },
+
         getCities(province) {
+            // Validación de seguridad
+            if (!province) return;
+
             let dataSend = {
                 "province": province,
             }

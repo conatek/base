@@ -160,6 +160,8 @@ Route::group(['middleware' => 'auth'], function () {
     // CONTRACTUAL INFORMATION
     Route::get('/contracts/{collaborator_id}', [ContractController::class, 'getContracts']);
     Route::get('/contractual-information', [ContractController::class, 'getContractualInformation']);
+    Route::get('/contractual-information/{collaborator_id}', [ContractController::class, 'getActiveContractByCollaborator']);
+    // Route::get('/contractual-information/{collaborator_id}', [ContractController::class, 'getContractualInformationByCollaborator']);
     // Route::post('/collaborators/{collaborator}/contractual-information', [ContractController::class, 'store']);
     // Route::put('/collaborators/{collaborator}/contractual-information', [ContractController::class, 'update']);
     Route::post('/contracts/{collaborator}', [ContractController::class, 'store']);

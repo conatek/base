@@ -1,5 +1,13 @@
 <template>
     <div class="colaborator-absence">
+        <Teleport to="body">
+            <div v-if="is_loading" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Procesando...</span>
+                </div>
+                <p class="loading-text mt-3">Procesando, por favor espera...</p>
+            </div>
+        </Teleport>
         <div class="row justify-content-center">
             <div v-if="chartAbsenceCollaboratorData && chartAbsenceCollaboratorOptions" class="col-md-4">
                 <div class="main-card mb-3 card">
@@ -149,8 +157,28 @@
                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                             <div class="position-relative mb-3">
                                                 <label for="support_file" class="form-label">Soporte</label>
+
+                                                <input
+                                                    ref="supportFileInput"
+                                                    @change="onChangeSupportFile"
+                                                    type="file"
+                                                    name="support_file"
+                                                    id="support_file"
+                                                    class="form-control d-none"
+                                                    accept=".pdf,.jpg,.jpeg,.png"
+                                                >
                                                 <div class="input-group">
-                                                    <input @change="onChangeSupportFile" type="file" name="support_file" id="support_file" class="form-control">
+                                                    <button type="button" class="btn btn-primary" @click="selectSupportFile">
+                                                        <i class="fa fa-upload"></i> Seleccionar
+                                                    </button>
+                                                    <input
+                                                        @click="selectSupportFile"
+                                                        type="text"
+                                                        class="form-control"
+                                                        :value="support_file ? support_file.name : ''"
+                                                        readonly
+                                                        placeholder="Sin archivo"
+                                                    />
                                                 </div>
                                                 <span v-if="errors && errors.support_file" class="error text-danger" for="support_file">{{ errors.support_file[0] }}</span>
                                             </div>
@@ -326,8 +354,28 @@
                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                             <div class="position-relative mb-3">
                                                 <label for="support_file" class="form-label">Soporte</label>
+
+                                                <input
+                                                    ref="supportFileInput"
+                                                    @change="onChangeSupportFile"
+                                                    type="file"
+                                                    name="support_file"
+                                                    id="support_file"
+                                                    class="form-control d-none"
+                                                    accept=".pdf,.jpg,.jpeg,.png"
+                                                >
                                                 <div class="input-group">
-                                                    <input @change="onChangeSupportFile" type="file" name="support_file" id="support_file" class="form-control">
+                                                    <button type="button" class="btn btn-primary" @click="selectSupportFile">
+                                                        <i class="fa fa-upload"></i> Seleccionar
+                                                    </button>
+                                                    <input
+                                                        @click="selectSupportFile"
+                                                        type="text"
+                                                        class="form-control"
+                                                        :value="support_file ? support_file.name : ''"
+                                                        readonly
+                                                        placeholder="Sin archivo"
+                                                    />
                                                 </div>
                                                 <span v-if="errors && errors.support_file" class="error text-danger" for="support_file">{{ errors.support_file[0] }}</span>
                                             </div>
@@ -446,53 +494,66 @@
             </div>
         </div>
 
-        <!-- <div v-if="isLoading == false" class="main-card mb-3 card"> -->
         <div class="main-card mb-3 card">
             <div class="card-body table-responsive">
-                <table style="width: 100%;" id="dt_absences" class="table table-cntk table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <th class="text-center">ID</th>
-                            <th class="text-center">Contingencia</th>
-                            <th class="text-center">Clasificación</th>
-                            <th class="text-center">Inicio</th>
-                            <th class="text-center">Finalización</th>
-                            <th class="text-end">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(absence, index) in absences" :key="absence.id">
-                            <td class="text-center">{{ absence.id }}</td>
-                            <td class="text-left">
-                                <span class="mb-2 mr-2 badge bg-success" style="width: 80px;">
-                                    {{ absence.parent_absence_id != null ? 'Prórroga' : 'Nueva' }}
-                                </span>
-                                - {{ absence.absence_type.type }}
-                            </td>
-                            <td class="text-left">{{ [1,2,3,4,5].includes(absence.absence_type_id) ? absence.disease_classification_code : absence.absence_subtype }}</td>
-                            <td class="text-center">{{ absence.start_date }}</td>
-                            <td class="text-center">{{ absence.end_date }}</td>
-                            <td class="text-end">
-                                <button @click="showAbsence(absence)"
-                                        type="button"
-                                        class="me-2 btn-icon btn btn-sm btn-success"
-                                        data-bs-toggle="modal" data-bs-target=".absence-detail-modal">
-                                    <i class="fa fa-eye"></i> Mostrar
-                                </button>
-                                <button @click="editAbsence(absence)"
-                                        type="button"
-                                        class="me-2 btn-icon btn btn-sm btn-primary">
-                                    <i class="fa fa-edit"></i> Editar
-                                </button>
-                                <button @click="showDeleteAlert(absence.id)"
-                                        type="button"
-                                        class="btn-icon btn btn-sm btn-danger">
-                                    <i class="fa fa-trash"></i> Eliminar
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <vue-good-table
+                    :columns="columns"
+                    :rows="absences"
+                    :search-options="{
+                        enabled: true,
+                        placeholder: 'Buscar...',
+                    }"
+                    :pagination-options="{
+                        enabled: true,
+                        mode: 'records',
+                        perPage: 5,
+                        perPageDropdown: [5, 10, 20],
+                        nextLabel: 'Siguiente',
+                        prevLabel: 'Anterior',
+                        rowsPerPageLabel: 'Filas',
+                        ofLabel: 'de',
+                        pageLabel: 'Página',
+                        allLabel: 'Todo'
+                    }"
+                    style-class="vgt-table bordered condensed table-hover"
+                    no-data-message="No hay registros de ausentismo"
+                >
+                    <template #table-row="props">
+                        <span v-if="props.column.field === 'contingency'">
+                            <span class="mb-2 mr-2 badge bg-success" style="width: 80px;">
+                                {{ props.row.parent_absence_id != null ? 'Prórroga' : 'Nueva' }}
+                            </span>
+                            - {{ props.row.absence_type.type }}
+                        </span>
+
+                        <span v-else-if="props.column.field === 'classification'">
+                            {{ [1,2,3,4,5].includes(props.row.absence_type_id) ? props.row.disease_classification_code : props.row.absence_subtype }}
+                        </span>
+
+                        <span v-else-if="props.column.field === 'actions'">
+                            <button @click="showAbsence(props.row)"
+                                    type="button"
+                                    class="me-2 btn-icon btn btn-sm btn-success"
+                                    data-bs-toggle="modal" data-bs-target=".absence-detail-modal">
+                                <i class="fa fa-eye"></i> Mostrar
+                            </button>
+                            <button @click="editAbsence(props.row)"
+                                    type="button"
+                                    class="me-2 btn-icon btn btn-sm btn-primary">
+                                <i class="fa fa-edit"></i> Editar
+                            </button>
+                            <button @click="showDeleteAlert(props.row.id)"
+                                    type="button"
+                                    class="btn-icon btn btn-sm btn-danger">
+                                <i class="fa fa-trash"></i> Eliminar
+                            </button>
+                        </span>
+
+                        <span v-else>
+                            {{ props.formattedRow[props.column.field] }}
+                        </span>
+                    </template>
+                </vue-good-table>
             </div>
         </div>
 
@@ -511,7 +572,7 @@
                     <div class="modal-body">
                         <div v-if="selected_absence" class="data-grid">
                             <div class="label">Colaborador:</div>
-                            <div class="value">{{ collaborator.name }} {{ collaborator.first_surname }} {{ collaborator.second_surname }}</div>
+                            <div class="value">{{ collaborator.name }} {{ collaborator.first_surname }} {{ collaborator.second_surname ?? '' }}</div>
 
                             <div class="label">¿Es prórroga?:</div>
                             <div class="value">{{ selected_absence.is_extension == true ? 'Sí' : 'No' }}</div>
@@ -566,7 +627,7 @@ import { Doughnut } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale } from 'chart.js'
 
 import axios from 'axios';
-import { absencesDatatable } from '../../assets/js/tables.js';
+import { VueGoodTable } from 'vue-good-table-next';
 import {
     setAbsenceCollaboratorData,
     absenceCollaboratorOptions,
@@ -584,7 +645,8 @@ export default {
 
     components: {
         Bar,
-        Doughnut
+        Doughnut,
+        VueGoodTable,
     },
     props: {
         collaborator: {
@@ -599,6 +661,7 @@ export default {
     },
     data() {
         return {
+            is_loading: false,
             dataTableInstance: null,
 
             absence_type_id: '',
@@ -624,8 +687,6 @@ export default {
             hours: 0,
             days: 0,
             observations: '',
-
-            isLoading: true,
 
             chartAbsenceCollaboratorData: null,
             chartAbsenceCollaboratorOptions: absenceCollaboratorOptions,
@@ -653,6 +714,59 @@ export default {
             ],
             selectedAbsenceType: null,
 
+            columns: [
+                {
+                    label: 'ID',
+                    field: 'id',
+                    type: 'number',
+                    width: '50px',
+                    sortable: false,       // Quita la flecha
+                    thClass: 'text-start', // Cabecera a la izquierda
+                    tdClass: 'text-start'  // Contenido a la izquierda
+                },
+                {
+                    label: 'Contingencia',
+                    field: 'contingency',
+                    sortable: false,
+                    thClass: 'text-start',
+                    tdClass: 'text-start'
+                },
+                {
+                    label: 'Clasificación',
+                    field: 'classification',
+                    sortable: false,
+                    thClass: 'text-start',
+                    tdClass: 'text-start'
+                },
+                {
+                    label: 'Inicio',
+                    field: 'start_date',
+                    type: 'date',
+                    dateInputFormat: 'yyyy-MM-dd',
+                    dateOutputFormat: 'yyyy-MM-dd',
+                    sortable: false,
+                    thClass: 'text-start',
+                    tdClass: 'text-start'
+                },
+                {
+                    label: 'Finalización',
+                    field: 'end_date',
+                    type: 'date',
+                    dateInputFormat: 'yyyy-MM-dd',
+                    dateOutputFormat: 'yyyy-MM-dd',
+                    sortable: false,
+                    thClass: 'text-start',
+                    tdClass: 'text-start'
+                },
+                {
+                    label: 'Acciones',
+                    field: 'actions',
+                    sortable: false,
+                    thClass: 'text-end', // Cabecera a la DERECHA
+                    tdClass: 'text-end'  // Contenido a la DERECHA
+                },
+            ],
+
             errors: null,
         };
     },
@@ -664,15 +778,8 @@ export default {
     watch: {
         absences: {
             handler(newValue) {
-                this.absences = newValue;
-                this.isLoading = false;
-                // this.dataTableInstance = absencesDatatable();
                 this.calculateMonthlyAbsences();
                 this.calculateAbsencesByType();
-
-                this.$nextTick(() => {
-                    absencesDatatable();
-                });
             },
             deep: true
         },
@@ -751,6 +858,9 @@ export default {
                 });
             }
             });
+        },
+        selectSupportFile() {
+            this.$refs.supportFileInput.click();
         },
         generateYears() {
             const currentYear = new Date().getFullYear();
@@ -1217,12 +1327,11 @@ export default {
             }
         },
         storeAbsence() {
+            this.is_loading = true; // ACTIVAR
             const formData = new FormData();
 
-            // console.log(this.absence_subtype);
-
             if(this.support_file) {
-                fd.append('support_file', this.support_file)
+                formData.append('support_file', this.support_file)
             }
             formData.append('absence_type_id', this.absence_type_id);
             formData.append('absence_subtype', this.absence_subtype);
@@ -1241,11 +1350,13 @@ export default {
                     this.absences = response.data.absences;
                     this.add_absence = false;
                     this.resetForm();
-
                     this.getAbsencesByCollaborator(this.collaborator.id);
                 })
                 .catch(error => {
                     this.errors = error.response.data.errors;
+                })
+                .finally(() => {
+                    this.is_loading = false; // DESACTIVAR
                 });
         },
         showAbsence(absence) {
@@ -1257,6 +1368,7 @@ export default {
             this.parent_absence = [this.absences.find(item => item.id === absence.parent_absence_id)];
         },
         updateAbsence() {
+            this.is_loading = true; // ACTIVAR
             const formData = new FormData();
 
             if (this.support_file) {
@@ -1276,34 +1388,33 @@ export default {
             formData.append('observations', this.observations);
             formData.append('_method', 'PUT')
 
-            axios
-                .post(`/absences/${this.collaborator.id}/${this.selected_absence.id}`, formData)
+            axios.post(`/absences/${this.collaborator.id}/${this.selected_absence.id}`, formData)
                 .then((response) => {
                     this.absences = response.data.absences;
                     this.edit_absence = false;
                     this.resetForm();
-
                     this.getAbsencesByCollaborator(this.collaborator.id);
                 })
                 .catch((error) => {
                     this.errors = error.response.data.errors;
+                })
+                .finally(() => {
+                    this.is_loading = false; // DESACTIVAR
                 });
         },
         deleteAbsence(id){
-            let url = ''
+            this.is_loading = true; // ACTIVAR
             axios.delete(`/absences/${this.collaborator.id}/${id}/destroy`).then(
                 (res) => {
                     this.absences = res.data.absences;
-                    // localStorage.setItem('origin', 'deleted');
-
-                    // url = `/collaborators`
-                    // window.location.href = url
                     this.errors = null
                 }).catch(
                 (error) => {
                     if(error && error.response && error.response.data && error.response.data.errors) {
                         this.errors = error.response.data.errors
                     }
+                }).finally(() => {
+                    this.is_loading = false; // DESACTIVAR
                 })
         },
         resetForm() {
@@ -1331,9 +1442,6 @@ export default {
                 .catch(error => {
                     console.error('Error al cargar las ausencias:', error);
                 })
-                .finally(() => {
-                    this.isLoading = false;
-                });
         },
         changeAbsenceType() {
             this.absence_subtype = '';
@@ -1450,6 +1558,7 @@ export default {
             this.disease_classification_code = this.disease_classification_code.toUpperCase();
 
             if (this.disease_classification_code.length === 3 || this.disease_classification_code.length === 4) {
+
                 axios.get(`/absences/classification/${this.disease_classification_code}`).then(
                     (response) => {
                         this.disease_classification = response.data.disease_classification;
@@ -1464,7 +1573,6 @@ export default {
             }
         },
         downloadSupportFile(absence_id) {
-            // console.log(absence_id);
             axios.get(`/absence/${absence_id}/download`)
             .then(response => {
                 window.open(response.data.support_download_url, '_blank');
@@ -1505,5 +1613,24 @@ export default {
         border: 1px dotted #ccc;
         padding: 5px;
         border-radius: 4px;
+    }
+
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.85);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .loading-text {
+        font-weight: 500;
+        color: #333;
     }
 </style>
