@@ -1,89 +1,97 @@
 <template>
     <div class="dashboard-container">
-        <div class="row mb-5 align-items-stretch">
-      
-            <div class="col-md-6 d-flex"> 
+        <!-- Fila 1: Género y Nivel Académico -->
+        <div class="row mb-4 align-items-stretch">
+            <div class="col-12 col-lg-6 d-flex mb-4 mb-lg-0"> 
                 <div class="card shadow-sm border-0 rounded-lg w-100">
-                    <div class="card-body d-flex flex-column p-4">
+                    <div class="card-body d-flex flex-column p-3 p-md-4">
                         <h6 class="text-muted text-uppercase mb-4 font-size-xs text-center fw-bold">
                             Distribución por Género
                         </h6>
-
                         <div class="flex-grow-1 d-flex align-items-center justify-content-center">
                             <div class="w-100">
                                 <apexchart 
                                     v-if="genderSeries.length > 0"
                                     type="donut" 
-                                    height="300" 
+                                    :height="chartHeight"
                                     :options="genderOptions" 
                                     :series="genderSeries"
                                 ></apexchart>
-                                <p v-else class="text-center text-muted small">Cargando datos...</p>
+                                <empty-state v-else icon="gender" message="Aún no hay datos de género registrados" />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6 d-flex">
+            <div class="col-12 col-lg-6 d-flex">
                 <div class="card shadow-sm border-0 rounded-lg w-100">
-                    <div class="card-body d-flex flex-column p-4">
+                    <div class="card-body d-flex flex-column p-3 p-md-4">
                         <h6 class="text-muted text-uppercase mb-4 font-size-xs fw-bold">
                             Nivel Académico
                         </h6>
-                        
                         <div class="flex-grow-1 d-flex align-items-center justify-content-center">
                             <apexchart 
                                 v-if="academicOptions.xaxis.categories.length > 0"
                                 class="w-100"
                                 type="bar" 
-                                height="300" 
+                                :height="chartHeight"
                                 :options="academicOptions" 
                                 :series="academicSeries"
                             ></apexchart>
+                            <empty-state v-else icon="academic" message="Sin información académica disponible" />
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mb-5 align-items-stretch">
-            <div class="col-md-6 d-flex">
+        <!-- Fila 2: Estado Civil y Rangos de Edad -->
+        <div class="row mb-4 align-items-stretch">
+            <div class="col-12 col-lg-6 d-flex mb-4 mb-lg-0">
                 <div class="card shadow-sm border-0 rounded-lg w-100">
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column p-3 p-md-4">
                         <h6 class="text-muted text-uppercase mb-3 font-size-xs fw-bold">Estado Civil</h6>
-                        <apexchart 
-                            v-if="civilOptions.xaxis.categories.length > 0"
-                            type="bar" 
-                            height="250" 
-                            :options="civilOptions" 
-                            :series="civilSeries"
-                        ></apexchart>
+                        <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                            <apexchart 
+                                v-if="civilOptions.xaxis.categories.length > 0"
+                                class="w-100"
+                                type="bar" 
+                                :height="chartHeightSmall"
+                                :options="civilOptions" 
+                                :series="civilSeries"
+                            ></apexchart>
+                            <empty-state v-else icon="civil" message="Estado civil pendiente de registro" />
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6 d-flex">
+            <div class="col-12 col-lg-6 d-flex">
                 <div class="card shadow-sm border-0 rounded-lg w-100">
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column p-3 p-md-4">
                         <h6 class="text-muted text-uppercase mb-3 font-size-xs fw-bold">Rangos de Edad</h6>
-                        <apexchart 
-                            v-if="ageOptions.xaxis.categories.length > 0"
-                            type="area" 
-                            height="250" 
-                            :options="ageOptions" 
-                            :series="ageSeries"
-                        ></apexchart>
+                        <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                            <apexchart 
+                                v-if="ageOptions.xaxis.categories.length > 0"
+                                class="w-100"
+                                type="area" 
+                                :height="chartHeightSmall"
+                                :options="ageOptions" 
+                                :series="ageSeries"
+                            ></apexchart>
+                            <empty-state v-else icon="age" message="Datos de edad no disponibles" />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mb-5 align-items-stretch">
-            <div class="col-md-6 d-flex">
+        <!-- Fila 3: Antigüedad y Estrato Social -->
+        <div class="row mb-4 align-items-stretch">
+            <div class="col-12 col-lg-6 d-flex mb-4 mb-lg-0">
                 <div class="card shadow-sm border-0 rounded-lg w-100">
-                    <div class="card-body d-flex flex-column p-4">
+                    <div class="card-body d-flex flex-column p-3 p-md-4">
                         <h6 class="text-muted text-uppercase mb-4 font-size-xs fw-bold">
                             Antigüedad en la empresa
                         </h6>
@@ -92,26 +100,31 @@
                                 v-if="lengthServiceSeries[0].data.length > 0"
                                 class="w-100"
                                 type="bar" 
-                                height="250" 
+                                :height="chartHeightSmall"
                                 :options="lengthServiceOptions" 
                                 :series="lengthServiceSeries"
                             />
+                            <empty-state v-else icon="seniority" message="Sin datos de antigüedad" />
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6 d-flex">
+            <div class="col-12 col-lg-6 d-flex">
                 <div class="card shadow-sm border-0 rounded-lg w-100">
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column p-3 p-md-4">
                         <h6 class="text-muted text-uppercase mb-3 font-size-xs fw-bold">Estrato Social</h6>
-                        <apexchart 
-                            v-if="strataOptions.xaxis.categories.length > 0"
-                            type="bar" 
-                            height="250" 
-                            :options="strataOptions" 
-                            :series="strataSeries"
-                        ></apexchart>
+                        <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                            <apexchart 
+                                v-if="strataOptions.xaxis.categories.length > 0"
+                                class="w-100"
+                                type="bar" 
+                                :height="chartHeightSmall"
+                                :options="strataOptions" 
+                                :series="strataSeries"
+                            ></apexchart>
+                            <empty-state v-else icon="strata" message="Estrato social sin registrar" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,13 +133,12 @@
 </template>
 
 <script>
-import VueApexCharts from 'vue3-apexcharts'; // O 'vue-apexcharts' si usas Vue 2
-import axios from 'axios'; // Asegúrate de importar axios si no es global
+import VueApexCharts from 'vue3-apexcharts';
+import axios from 'axios';
+import EmptyState from './EmptyState.vue';
 
 const genderPalette = ['#F472B6', '#38BDF8'];
-// const academicPalette = ['#BC4749', '#6A994E', '#386641', '#A7C957', '#F2E8CF', '#3D405B', '#E07A5F', '#81B29A', '#F2CC8F', '#525B76', '#22333B'];
 const academicPalette = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316', '#14B8A6', '#84CC16', '#6366F1'];
-// const academicPalette = ['#0F172A', '#1E1B4B', '#1E293B', '#1E3A8A', '#1E40AF', '#1D4ED8', '#2563EB', '#312E81', '#3730A3', '#4338CA', '#4F46E5'];
 const civilStatusPalette = ['#064E3B', '#065F46', '#047857', '#059669', '#10B981', '#34D399'];
 const strataPalette = ['#431407', '#7C2D12', '#9A3412', '#C2410C', '#EA580C', '#F97316'];
 const seniorityPalette = ['#ca8a04', '#eab308', '#d97706', '#b45309'];
@@ -134,16 +146,19 @@ const seniorityPalette = ['#ca8a04', '#eab308', '#d97706', '#b45309'];
 export default {
     components: {
         apexchart: VueApexCharts,
+        EmptyState
     },
     props: {
         company_id: { default: null },
     },
     data() {
         return {
+            windowWidth: window.innerWidth,
+            
             // --- 1. GÉNERO (Donut) ---
-            genderSeries: [], // Se llenará con los datos de la API
+            genderSeries: [],
             genderOptions: {
-                labels: [], // Se llenará con las etiquetas de la API
+                labels: [],
                 colors: genderPalette,
                 chart: { type: 'donut' },
                 plotOptions: {
@@ -155,44 +170,71 @@ export default {
                     }
                 },
                 dataLabels: { enabled: false },
-                legend: { position: 'bottom' }
+                legend: { position: 'bottom' },
+                responsive: [{
+                    breakpoint: 576,
+                    options: {
+                        legend: { position: 'bottom', fontSize: '10px' }
+                    }
+                }]
             },
 
-            // --- 2. NIVEL ACADÉMICO (Ahora Barras Verticales) ---
+            // --- 2. NIVEL ACADÉMICO ---
             academicSeries: [{ name: 'Colaboradores', data: [] }],
             academicOptions: {
                 chart: { type: 'bar', toolbar: { show: false } },
                 plotOptions: {
                     bar: { 
-                        horizontal: false, // VERTICAL
-                        borderRadius: 6,   // Radio en las esquinas
-                        distributed: true, // Colores diferentes por barra
+                        horizontal: false,
+                        borderRadius: 6,
+                        distributed: true,
                         columnWidth: '60%',
                     }
                 },
                 colors: academicPalette,
-                legend: { show: false }, // Ocultamos leyenda para limpiar
+                legend: { show: false },
                 xaxis: { 
                     categories: [],
-                    labels: { rotate: -45, style: { fontSize: '10px' } } // Rotar si hay muchas barras
-                }
+                    labels: { 
+                        rotate: -45, 
+                        style: { fontSize: '10px' },
+                        trim: true,
+                        maxHeight: 80
+                    }
+                },
+                responsive: [{
+                    breakpoint: 768,
+                    options: {
+                        plotOptions: { bar: { columnWidth: '80%' } },
+                        xaxis: { labels: { rotate: -60, style: { fontSize: '8px' } } }
+                    }
+                }]
             },
 
-            // --- 3. RANGOS DE EDAD (Área) ---
+            // --- 3. RANGOS DE EDAD ---
             ageSeries: [{ name: 'Cantidad', data: [] }],
             ageOptions: {
                 chart: { type: 'area', toolbar: { show: false } },
                 dataLabels: { enabled: false },
                 stroke: { curve: 'smooth', width: 2 },
-                colors: ['#8B5CF6'], // Violeta
+                colors: ['#8B5CF6'],
                 fill: {
                     type: 'gradient',
                     gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.2, stops: [0, 90, 100] }
                 },
-                xaxis: { categories: [] }
+                xaxis: { 
+                    categories: [],
+                    labels: { style: { fontSize: '10px' } }
+                },
+                responsive: [{
+                    breakpoint: 768,
+                    options: {
+                        xaxis: { labels: { rotate: -45, style: { fontSize: '8px' } } }
+                    }
+                }]
             },
 
-            // --- 4. ESTADO CIVIL (Aseguramos consistencia) ---
+            // --- 4. ESTADO CIVIL ---
             civilSeries: [{ name: 'Cantidad', data: [] }],
             civilOptions: {
                 chart: { type: 'bar', toolbar: { show: false } },
@@ -201,10 +243,19 @@ export default {
                 },
                 colors: civilStatusPalette,
                 legend: { show: false },
-                xaxis: { categories: [] }
+                xaxis: { 
+                    categories: [],
+                    labels: { style: { fontSize: '10px' } }
+                },
+                responsive: [{
+                    breakpoint: 768,
+                    options: {
+                        xaxis: { labels: { rotate: -45, style: { fontSize: '8px' } } }
+                    }
+                }]
             },
 
-            // --- 5. ESTRATO SOCIAL (Aseguramos consistencia) ---
+            // --- 5. ESTRATO SOCIAL ---
             strataSeries: [{ name: 'Cantidad', data: [] }],
             strataOptions: {
                 chart: { type: 'bar', toolbar: { show: false } },
@@ -213,16 +264,19 @@ export default {
                 },
                 colors: strataPalette,
                 legend: { show: false },
-                xaxis: { categories: [] }
+                xaxis: { 
+                    categories: [],
+                    labels: { style: { fontSize: '10px' } }
+                }
             },
 
-            // --- 6. ANTIGÜEDAD (Ahora Barras Horizontales) ---
+            // --- 6. ANTIGÜEDAD ---
             lengthServiceSeries: [{ name: 'Colaboradores', data: [] }],
             lengthServiceOptions: {
                 chart: { type: 'bar', toolbar: { show: false } },
                 plotOptions: {
                     bar: { 
-                        horizontal: true, // HORIZONTAL
+                        horizontal: true,
                         borderRadius: 6, 
                         distributed: true,
                         barHeight: '50%'
@@ -230,23 +284,40 @@ export default {
                 },
                 colors: seniorityPalette,
                 legend: { show: false },
-                xaxis: { categories: [] }
+                xaxis: { categories: [] },
+                yaxis: {
+                    labels: { style: { fontSize: '10px' } }
+                }
             }
         };
     },
+    computed: {
+        chartHeight() {
+            return this.windowWidth < 576 ? 250 : 300;
+        },
+        chartHeightSmall() {
+            return this.windowWidth < 576 ? 200 : 250;
+        }
+    },
     mounted() {
+        window.addEventListener('resize', this.handleResize);
         if (this.company_id) {
             this.loadAllData(this.company_id);
         }
     },
+    beforeUnmount() {
+        window.removeEventListener('resize', this.handleResize);
+    },
     watch: {
-        // Por si el company_id cambia sin recargar la página
         company_id(newVal) {
             if(newVal) this.loadAllData(newVal);
         }
     },
     methods: {
-        // Función auxiliar para cargar todo junto
+        handleResize() {
+            this.windowWidth = window.innerWidth;
+        },
+        
         loadAllData(id) {
             this.getGenderData(id);
             this.getAcademicLevelData(id);
@@ -256,12 +327,9 @@ export default {
             this.getLengthServiceData(id);
         },
 
-        // --- MÉTODOS DE API ---
-
         getGenderData(company_id) {
             axios.get(`/gender-data/${company_id}`).then(response => {
                 const data = response.data.gender_data;
-                // Mapeo para Donut: Values directo a series, Labels a options
                 this.genderSeries = data.values;
                 this.genderOptions = {
                     ...this.genderOptions,
@@ -273,11 +341,10 @@ export default {
         getAcademicLevelData(company_id) {
             axios.get(`/academic-level-data/${company_id}`).then(response => {
                 const data = response.data.academic_level_data;
-                // Mapeo para Barras: Values a series[0].data, Labels a xaxis.categories
                 this.academicSeries = [{ name: 'Empleados', data: data.values }];
                 this.academicOptions = {
                     ...this.academicOptions,
-                    xaxis: { categories: data.labels }
+                    xaxis: { ...this.academicOptions.xaxis, categories: data.labels }
                 };
             }).catch(e => console.error(e));
         },
@@ -288,7 +355,7 @@ export default {
                 this.ageSeries = [{ name: 'Empleados', data: data.values }];
                 this.ageOptions = {
                     ...this.ageOptions,
-                    xaxis: { categories: data.labels }
+                    xaxis: { ...this.ageOptions.xaxis, categories: data.labels }
                 };
             }).catch(e => console.error(e));
         },
@@ -299,7 +366,7 @@ export default {
                 this.civilSeries = [{ name: 'Empleados', data: data.values }];
                 this.civilOptions = {
                     ...this.civilOptions,
-                    xaxis: { categories: data.labels }
+                    xaxis: { ...this.civilOptions.xaxis, categories: data.labels }
                 };
             }).catch(e => console.error(e));
         },
@@ -310,7 +377,7 @@ export default {
                 this.strataSeries = [{ name: 'Empleados', data: data.values }];
                 this.strataOptions = {
                     ...this.strataOptions,
-                    xaxis: { categories: data.labels }
+                    xaxis: { ...this.strataOptions.xaxis, categories: data.labels }
                 };
             }).catch(e => console.error(e));
         },
@@ -318,12 +385,10 @@ export default {
         getLengthServiceData(company_id) {
             axios.get(`/length-service-data/${company_id}`).then(response => {
                 const data = response.data.length_service_data;
-                
-                // Revertimos el mapeo de treemap a formato de barras estándar
                 this.lengthServiceSeries = [{ name: 'Empleados', data: data.values }];
                 this.lengthServiceOptions = {
                     ...this.lengthServiceOptions,
-                    xaxis: { categories: data.labels }
+                    xaxis: { ...this.lengthServiceOptions.xaxis, categories: data.labels }
                 };
             }).catch(e => console.error(e));
         }
@@ -332,17 +397,34 @@ export default {
 </script>
 
 <style scoped>
-/* Un poco de CSS para dar aire */
 .card {
     transition: transform 0.2s;
-    /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important; */
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25) !important;
 }
+
 .font-size-xs {
     font-size: 0.85rem;
     letter-spacing: 0.05em;
 }
+
 .rounded-lg {
     border-radius: 0.75rem !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+    .font-size-xs {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .font-size-xs {
+        font-size: 0.75rem;
+    }
 }
 </style>
