@@ -69,20 +69,17 @@ class CompanyController extends Controller
     {
         $results = [];
         $gender_data = [];
-
         $data = Collaborator::join('companies as cp', 'cp.id', '=', 'collaborators.company_id')
             ->join('sex_types as st', 'st.id', '=', 'collaborators.sex_type_id')
             ->where('cp.id', $company_id)
             ->select('collaborators.sex_type_id', 'st.name', DB::raw('COUNT(*) as count'))
             ->groupBy('collaborators.sex_type_id', 'st.name')
-            ->orderBy('count', 'desc')
+            ->orderBy('collaborators.sex_type_id', 'asc')  // Cambiado aquí
             ->get();
 
         $gender_data['labels'] = $data->pluck('name');
         $gender_data['values'] = $data->pluck('count');
-
         $results['gender_data'] = $gender_data;
-
         return $results;
     }
 
