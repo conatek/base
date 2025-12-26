@@ -55,6 +55,73 @@ class Collaborator extends Model
         return $this->belongsTo(Province::class);
     }
 
+    public function document_city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function birth_province()
+    {
+        return $this->belongsTo(Province::class, 'birth_province_id');
+    }
+
+    public function birth_city()
+    {
+        return $this->belongsTo(City::class, 'birth_city_id');
+    }
+
+    public function residence_province()
+    {
+        return $this->belongsTo(Province::class, 'residence_province_id');
+    }
+
+    public function residence_city()
+    {
+        return $this->belongsTo(City::class, 'residence_city_id');
+    }
+
+    public function stratum_type()
+    {
+        return $this->belongsTo(SocialStratum::class);
+    }
+
+    public function civil_status_type()
+    {
+        return $this->belongsTo(CivilStatusType::class);
+    }
+
+    public function highest_academic_achievement(): HasOne
+    {
+        // 'ofMany' recibirá la columna a comparar y la función agregada ('max')
+        return $this->hasOne(CollaboratorAcademicAchievement::class)
+            ->ofMany('achievement_type_id', 'max');
+    }
+
+    public function sex_type()
+    {
+        return $this->belongsTo(SexType::class);
+    }
+
+    public function rh_type()
+    {
+        return $this->belongsTo(RhType::class);
+    }
+
+    public function staff_provider()
+    {
+        return $this->belongsTo(StaffProvider::class);
+    }
+
+    public function social_security()
+    {
+        return $this->hasOne(CollaboratorSocialSecurity::class);
+    }
+
+    public function bank_accounts()
+    {
+        return $this->hasMany(CollaboratorBankAccount::class);
+    }
+
     public function contracts(): HasMany
     {
         return $this->hasMany(CollaboratorContract::class);

@@ -11,94 +11,119 @@ use Illuminate\Support\Facades\Response;
 
 class PdfReportController extends Controller
 {
+    // public function downloadReportCollaborators()
+    // {
+    //     $user = Auth::user();
+
+    //     $collaborators = Collaborator::with([
+    //         'document_type',
+    //         'activeContract.position',
+    //         'activeContract.contractType'
+    //     ])
+    //         ->where('company_id', $user->company_id)
+    //         ->orderBy('name')
+    //         ->get();
+
+    //     $html = View::make('pdf.collaborators-report', compact('collaborators'))->render();
+
+    //     $pdf = Browsershot::html($html)
+    //         ->format('Letter')
+    //         ->margins(10, 10, 10, 10)
+    //         ->noSandbox()
+    //         ->waitUntilNetworkIdle() // Importante para cargar las imágenes
+    //         ->pdf();
+
+    //     return response()->streamDownload(function () use ($pdf) {
+    //         echo $pdf;
+    //     }, 'reporte-colaboradores.pdf', [
+    //         'Content-Type' => 'application/pdf',
+    //     ]);
+    // }
+
+    // public function downloadReportCollaborators()
+    // {
+    //     $user = Auth::user();
+
+    //     $collaborators = Collaborator::where('is_active', 1)
+    //         ->whereHas('activeContract') // Solo con contrato vigente
+    //         ->with([
+    //             'document_type',
+    //             'activeContract.position.area',
+    //             'activeContract.contractType',
+    //             'activeContract.bank',
+    //             'activeContract.eps',
+    //             'activeContract.afpPension',
+    //             'activeContract.arl'
+    //         ])
+    //         ->where('company_id', $user->company_id)
+    //         ->orderBy('name')
+    //         ->get();
+
+    //     $html = View::make('pdf.collaborators-report', compact('collaborators'))->render();
+
+    //     $pdf = Browsershot::html($html)
+    //         ->format('Letter')
+    //         ->margins(10, 10, 10, 10)
+    //         ->noSandbox()
+    //         ->waitUntilNetworkIdle()
+    //         ->pdf();
+
+    //     return response()->streamDownload(function () use ($pdf) {
+    //         echo $pdf;
+    //     }, 'reporte-colaboradores-vigentes.pdf', [
+    //         'Content-Type' => 'application/pdf',
+    //     ]);
+    // }
+
     public function downloadReportCollaborators()
     {
         $user = Auth::user();
 
-        $collaborators = Collaborator::where('company_id', $user->company_id)
-            ->orderBy('name')
-            ->get();
+        $collaborators = Collaborator::where('is_active', 1)
+            ->whereHas('activeContract')
+            ->with([
+                'document_type',
+                'document_province',
+                'document_city',
+                'birth_province',
+                'birth_city',
+                'stratum_type',
+                'civil_status_type',
+                'highest_academic_achievement.achievement_type',
+                'sex_type',
+                'rh_type',
+                'staff_provider',
+                'social_security.eps',
+                'social_security.afp_pension',
+                'social_security.afp_saving',
+                'social_security.arl',
+                'social_security.ccf',
+                'bank_accounts.bank',
 
-        $abbreviations = [
-            'Cédula de ciudadanía'     => 'CC',
-            'Cédula de extranjería'    => 'CE',
-            'NIT'                      => 'NIT',
-            'NUIP'                     => 'NUIP',
-            'Pasaporte'               => 'PP',
-            'Tarjeta de identidad'     => 'TI',
-        ];
+                'activeContract.position.area',
+                'activeContract.contractType',
 
-        // Variable para controlar el margen de impresión
-        $printMargin = '5mm'; // Cambia este valor: 2mm, 3mm, 5mm, 8mm, etc.
-
-        $html = View::make('pdf.collaborators-report', compact('collaborators', 'abbreviations', 'printMargin'))->render();
-
-        $pdf = Browsershot::html($html)
-            ->format('Letter')
-            ->margins(0, 0, 0, 0) // Browsershot sin márgenes - se controla desde CSS @page
-            ->noSandbox()
-            ->waitUntilNetworkIdle()
-            ->showBackground()
-            ->printBackground()
-            ->emulateMedia('print')
-            ->setOption('args', [
-                '--no-first-run',
-                '--disable-gpu',
-                '--disable-dev-shm-usage',
-                '--disable-setuid-sandbox',
-                '--no-zygote',
-                '--single-process',
-                '--disable-web-security',
-                '--allow-running-insecure-content'
+                'activeContract.bank'
             ])
-            ->scale(1.0)
-            ->windowSize(816, 1056)
-            ->pdf();
-
-        return response($pdf)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="reporte-colaboradores.pdf"');
-    }
-
-    /**
-     * Método alternativo si necesitas más control sobre la paginación
-     */
-    public function downloadReportCollaboratorsWithPagination()
-    {
-        $user = Auth::user();
-
-        $collaborators = Collaborator::where('company_id', $user->company_id)
+            ->where('company_id', $user->company_id)
             ->orderBy('name')
             ->get();
 
-        $abbreviations = [
-            'Cédula de ciudadanía'     => 'CC',
-            'Cédula de extranjería'    => 'CE',
-            'NIT'                      => 'NIT',
-            'NUIP'                     => 'NUIP',
-            'Pasaporte'               => 'PP',
-            'Tarjeta de identidad'     => 'TI',
-        ];
+        // dd($collaborators);
 
-        // Dividir colaboradores en grupos para mejor control de paginación
-        $collaboratorsPerPage = 20; // Ajusta según el espacio disponible
-        $collaboratorChunks = $collaborators->chunk($collaboratorsPerPage);
-
-        $html = View::make('pdf.collaborators-report-paginated', compact('collaboratorChunks', 'abbreviations'))->render();
+        $html = View::make('pdf.collaborators-report', compact('collaborators'))->render();
 
         $pdf = Browsershot::html($html)
             ->format('Letter')
-            ->margins(5, 5, 5, 5)
+            ->margins(10, 10, 10, 10)
             ->noSandbox()
-            ->waitUntilNetworkIdle()
-            ->showBackground()
-            ->printBackground()
-            ->emulateMedia('print')
-            ->scale(0.9)
+            ->waitUntilNetworkIdle() // Necesario para cargar Poppins desde Google Fonts
             ->pdf();
 
-        return response($pdf)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="reporte-colaboradores.pdf"');
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf;
+        }, 'reporte-colaboradores-vigentes.pdf', [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 }
