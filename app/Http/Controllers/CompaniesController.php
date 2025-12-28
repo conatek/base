@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CompanyCreateRequest;
-use App\Http\Requests\CompanyEditRequest;
+use Exception;
 use App\Models\City;
 use App\Models\Company;
-use App\Models\CompanyType;
-use App\Models\DocumentType;
 use App\Models\Industry;
 use App\Models\Province;
-use App\Models\StaffProvider;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use Exception;
+use App\Models\CompanyType;
+use App\Models\DocumentType;
 use Illuminate\Http\Request;
+use App\Models\StaffProvider;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\CompanyEditRequest;
+use App\Http\Requests\CompanyCreateRequest;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class CompaniesController extends Controller
 {
@@ -63,8 +64,10 @@ class CompaniesController extends Controller
 
     public function store(CompanyCreateRequest $request)
     {
+        // Iniciamos la transacción
+        DB::beginTransaction();
+
         try {
-            // Asignación masiva de los datos a través del método fill()
             $company = new Company();
             $company->fill($request->only([
                 'company_type_id',
@@ -92,41 +95,44 @@ class CompaniesController extends Controller
                 'youtube'
             ]));
 
-            // Manejo del campo 'is_active'
-            $company->is_active = $request->filled('is_active') ? 1 : 0;
-
-            // Guardar la empresa
+            // Uso de boolean() es más seguro para checkboxes
+            $company->is_active = $request->boolean('is_active');
             $company->save();
 
-            // Subida y actualización del logo, si existe
+            // Manejo del logo
             if ($request->hasFile('logo')) {
+                // Pasamos la empresa por referencia o usamos su ID
                 $this->uploadLogo($company, $request->file('logo'));
             }
 
-            // Crear registro inicial en staff_providers
-            // StaffProvider::create([
-            //     'company_id' => $company->id,
-            //     'provider_type_id' => 1,
-            //     'name' => $company->company_name,
-            // ]);
+            // Si todo salió bien, confirmamos los cambios en la BD
+            DB::commit();
 
             return response()->json([
-                'message' => 'Empresa creada exitosamente!',
-                'company' => $company,
+                'message' => '¡Empresa creada exitosamente!',
+                'company' => $company->fresh(), // fresh() para traer los datos actualizados del logo
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
+            // Si algo falla, deshacemos todo lo que se hizo en la BD
+            DB::rollBack();
+
             return response()->json([
-                'message' => $e->getMessage()
+                'message' => 'Error al crear la empresa: ' . $e->getMessage()
             ], 500);
         }
     }
 
     protected function uploadLogo(Company $company, $logoFile)
     {
+        // Es buena práctica envolver servicios externos en try/catch o dejar que el principal lo atrape
+        $folderPath = 'mh/' . app()->environment() . '/' . $company->id . '/logo';
+
         $cloudinary_object = Cloudinary::upload($logoFile->getRealPath(), [
-            'folder' => 'mh/' . env("APP_ENV", "local") . '/' . $company->id . '/logo'
+            'folder' => $folderPath
         ]);
 
+        // Actualizamos sin disparar eventos innecesarios si fuera el caso, 
+        // pero update() está bien aquí.
         $company->update([
             'logo_public_id' => $cloudinary_object->getPublicId(),
             'logo_url' => $cloudinary_object->getSecurePath(),
@@ -177,56 +183,40 @@ class CompaniesController extends Controller
 
     public function update(CompanyEditRequest $request, Company $company)
     {
-        // Las validaciones se realizan en CompanyEditRequest
+        DB::beginTransaction();
 
         try {
-            $data = array(
-                'company_name' => $request->company_name,
-                'company_type_id' => $request->company_type_id,
-                'identification_type_id' => $request->identification_type_id,
-                'identification_number' => $request->identification_number,
-                'province_id' => $request->province_id,
-                'city_id' => $request->city_id,
-                'address' => $request->address,
-                'industry_type_id' => $request->industry_type_id,
-                'size' => $request->size,
-                'founded_at' => $request->founded_at,
-                'description' => $request->description,
+            // 1. Actualizar datos básicos (usando fill para ser más limpio)
+            $company->fill($request->only([
+                'company_name', 'company_type_id', 'identification_type_id',
+                'identification_number', 'province_id', 'city_id', 'address',
+                'industry_type_id', 'size', 'founded_at', 'description',
+                'contact_name', 'contact_first_surname', 'contact_second_surname',
+                'website', 'email', 'phone', 'cellphone', 'facebook',
+                'instagram', 'linkedin', 'x_twitter', 'youtube'
+            ]));
 
-                'contact_name' => $request->contact_name,
-                'contact_first_surname' => $request->contact_first_surname,
-                'contact_second_surname' => $request->contact_second_surname,
-                'website' => $request->website,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'cellphone' => $request->cellphone,
+            $company->is_active = $request->boolean('is_active');
+            $company->save();
 
-                'facebook' => $request->facebook,
-                'instagram' => $request->instagram,
-                'linkedin' => $request->linkedin,
-                'x_twitter' => $request->x_twitter,
-                'youtube' => $request->youtube
-            );
-
-            // Manejo del campo 'is_active'
-            $company->is_active = $request->filled('is_active') ? 1 : 0;
-
-            // Guardar la empresa
-            $company->update($data);
-
-            // Subida y actualización del logo, si existe
             if ($request->hasFile('logo')) {
+                if ($company->logo_public_id) {
+                    Cloudinary::destroy($company->logo_public_id);
+                }
+
                 $this->uploadLogo($company, $request->file('logo'));
             }
 
+            DB::commit();
+
             return response()->json([
                 'message' => 'Empresa actualizada exitosamente!',
-                'company' => $company,
+                'company' => $company->fresh(),
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage()
-            ], 500);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -237,7 +227,7 @@ class CompaniesController extends Controller
         $company = Company::find($id);
 
         try {
-            if(isset($company['logo_public_id'])) {
+            if (isset($company['logo_public_id'])) {
                 $public_id = $company['logo_public_id'];
                 Cloudinary::destroy($public_id);
             }
@@ -245,8 +235,8 @@ class CompaniesController extends Controller
             $company->delete();
 
             return response()->json([
-                'message'=>'Empresa eliminada exitosamente!',
-                'company'=>$company
+                'message' => 'Empresa eliminada exitosamente!',
+                'company' => $company
             ]);
         } catch (Exception $e) {
             return response()->json([

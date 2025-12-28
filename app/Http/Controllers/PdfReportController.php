@@ -11,73 +11,10 @@ use Illuminate\Support\Facades\Response;
 
 class PdfReportController extends Controller
 {
-    // public function downloadReportCollaborators()
-    // {
-    //     $user = Auth::user();
-
-    //     $collaborators = Collaborator::with([
-    //         'document_type',
-    //         'activeContract.position',
-    //         'activeContract.contractType'
-    //     ])
-    //         ->where('company_id', $user->company_id)
-    //         ->orderBy('name')
-    //         ->get();
-
-    //     $html = View::make('pdf.collaborators-report', compact('collaborators'))->render();
-
-    //     $pdf = Browsershot::html($html)
-    //         ->format('Letter')
-    //         ->margins(10, 10, 10, 10)
-    //         ->noSandbox()
-    //         ->waitUntilNetworkIdle() // Importante para cargar las imágenes
-    //         ->pdf();
-
-    //     return response()->streamDownload(function () use ($pdf) {
-    //         echo $pdf;
-    //     }, 'reporte-colaboradores.pdf', [
-    //         'Content-Type' => 'application/pdf',
-    //     ]);
-    // }
-
-    // public function downloadReportCollaborators()
-    // {
-    //     $user = Auth::user();
-
-    //     $collaborators = Collaborator::where('is_active', 1)
-    //         ->whereHas('activeContract') // Solo con contrato vigente
-    //         ->with([
-    //             'document_type',
-    //             'activeContract.position.area',
-    //             'activeContract.contractType',
-    //             'activeContract.bank',
-    //             'activeContract.eps',
-    //             'activeContract.afpPension',
-    //             'activeContract.arl'
-    //         ])
-    //         ->where('company_id', $user->company_id)
-    //         ->orderBy('name')
-    //         ->get();
-
-    //     $html = View::make('pdf.collaborators-report', compact('collaborators'))->render();
-
-    //     $pdf = Browsershot::html($html)
-    //         ->format('Letter')
-    //         ->margins(10, 10, 10, 10)
-    //         ->noSandbox()
-    //         ->waitUntilNetworkIdle()
-    //         ->pdf();
-
-    //     return response()->streamDownload(function () use ($pdf) {
-    //         echo $pdf;
-    //     }, 'reporte-colaboradores-vigentes.pdf', [
-    //         'Content-Type' => 'application/pdf',
-    //     ]);
-    // }
-
     public function downloadReportCollaborators()
     {
         $user = Auth::user();
+        $company = $user->company;
 
         $collaborators = Collaborator::where('is_active', 1)
             ->whereHas('activeContract')
@@ -109,9 +46,7 @@ class PdfReportController extends Controller
             ->orderBy('name')
             ->get();
 
-        // dd($collaborators);
-
-        $html = View::make('pdf.collaborators-report', compact('collaborators'))->render();
+        $html = View::make('pdf.collaborators-report', compact('company', 'collaborators'))->render();
 
         $pdf = Browsershot::html($html)
             ->format('Letter')

@@ -20,10 +20,6 @@
                 </div>
                 <div class="page-title-actions">
                     <template v-if="viewState === 'list'">
-                        <!-- <a href="/report/collaborators" class="btn btn-mh-dark-blue me-3">
-                            <i class="fa fa-file-contract"></i>
-                            Reporte de Colaboradores
-                        </a> -->
                         <a href="/report/collaborators" class="btn btn-mh-dark-blue me-3" target="_blank">
                             <i class="fa fa-file-contract"></i>
                             Reporte de Colaboradores

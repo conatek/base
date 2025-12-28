@@ -45,6 +45,11 @@ class Collaborator extends Model
         'is_active',
     ];
 
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     public function document_type()
     {
         return $this->belongsTo(DocumentType::class);
