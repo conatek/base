@@ -21,4 +21,14 @@ class Area extends Model
         'name',
         'description',
     ];
+
+    public function campus()
+    {
+        return $this->belongsTo(Campus::class);
+    }
+
+    public function leader()
+    {
+        return $this->belongsTo(Collaborator::class, 'leader_id');
+    }
 }

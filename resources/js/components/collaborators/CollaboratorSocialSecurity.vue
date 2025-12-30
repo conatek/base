@@ -470,18 +470,18 @@
                             </div>
                             <div class="data-pair">
                                 <div class="box-label lb-45">
+                                    <p class="">Tipo de cuenta:</p>
+                                </div>
+                                <div class="box-value vl-45">
+                                    <p class="">{{ bank_information_data.account_type.name }}</p>
+                                </div>
+                            </div>
+                            <div class="data-pair without-border">
+                                <div class="box-label lb-45">
                                     <p class="">Número de cuenta:</p>
                                 </div>
                                 <div class="box-value vl-45">
                                     <p class="">{{ bank_information_data.bank_account }}</p>
-                                </div>
-                            </div>
-                            <div class="data-pair full-width without-border">
-                                <div class="box-label lb-46">
-                                    <p class="">Observaciones:</p>
-                                </div>
-                                <div class="box-value vl-46">
-                                    <p class="">{{ bank_information_data.observations }}</p>
                                 </div>
                             </div>
                         </div>
@@ -514,6 +514,20 @@
                                                     <option v-for="bank_type in bank_types" :value="bank_type.id">{{ bank_type.name }}</option>
                                                 </select>
                                                 <span v-if="errors_bank_information && errors_bank_information.bank_id" class="error text-danger" for="bank_id">{{ errors_bank_information.bank_id[0] }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-6">
+                                            <div class="position-relative mb-3">
+                                                <label for="bank_account_type_id" class="form-label">Tipo de cuenta*</label>
+                                                <select v-model="bank_account_type_id" name="bank_account_type_id" class="form-control">
+                                                    <option value="" disabled selected hidden>Seleccionar Tipo</option>
+                                                    <option v-for="type in bank_account_types" :key="type.id" :value="type.id">
+                                                        {{ type.name }}
+                                                    </option>
+                                                </select>
+                                                <span v-if="errors_bank_information && errors_bank_information.bank_account_type_id" class="error text-danger">
+                                                    {{ errors_bank_information.bank_account_type_id[0] }}
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="col-sm-12 col-md-6 col-lg-6">
@@ -551,13 +565,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12">
-                                            <div class="position-relative mb-3">
-                                                <label for="observations_bank_information" class="form-label">Observaciones</label>
-                                                <textarea v-model="observations_bank_information" name="observations_bank_information" id="observations_bank_information" type="text" class="form-control" placeholder="Ingrese sus observaciones" rows="4" cols="50"></textarea>
-                                                <span v-if="errors_bank_information && errors_bank_information.observations" class="error text-danger" for="observations">{{ errors_bank_information.observations[0] }}</span>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-footer d-flex">
@@ -593,6 +600,20 @@
                                         </div>
                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                             <div class="position-relative mb-3">
+                                                <label for="bank_account_type_id" class="form-label">Tipo de cuenta*</label>
+                                                <select v-model="bank_information_data.bank_account_type_id" name="bank_account_type_id" class="form-control">
+                                                    <option value="" disabled selected hidden>Seleccionar tipo</option>
+                                                    <option v-for="type in bank_account_types" :key="type.id" :value="type.id">
+                                                        {{ type.name }}
+                                                    </option>
+                                                </select>
+                                                <span v-if="errors_bank_information && errors_bank_information.bank_account_type_id" class="error text-danger">
+                                                    {{ errors_bank_information.bank_account_type_id[0] }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-6">
+                                            <div class="position-relative mb-3">
                                                 <label for="bank_account" class="form-label">Número de cuenta*</label>
                                                 <input v-model="bank_information_data.bank_account" name="bank_account" id="bank_account" type="text" class="form-control" placeholder="Ingrese número de cuenta">
                                                 <span v-if="errors_bank_information && errors_bank_information.bank_account" class="error text-danger" for="bank_account">{{ errors_bank_information.bank_account[0] }}</span>
@@ -624,13 +645,6 @@
                                                         placeholder="Ningún archivo seleccionado"
                                                     />
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="position-relative mb-3">
-                                                <label for="observations_bank_information" class="form-label">Observaciones</label>
-                                                <textarea v-model="bank_information_data.observations" name="observations_bank_information" id="observations_bank_information" type="text" class="form-control" placeholder="Ingrese sus observaciones" rows="4" cols="50"></textarea>
-                                                <span v-if="errors_bank_information && errors_bank_information.observations" class="error text-danger" for="observations">{{ errors_bank_information.observations[0] }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -690,6 +704,7 @@ export default {
             ccf_types: [],
 
             bank_types: [],
+            bank_account_types: [],
 
             eps_id: '',
             arl_id: '',
@@ -699,8 +714,8 @@ export default {
             observations_social_security: '',
 
             bank_id: '',
+            bank_account_type_id: '',
             bank_account: '',
-            observations_bank_information: '',
 
             add_social_security_data: false,
             edit_social_security_data: false,
@@ -788,6 +803,7 @@ export default {
             axios.get(`/bank-account-information`)
             .then(response => {
                 this.bank_types = response.data.bank_types;
+                this.bank_account_types = response.data.bank_account_types;
             })
             .catch(e => {
                 //
@@ -923,9 +939,9 @@ export default {
             let fd = new FormData()
             fd.append('collaborator_id', this.collaborator.id)
             fd.append('bank_id', this.bank_id)
+            fd.append('bank_account_type_id', this.bank_account_type_id)
             fd.append('bank_account', this.bank_account)
             fd.append('bank_account_file', this.bank_account_file)
-            fd.append('observations', this.observations_bank_information)
 
             axios.post(`/bank-account-information`, fd).then(
                 (res) => {
@@ -980,9 +996,9 @@ export default {
             let fd = new FormData()
             fd.append('collaborator_id', this.collaborator.id)
             fd.append('bank_id', this.bank_information_data.bank_id)
+            fd.append('bank_account_type_id', this.bank_information_data.bank_account_type_id)
             fd.append('bank_account', this.bank_information_data.bank_account)
             fd.append('bank_account_file', this.bank_account_file)
-            fd.append('observations', this.bank_information_data.observations)
             fd.append('_method', 'PUT')
 
             axios.post(`/bank-account-information/${this.bank_information_data.id}`, fd).then(

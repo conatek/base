@@ -43,6 +43,11 @@ class CollaboratorContract extends Model
         return $this->belongsTo(Position::class);
     }
 
+    public function contract_type(): BelongsTo
+    {
+        return $this->belongsTo(ContractType::class, 'contract_type_id');
+    }
+
     /**
      * Scope: contratos vigentes para una fecha ($on o hoy).
      * Vigente = start <= $on AND (end IS NULL OR $on <= end)

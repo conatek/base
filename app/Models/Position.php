@@ -24,6 +24,16 @@ class Position extends Model
         return $this->belongsTo(Area::class);
     }
 
+    public function position_criticality_level()
+    {
+        return $this->belongsTo(PositionCriticalityLevel::class, 'criticality_level_id');
+    }
+
+    public function position_risk_class()
+    {
+        return $this->belongsTo(PositionRiskClass::class, 'risk_class_id');
+    }
+
     public function contracts()
     {
         return $this->hasMany(CollaboratorContract::class);

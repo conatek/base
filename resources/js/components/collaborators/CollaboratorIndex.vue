@@ -20,10 +20,14 @@
                 </div>
                 <div class="page-title-actions">
                     <template v-if="viewState === 'list'">
-                        <a href="/report/collaborators" class="btn btn-mh-dark-blue me-3" target="_blank">
+                        <!-- <a href="/report/collaborators" class="btn btn-mh-dark-blue me-3" target="_blank">
                             <i class="fa fa-file-contract"></i>
                             Reporte de Colaboradores
-                        </a>
+                        </a> -->
+                        <button @click="requestReport" class="btn btn-mh-dark-blue me-3">
+                            <i class="fa fa-envelope"></i>
+                            Solicitar Reporte por Correo
+                        </button>
                         <button @click="addCollaborator()" class="btn btn-mh-dark-blue me-3">
                             <i class="fa fa-plus"></i>
                             Agregar
@@ -52,6 +56,14 @@
 
             </div>
         </div>
+
+        <div v-if="message !== ''" class="mbg-3 alert alert-success alert-dismissible fade show" role="alert">
+            <span class="pe-2">
+                <i class="fa fa-star"></i>
+            </span>
+            {{ message }}
+        </div>
+
         <div v-if="viewState === 'list'">
             <!-- <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-6 col-xl-4">
@@ -401,6 +413,24 @@ export default {
         returnToList() {
             this.selected_collaborator = null
             this.viewState = 'list';
+        },
+        requestReport() {
+            axios.get('/report/collaborators')
+                .then(response => {
+                    this.getMessage(response.data.message);
+                })
+                .catch(error => {
+                    console.error("Hubo un error al solicitar el reporte");
+                });
+        },
+        getMessage(msg) {
+            if(msg != '' && msg != null) {
+                this.message = msg
+            }
+
+            setTimeout(() => {
+                this.message = ''
+            }, 3000)
         },
         getCollaborators() {
             axios.get(`/collaborators/${this.company_id}`)

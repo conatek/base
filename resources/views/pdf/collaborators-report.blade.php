@@ -326,25 +326,23 @@
 
                     <div class="section-tag">Información bancaria</div>
 
-                    @php $bankAccount = $collab->bank_accounts->first(); @endphp
-
                     <div class="horizontal-list">
                         <div class="item-horizontal">
                             <span class="label">Entidad:</span>
                             <div class="value-container"><span
-                                    class="value-truncate">{{ $bankAccount->bank->name ?? 'Sin definir' }}</span>
+                                    class="value-truncate">{{ $collab->bank_account->bank->name ?? 'Sin definir' }}</span>
+                            </div>
+                        </div>
+                        <div class="item-horizontal">
+                            <span class="label">Tipo de cuenta:</span>
+                            <div class="value-container"><span
+                                    class="value-truncate">{{ $collab->bank_account->accountType->name ?? 'Sin definir' }}</span>
                             </div>
                         </div>
                         <div class="item-horizontal">
                             <span class="label">Número de cuenta:</span>
                             <div class="value-container"><span
-                                    class="value-truncate">{{ $bankAccount->bank_account ?? 'Sin definir' }}</span>
-                            </div>
-                        </div>
-                        <div class="item-horizontal">
-                            <span class="label">Observaciones:</span>
-                            <div class="value-container"><span
-                                    class="value-truncate">{{ $bankAccount->observations ?? 'Sin definir' }}</span>
+                                    class="value-truncate">{{ $collab->bank_account->bank_account ?? 'Sin definir' }}</span>
                             </div>
                         </div>
                     </div>

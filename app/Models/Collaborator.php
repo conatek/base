@@ -85,6 +85,11 @@ class Collaborator extends Model
         return $this->belongsTo(City::class, 'residence_city_id');
     }
 
+    public function housing_tenure()
+    {
+        return $this->belongsTo(HousingTenure::class);
+    }
+
     public function stratum_type()
     {
         return $this->belongsTo(SocialStratum::class);
@@ -122,9 +127,9 @@ class Collaborator extends Model
         return $this->hasOne(CollaboratorSocialSecurity::class);
     }
 
-    public function bank_accounts()
+    public function bank_account()
     {
-        return $this->hasMany(CollaboratorBankAccount::class);
+        return $this->hasOne(CollaboratorBankAccount::class);
     }
 
     public function contracts(): HasMany
