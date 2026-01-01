@@ -17,4 +17,14 @@ class CollaboratorMedicalExamination extends Model
         'result_public_id',
         'result_url'
     ];
+
+    public function collaborator()
+    {
+        return $this->belongsTo(Collaborator::class);
+    }
+
+    public function examination_type()
+    {
+        return $this->belongsTo(MedicalExaminationType::class);
+    }
 }

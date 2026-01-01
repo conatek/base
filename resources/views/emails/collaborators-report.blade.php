@@ -87,7 +87,7 @@
                     <h1>¡Hola, {{ $user->name }}! 👋</h1>
                     <p>Esperamos que estés teniendo un excelente día. Te informamos que el <strong>Reporte de General de Colaboradores</strong> que solicitaste ya ha sido generado con éxito.</p>
                     
-                    <p>En el archivo adjunto encontrarás el detalle completo procesado por nuestro sistema, listo para tu revisión o impresión.</p>
+                    <p>En los dos (2) archivos adjuntos encontrarás el detalle completo procesado por nuestro sistema, listo para tu revisión o impresión.</p>
                     
                     <div style="text-align: center; margin-top: 30px;">
                         <p style="font-size: 14px; color: #64748b;">Este es un proceso automático de <strong>Muy Humano</strong> para optimizar tu gestión de talento.</p>

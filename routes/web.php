@@ -272,7 +272,6 @@ Route::group(['middleware' => 'auth'], function () {
 
     // PDF REPORTS
     Route::get('/report/collaborators', [PdfReportController::class, 'downloadReportCollaborators']);
-    // Route::get('/report/collaborators', [PdfReportController::class, 'downloadReportCollaboratorsWithPagination']);
 
     // SELF MANAGEMENT
     Route::get('/self-management/profile', [SelfManagementController::class, 'profile'])->name('self-management.profile');

@@ -19,4 +19,24 @@ class CollaboratorFamily extends Model
         'occupation_id',
         'birth_date'
     ];
+
+    public function collaborator()
+    {
+        return $this->belongsTo(Collaborator::class);
+    }
+
+    public function relationship()
+    {
+        return $this->belongsTo(Relationship::class);
+    }
+
+    public function sex_type()
+    {
+        return $this->belongsTo(SexType::class);
+    }
+
+    public function occupation()
+    {
+        return $this->belongsTo(Occupation::class);
+    }
 }

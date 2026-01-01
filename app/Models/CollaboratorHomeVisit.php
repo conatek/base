@@ -18,4 +18,14 @@ class CollaboratorHomeVisit extends Model
         'report_public_id',
         'report_url'
     ];
+
+    public function collaborator()
+    {
+        return $this->belongsTo(Collaborator::class);
+    }
+
+    public function home_visit_type()
+    {
+        return $this->belongsTo(HomeVisitType::class);
+    }
 }

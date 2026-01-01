@@ -168,4 +168,24 @@ class Collaborator extends Model
             'position_id' // Llave foránea en collaborator_contracts
         );
     }
+
+    public function families(): HasMany
+    {
+        return $this->hasMany(CollaboratorFamily::class);
+    }
+
+    public function academic_achievements(): HasMany
+    {
+        return $this->hasMany(CollaboratorAcademicAchievement::class);
+    }
+
+    public function medical_examinations(): HasMany
+    {
+        return $this->hasMany(CollaboratorMedicalExamination::class);
+    }
+
+    public function home_visits(): HasMany
+    {
+        return $this->hasMany(CollaboratorHomeVisit::class);
+    }
 }

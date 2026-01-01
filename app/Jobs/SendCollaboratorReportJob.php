@@ -61,7 +61,13 @@ class SendCollaboratorReportJob implements ShouldQueue
                 'activeContract.position.position_risk_class',
                 'activeContract.contractType',
 
-                'activeContract.bank'
+                // 'activeContract.bank'
+                'families.relationship', 
+                'families.occupation',
+                'families.sex_type',
+                'academic_achievements.achievement_type',
+                'medical_examinations.examination_type',
+                'home_visits.home_visit_type'
             ])
             ->where('company_id', $this->user->company_id)
             ->orderBy('name')
