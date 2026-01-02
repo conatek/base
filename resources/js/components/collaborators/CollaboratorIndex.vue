@@ -121,13 +121,18 @@
                         <div class="card-profile-text">
                             <div class="portada">
                                 <div class="icon-grid">
-                                    <a @click="showCollaboratorContract(collaborator.id)" title="Contratos"> <i
-                                            class="fa fa-file-contract"></i></a>
-                                    <a @click="showCollaboratorSocialSecurity(collaborator.id)"
-                                        title="Seguridad Social e Información Bancaria"> <i
-                                            class="fa fa-handshake"></i></a>
-                                    <a @click="showCollaboratorAbsence(collaborator.id)" title="Ausentismo"> <i
-                                            class="fa fa-clock"></i></a>
+                                    <a @click="showCollaboratorContract(collaborator.id)" title="Contratos">
+                                        <i class="fa fa-file-contract"></i>
+                                    </a>
+                                    <a @click="showCollaboratorSocialSecurity(collaborator.id)" title="Seguridad Social e Información Bancaria">
+                                        <i class="fa fa-handshake"></i>
+                                    </a>
+                                    <a @click="showCollaboratorAbsence(collaborator.id)" title="Ausentismo">
+                                        <i class="fa fa-clock"></i>
+                                    </a>
+                                    <a @click="requestIndividualReport(collaborator.id)" title="Descargar Reporte Individual">
+                                        <i class="fa fa-file-pdf"></i>
+                                    </a>
                                 </div>
                             </div>
                             <div class="title-total">
@@ -421,6 +426,15 @@ export default {
                 })
                 .catch(error => {
                     console.error("Hubo un error al solicitar el reporte");
+                });
+        },
+        requestIndividualReport(id) {
+            axios.get(`/report/collaborator/${id}`)
+                .then(response => {
+                    this.getMessage(response.data.message);
+                })
+                .catch(error => {
+                    console.error("Error al solicitar el reporte individual", error);
                 });
         },
         getMessage(msg) {
