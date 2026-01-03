@@ -14,49 +14,53 @@
         </div>
         <div class="card-shadow-primary profile-responsive card-border mb-3 card">
             <div class="dropdown-menu-header">
-                <div class="dropdown-menu-header-inner" style="background-color: #127cb3;">
+                <div class="dropdown-menu-header-inner" style="background-color: #127cb3; min-height: auto; padding: 1.5rem 0;">
                     <div class="menu-header-image opacity-3" style="background-image: url('');"></div>
-                    <div class="menu-header-content btn-pane-right">
-                        <div class="avatar-icon-wrapper me-2 avatar-icon-xl">
-                            <div v-if="company && company.logo_url" class="avatar-icon rounded">
-                                <img :src="company.logo_url" :alt="company.company_name">
+                    
+                    <div class="menu-header-content d-flex align-items-center flex-wrap flex-lg-nowrap px-3">
+                        
+                        <div class="logo-adaptive-container me-3 mb-3 mb-lg-0">
+                            <div v-if="company && company.logo_url" class="logo-wrapper">
+                                <img :src="company.logo_url" :alt="company.company_name" class="img-fluid adaptive-logo">
                             </div>
-                            <div v-else class="avatar-icon rounded">
-                                <img :src="'/images/default-profile.jpeg'" :alt="company.company_name">
+                            <div v-else class="logo-wrapper">
+                                <img :src="'/images/default-profile.jpeg'" :alt="company.company_name" class="img-fluid adaptive-logo">
                             </div>
                         </div>
-                        <div>
-                            <h5 class="menu-header-title">{{ company.company_name }}</h5>
-                            <h6 class="menu-header-subtitle">Información complementaria</h6>
+
+                        <div class="text-white text-start flex-grow-1 mb-3 mb-lg-0">
+                            <h5 class="menu-header-title mb-1" style="font-size: 1.5rem;">{{ company.company_name }}</h5>
+                            <h6 class="menu-header-subtitle opacity-8">Información complementaria</h6>
                         </div>
-                        <div class="menu-header-btn-pane">
-                            <div class="inner-menu-header-btn-pane">
-                                <button v-if="user_admin && user_admin.id" @click="loginAs(user_admin.id)" class="btn btn-lg btn-mh-white m-2">
-                                    <font-awesome-icon :icon="['fas', 'ticket']" />
-                                    Modo administrador asistido
-                                </button>
-                                <button @click="emitLoadCollaborators" class="btn btn-lg btn-mh-white m-2">
-                                    <font-awesome-icon :icon="['fas', 'upload']" />
-                                    Carga masiva de colaboradores
-                                </button>
-                                <button @click="emitEditCompany" class="btn btn-lg btn-mh-white m-2">
-                                    <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-                                    Editar empresa
-                                </button>
-                                <button v-if="!user_admin" @click="emitAddUserAdmin" class="btn btn-lg btn-mh-white m-2">
-                                    <font-awesome-icon :icon="['fas', 'user']" />
-                                    Agregar Administrador
-                                </button>
-                                <button v-else @click="emitEditUserAdmin" class="btn btn-lg btn-mh-white m-2">
-                                    <font-awesome-icon :icon="['fas', 'user']" />
-                                    Editar Administrador
-                                </button>
-                            </div>
+
+                        <div class="menu-header-btn-pane d-flex flex-wrap justify-content-start justify-content-lg-end">
+                            <button v-if="user_admin && user_admin.id" @click="loginAs(user_admin.id)" class="btn btn-sm btn-mh-white m-1">
+                                <font-awesome-icon :icon="['fas', 'ticket']" class="me-1" />
+                                Modo asistido
+                            </button>
+                            <button @click="emitLoadCollaborators" class="btn btn-sm btn-mh-white m-1">
+                                <font-awesome-icon :icon="['fas', 'upload']" class="me-1" />
+                                Carga masiva
+                            </button>
+                            <button @click="emitEditCompany" class="btn btn-sm btn-mh-white m-1">
+                                <font-awesome-icon :icon="['fas', 'pen-to-square']" class="me-1" />
+                                Editar empresa
+                            </button>
+                            <button v-if="!user_admin" @click="emitAddUserAdmin" class="btn btn-sm btn-mh-white m-1">
+                                <font-awesome-icon :icon="['fas', 'user']" class="me-1" />
+                                + Administrador
+                            </button>
+                            <button v-else @click="emitEditUserAdmin" class="btn btn-sm btn-mh-white m-1">
+                                <font-awesome-icon :icon="['fas', 'user']" class="me-1" />
+                                Editar Administrador
+                            </button>
                         </div>
 
                     </div>
                 </div>
             </div>
+
+
             <ul class="list-group list-group-flush">
                 <li class="p-0 list-group-item">
                     <div class="grid-menu grid-menu-2col">
@@ -1177,5 +1181,51 @@ export default {
         grid-template-columns: repeat(2, 1fr);
         max-width: 600px;
         justify-content: end;
+    }
+
+    /* Contenedor adaptativo para cualquier relación de aspecto (1:1 a 4:1) */
+    .logo-adaptive-container {
+        background: white;
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 90px; /* Altura base para el detalle */
+        min-width: 90px;
+        max-width: 260px; /* Límite para logos tipo banner 4:1 */
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .adaptive-logo {
+        max-height: 100%;
+        width: auto;
+        object-fit: contain; /* Mantiene la proporción sin recortar */
+    }
+
+    /* Ajustes para Tablets y Móviles */
+    @media (max-width: 991.98px) {
+        .menu-header-content {
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .logo-adaptive-container {
+            height: 75px;
+            max-width: 200px;
+            margin-right: 0 !important;
+        }
+
+        .text-start {
+            text-align: center !important;
+            width: 100%;
+        }
+
+        .menu-header-btn-pane {
+            justify-content: center !important;
+            width: 100%;
+        }
     }
 </style>

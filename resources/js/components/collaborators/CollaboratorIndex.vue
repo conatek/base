@@ -65,20 +65,8 @@
         </div>
 
         <div v-if="viewState === 'list'">
-            <!-- <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-4">
-                    <div class="input-group mb-3">
-                        <div class="input-group-text">
-                            <div class="">
-                                <i class="fa fa-search fa-w-16 "></i>
-                            </div>
-                        </div>
-                        <input v-model="search" @input="handleSearch" placeholder="Buscar Colaborador ..." type="text" class="form-control">
-                    </div>
-                </div>
-            </div> -->
 
-            <div class="row">
+            <div v-if="collaborators && collaborators.length > 0" class="row">
                 <div class="col-sm-12 col-lg-4">
                     <div class="input-group mb-3">
                         <div class="input-group-text"><i class="fa fa-search"></i></div>
@@ -86,7 +74,7 @@
                             type="text" class="form-control">
                     </div>
                 </div>
-
+    
                 <div class="col-sm-12 col-md-6 col-lg-4">
                     <div class="input-group mb-3">
                         <div class="input-group-text"><i class="fa fa-user-tag"></i></div>
@@ -97,7 +85,7 @@
                         </select>
                     </div>
                 </div>
-
+    
                 <div class="col-sm-12 col-md-6 col-lg-4">
                     <div class="input-group mb-3">
                         <div class="input-group-text"><i class="fa fa-file-contract"></i></div>
@@ -108,8 +96,7 @@
                         </select>
                     </div>
                 </div>
-            </div>
-            <div v-if="collaborators !== null" class="row">
+
                 <div v-for="collaborator in paginatedData" :key="collaborator.id"
                     class="col-sm-12 col-md-12 col-lg-6 col-xl-4">
                     <div class="card-profile mb-3">
@@ -193,27 +180,33 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <nav v-if="collaborators !== null" class="" aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item">
-                        <a @click="getPreviousPage()" class="page-link" aria-label="Previous">
-                            <span aria-hidden="true">«</span>
-                            <span class="visually-hidden">Previous</span>
-                        </a>
-                    </li>
-                    <li v-for="page in totalPages" class="page-item" :class="currentPage == page ? 'active' : ''">
-                        <a @click="getPageData(page)" class="page-link">{{ page }}</a>
-                    </li>
-                    <li class="page-item">
-                        <a @click="getNextPage()" class="page-link" aria-label="Next">
-                            <span aria-hidden="true">»</span>
-                            <span class="visually-hidden">Next</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+                <nav class="" aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item">
+                            <a @click="getPreviousPage()" class="page-link" aria-label="Previous">
+                                <span aria-hidden="true">«</span>
+                                <span class="visually-hidden">Previous</span>
+                            </a>
+                        </li>
+                        <li v-for="page in totalPages" class="page-item" :class="currentPage == page ? 'active' : ''">
+                            <a @click="getPageData(page)" class="page-link">{{ page }}</a>
+                        </li>
+                        <li class="page-item">
+                            <a @click="getNextPage()" class="page-link" aria-label="Next">
+                                <span aria-hidden="true">»</span>
+                                <span class="visually-hidden">Next</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div v-else>
+                <empty-state 
+                    icon="collaborators" 
+                    message="No hay colaboradores registrados aún."
+                ></empty-state>
+            </div>
         </div>
         <div v-else-if="viewState === 'detail' && collaboratorData">
             <collaborator-show @editCollaborator="editCollaborator" :collaborator="selected_collaborator"
@@ -262,16 +255,17 @@
 </template>
 
 <script>
+import EmptyState from '../company/EmptyState.vue';
 import axios from 'axios';
 
 export default {
+    components: {
+        EmptyState
+    },
     props: {
         company_id: {
             default: null,
         },
-        // collaborators: {
-        //     default: null,
-        // },
         absence_types: {
             default: null,
         },

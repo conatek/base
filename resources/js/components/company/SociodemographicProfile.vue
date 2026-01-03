@@ -73,7 +73,7 @@
                         <h6 class="text-muted text-uppercase mb-3 font-size-xs fw-bold">Rangos de Edad</h6>
                         <div class="flex-grow-1 d-flex align-items-center justify-content-center">
                             <apexchart 
-                                v-if="ageOptions.xaxis.categories.length > 0"
+                                v-if="ageSeries[0].data.some(val => val > 0)"
                                 class="w-100"
                                 type="area" 
                                 :height="chartHeightSmall"

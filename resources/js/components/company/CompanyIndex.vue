@@ -152,7 +152,7 @@
                         </div>
                     </div>
                     <div v-if="companies !== null" class="row">
-                        <div v-for="company in paginatedData" :key="company.id" class="col-sm-12 col-md-12 col-lg-6 col-xl-4">
+                        <!-- <div v-for="company in paginatedData" :key="company.id" class="col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <div class="card-profile mb-3">
                                 <div class="img-avatar">
                                     <img v-if="company && company.logo_url" :src="company.logo_url" :alt="company.company_name">
@@ -166,12 +166,46 @@
                                         <div class="email-profile text-truncate">{{ company ? company.email : '' }}</div>
                                         <div class="cellphone-profile text-truncate">{{ company ? company.cellphone : '' }}</div>
 
-                                        <!-- <div class="desc"></div> -->
                                         <div class="actions">
                                             <button v-if="company" @click="getCompany(company.id)"><i class="fa fa-eye"></i></button>
                                             <button v-if="company" @click="editCompany(company.id)"><i class="fa fa-edit"></i></button>
                                             <button v-if="company" @click="showDeleteAlert('deleteCompany', company.id)"><i class="fa fa-trash"></i></button>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+
+
+
+
+                        <div v-for="company in paginatedData" :key="company.id" class="col-sm-12 col-md-6 col-xl-4 mb-4">
+                            <div class="mh-company-card shadow-sm">
+                                <div class="mh-logo-header">
+                                    <div class="mh-logo-box">
+                                        <img v-if="company && company.logo_url" :src="company.logo_url" :alt="company.company_name" class="mh-img-adaptive">
+                                        <img v-else :src="'/images/default-profile.jpeg'" alt="Default" class="mh-img-adaptive">
+                                    </div>
+                                </div>
+
+                                <div class="mh-card-body">
+                                    <div class="text-center mb-3">
+                                        <span class="mh-sector-badge">
+                                            {{ company && company.sector ? company.sector : 'SECTOR NO DEFINIDO' }}
+                                        </span>
+                                    </div>
+
+                                    <h5 class="mh-company-name text-truncate">{{ company ? company.company_name : '' }}</h5>
+                                    
+                                    <div class="mh-contact-info">
+                                        <p class="text-truncate"><i class="fa fa-envelope me-2"></i>{{ company ? company.email : 'Sin email' }}</p>
+                                        <p class="text-truncate"><i class="fa fa-phone me-2"></i>{{ company ? company.cellphone : 'Sin teléfono' }}</p>
+                                    </div>
+
+                                    <div class="mh-card-actions">
+                                        <button class="btn-mh-icon view" @click="getCompany(company.id)" title="Ver"><i class="fa fa-eye"></i></button>
+                                        <button class="btn-mh-icon edit" @click="editCompany(company.id)" title="Editar"><i class="fa fa-edit"></i></button>
+                                        <button class="btn-mh-icon delete" @click="showDeleteAlert('deleteCompany', company.id)" title="Eliminar"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -679,4 +713,105 @@ export default {
 
 <style>
     @import './../../assets/css/custom-companies.css';
+
+    /* Contenedor principal para evitar el estiramiento infinito */
+    .mh-company-card {
+        background: #fff;
+        border-radius: 12px;
+        display: flex !important;
+        flex-direction: column !important;
+        border: 1px solid #eef0f3;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        /* min-height: 420px; */
+    }
+
+    .mh-company-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+
+    /* Cabecera del logo: Asegura que el logo ocupe el área superior */
+    .mh-logo-header {
+        height: 140px;
+        /* background: #f8f9fa; */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        border-bottom: 1px solid #f1f3f5;
+    }
+
+    .mh-logo-box {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mh-img-adaptive {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain; /* Esto arregla cualquier relación de aspecto */
+    }
+
+    /* Cuerpo de la tarjeta */
+    .mh-card-body {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mh-sector-badge {
+        background: #f1f3f5;
+        color: #495057;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 5px 15px;
+        border-radius: 50px;
+        display: inline-block;
+        border: 1px solid #dee2e6;
+    }
+
+    .mh-company-name {
+        color: #2c3e50;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+    }
+
+    .mh-contact-info {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 20px;
+    }
+
+    .mh-contact-info p {
+        margin-bottom: 5px;
+    }
+
+    /* Acciones pegadas al fondo */
+    .mh-card-actions {
+        margin-top: auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .btn-mh-icon {
+        border: none;
+        padding: 8px;
+        border-radius: 8px;
+        background: #f8f9fa;
+        color: #adb5bd;
+        transition: 0.2s;
+    }
+
+    .btn-mh-icon:hover { color: white; }
+    .btn-mh-icon.view:hover { background: #f39c12; }
+    .btn-mh-icon.edit:hover { background: #3498db; }
+    .btn-mh-icon.delete:hover { background: #e74c3c; }
 </style>

@@ -31,7 +31,7 @@
                 <div class="dropdown-menu-header">
                     <div class="dropdown-menu-header-inner" style="background-color: #127cb3;">
                         <div class="menu-header-image opacity-3" style="background-image: url('');"></div>
-                        <div class="menu-header-content btn-pane-right">
+                        <!-- <div class="menu-header-content btn-pane-right">
                             <div class="avatar-icon-wrapper me-2 avatar-icon-xl">
                                 <div v-if="company && company.logo_url" class="avatar-icon rounded">
                                     <img :src="company.logo_url" :alt="company.company_name">
@@ -41,24 +41,39 @@
                                 </div>
                             </div>
                             <div>
-                                <!-- <h5 class="menu-header-title">{{ collaborator.name }}</h5>
-                                <h6 class="menu-header-subtitle">{{ collaborator.email }}</h6> -->
-
                                 <h5 class="menu-header-title">{{ company.company_name }}</h5>
                                 <h6 class="menu-header-subtitle">Información complementaria</h6>
                             </div>
                             <div class="menu-header-btn-pane">
-                                <!-- <a :href="`/collaborators/${collaborator.id}/edit`" class="ladda-button btn btn-pill btn-light" data-style="slide-right">
-                                    <span class="ladda-label">Editar</span>
-                                    <span class="ladda-spinner"></span>
-                                </a> -->
-
                                 <div v-if="isImpersonating" class="text-center">
                                     <form @submit.prevent="returnToOriginalUser">
                                         <button type="submit" class="btn btn-lg btn-mh-white m-2"><i class="fa fa-undo"></i> Volver a mi usuario</button>
                                     </form>
                                 </div>
+                            </div>
+                        </div> -->
 
+                        <div class="menu-header-content btn-pane-right d-flex align-items-center flex-wrap flex-sm-nowrap">
+                            <div class="logo-adaptive-container me-3 mb-2 mb-sm-0">
+                                <div v-if="company && company.logo_url" class="logo-wrapper">
+                                    <img :src="company.logo_url" :alt="company.company_name" class="img-fluid adaptive-logo">
+                                </div>
+                                <div v-else class="logo-wrapper">
+                                    <img :src="'/images/default-profile.jpeg'" :alt="company.company_name" class="img-fluid adaptive-logo">
+                                </div>
+                            </div>
+
+                            <div class="text-start flex-grow-1">
+                                <h5 class="menu-header-title mb-0">{{ company.company_name }}</h5>
+                                <h6 class="menu-header-subtitle opacity-8">Información complementaria</h6>
+                            </div>
+
+                            <div class="menu-header-btn-pane ms-auto">
+                                <div v-if="isImpersonating">
+                                    <form @submit.prevent="returnToOriginalUser">
+                                        <button type="submit" class="btn btn-sm btn-mh-white"><i class="fa fa-undo"></i> Volver</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1807,5 +1822,52 @@ export default {
     .loading-text {
         font-weight: 500;
         color: #333;
+    }
+
+    /* Contenedor principal del logo */
+    .logo-adaptive-container {
+        background: white;
+        padding: 8px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Altura fija para mantener consistencia en el header */
+        height: 80px; 
+        /* Ancho mínimo para logos 1:1 */
+        min-width: 80px; 
+        /* Ancho máximo para no ocupar toda la pantalla en móvil */
+        max-width: 240px; 
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    /* Ajuste de la imagen */
+    .adaptive-logo {
+        max-height: 100%;
+        width: auto;
+        /* Evita que el logo se estire, mantiene proporción */
+        object-fit: contain; 
+    }
+
+    /* Responsividad para móviles */
+    @media (max-width: 576px) {
+        .logo-adaptive-container {
+            height: 60px; /* Un poco más pequeño en móviles */
+            min-width: 60px;
+            max-width: 180px;
+            margin-right: 0 !important;
+            margin-bottom: 10px;
+        }
+        
+        .menu-header-content {
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .text-start {
+            text-align: center !important;
+        }
     }
 </style>

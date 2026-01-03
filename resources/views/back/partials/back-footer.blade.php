@@ -592,14 +592,7 @@
             <div class="app-footer-right">
                 <ul class="header-megamenu nav">
                     <li class="nav-item">
-                        {{-- <a data-bs-placement="top" rel="popover-focus"
-                            data-offset="300" data-toggle="popover-custom" class="nav-link">
-                            Desarrollado por: CONATEK SAS
-                        </a> --}}
-
-                        {{-- Desarrollado por: <strong>CONATEK S.A.S.</strong> --}}
-                        {{-- Desarrollado por: <strong>CONATEK S.A.S.</strong> --}}
-                        Todos los derechos reservados &copy; MUYHUMANO 2025
+                        Todos los derechos reservados &copy; Muy Humano {{ now()->year }}
                     </li>
                 </ul>
             </div>

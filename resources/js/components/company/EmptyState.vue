@@ -59,6 +59,20 @@
                 <rect x="72" y="70" width="6" height="8" fill="#FDBA74"/>
             </svg>
 
+            <svg v-else-if="icon === 'collaborators'" class="icon-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="35" cy="45" r="10" stroke="#94A3B8" stroke-width="3"/>
+                <path d="M15 80 C15 65 25 60 35 60 C40 60 45 62 48 65" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+                
+                <circle cx="65" cy="45" r="10" stroke="#94A3B8" stroke-width="3"/>
+                <path d="M85 80 C85 65 75 60 65 60 C60 60 55 62 52 65" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+                
+                <circle cx="50" cy="35" r="12" stroke="#3B82F6" stroke-width="3" fill="white"/>
+                <path d="M25 80 C25 60 35 55 50 55 C65 55 75 60 75 80" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" fill="none"/>
+                
+                <circle cx="75" cy="30" r="8" fill="#10B981"/>
+                <path d="M75 26 V34 M71 30 H79" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+
             <!-- Icono por defecto -->
             <svg v-else class="icon-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="50" cy="50" r="35" stroke="#CBD5E1" stroke-width="3" fill="none"/>
