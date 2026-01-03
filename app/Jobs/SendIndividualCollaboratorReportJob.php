@@ -48,6 +48,7 @@ class SendIndividualCollaboratorReportJob implements ShouldQueue
         $pdf = Browsershot::html($html)
             ->format('Letter')
             ->margins(10, 10, 10, 10)
+            ->setChromePath('/app/.apt/usr/bin/google-chrome') // Para Heroku
             ->noSandbox()
             ->waitUntilNetworkIdle()
             ->pdf();
