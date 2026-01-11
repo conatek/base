@@ -131,7 +131,7 @@
                                 <td :colspan="roles.length + 2" class="td-module">{{ module }}</td>
                             </tr>
                             <tr v-for="permission in permissions" :key="permission.id">
-                                <td>{{ permission.display_name }}</td>
+                                <td>{{ permission.display_name }} ({{ permission.name }})</td>
                                 <td v-for="role in roles" :key="role.id" class="form-group clearfix text-center">
                                     <div class="icheck-primary d-inline">
                                         <input

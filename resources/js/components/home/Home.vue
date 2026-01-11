@@ -47,6 +47,12 @@ export default {
     },
     mounted() {
         // lógica al montar el componente
+
+        // if (this.$can('block_company')) {
+        //     console.log("Permiso concedido");
+        // } else {
+        //     console.log("Permiso denegado");
+        // }
     },
     methods: {
         hasRole(role) {

@@ -22,6 +22,11 @@ import './assets/css/message.css';
 
 const app = createApp({});
 
+app.config.globalProperties.$can = (permissionName) => {
+    const permissions = window.Laravel?.permissions || [];
+    return permissions.includes(permissionName);
+};
+
 app.use(VueSweetalert2);
 
 Object.keys(components).forEach(key => {

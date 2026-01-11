@@ -74,6 +74,18 @@
             };
         </script>
 
+        <script>
+            window.Laravel = {
+                @if(auth()->check())
+                    // getAllPermissions() devuelve una colección de objetos Permission. 
+                    // Pluck('name') nos da solo los nombres de los permisos en un array simple.
+                    permissions: {!! auth()->user()->getAllPermissions()->pluck('name')->toJson() !!},
+                @else
+                    permissions: [],
+                @endif
+            };
+        </script>
+
         @vite('resources/js/app.js')
 
         {{-- @vite([
