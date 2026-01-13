@@ -498,12 +498,11 @@ export default {
 
             // Función interna
             const sendRequest = (formData) => {
-                formData.append('company_id', this.company_id)
-                formData.append('name', this.name)
-                formData.append('email', this.email)
-                if (this.password) {
-                    formData.append('password', this.password);
-                }
+                this.appendIfNotEmpty(formData, 'company_id', this.company_id);
+                this.appendIfNotEmpty(formData, 'name', this.name);
+                this.appendIfNotEmpty(formData, 'email', this.email);
+                this.appendIfNotEmpty(formData, 'password', this.password);
+
                 this.selected_roles.forEach((role, index) => {
                     formData.append(`roles[${index}]`, role);
                 });
@@ -586,15 +585,15 @@ export default {
             let fd = new FormData()
 
             const sendRequest = (formData) => {
-                formData.append('company_id', this.company_id)
-                formData.append('name', this.name)
-                formData.append('email', this.email)
-                if (this.password) {
-                    formData.append('password', this.password);
-                }
+                this.appendIfNotEmpty(formData, 'company_id', this.company_id);
+                this.appendIfNotEmpty(formData, 'name', this.name);
+                this.appendIfNotEmpty(formData, 'email', this.email);
+                this.appendIfNotEmpty(formData, 'password', this.password);
+
                 this.selected_roles.forEach((role, index) => {
                     formData.append(`roles[${index}]`, role);
                 });
+                
                 formData.append('_method', 'PUT')
 
                 axios.post(`/users/${this.selected_user.id}`, formData).then(
@@ -661,6 +660,11 @@ export default {
                 }).finally(() => {
                     this.is_loading = false; // DESACTIVAR
                 })
+        },
+        appendIfNotEmpty(fd, key, value) {
+            if (value !== null && value !== '' && value !== undefined) {
+                fd.append(key, value)
+            }
         },
     },
 };

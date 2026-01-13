@@ -107,7 +107,7 @@
                         </div>
                         <div class="card-profile-text">
                             <div class="portada">
-                                <div class="icon-grid">
+                                <div v-if="collaborator && collaborator.isProfileComplete" class="icon-grid">
                                     <a @click="showCollaboratorContract(collaborator.id)" title="Contratos">
                                         <i class="fa fa-file-contract"></i>
                                     </a>
@@ -123,7 +123,7 @@
                                 </div>
                             </div>
                             <div class="title-total">
-                                <div class="title d-flex justify-content-end align-items-center">
+                                <div v-if="collaborator && collaborator.isProfileComplete" class="title d-flex justify-content-end align-items-center">
                                     <span
                                         v-if="collaborator && collaborator.hasActiveContract && collaborator.hasActiveContract == true"
                                         @click="showCollaboratorContract(collaborator.id)"
@@ -149,6 +149,10 @@
                                         Inactivo
                                     </span>
                                 </div>
+                                <div v-else class="title d-flex justify-content-end align-items-center">
+                                    <span></span>
+                                    <span></span>
+                                </div>
 
                                 <div>
                                     <div class="name-profile text-truncate">{{ collaborator ? collaborator.name : '' }}
@@ -169,7 +173,7 @@
                                 </div>
 
                                 <div class="d-flex justify-content-end align-items-center" style="padding: 16px;">
-                                    <a v-if="collaborator" @click="getCollaborator(collaborator.id)"
+                                    <a v-if="collaborator && collaborator.isProfileComplete" @click="getCollaborator(collaborator.id)"
                                         class="btn btn-warning btn-sm mx-2"><i class="fa fa-eye"></i> Ver</a>
                                     <a v-if="collaborator" @click="editCollaborator(collaborator.id)"
                                         class="btn btn-primary btn-sm"><i class="fa fa-edit"></i> Editar</a>

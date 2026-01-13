@@ -1,45 +1,46 @@
 <?php
 
-use App\Http\Controllers\AbsenceController;
-use App\Http\Controllers\AbsenceStatusController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\UserCompanyController;
-use App\Http\Controllers\CollaboratorController;
-use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\AreaController;
-use App\Http\Controllers\PositionController;
-use App\Http\Controllers\CampusController;
-use App\Http\Controllers\CardsController;
-use App\Http\Controllers\CollaboratorAcademicAchievementController;
-use App\Http\Controllers\CollaboratorBankAccountController;
-use App\Http\Controllers\CollaboratorDocumentController;
-use App\Http\Controllers\CollaboratorFamilyController;
-use App\Http\Controllers\CollaboratorHomeVisitController;
-use App\Http\Controllers\CollaboratorMedicalExaminationController;
-use App\Http\Controllers\CollaboratorSocialSecurityController;
-use App\Http\Controllers\CompaniesController;
-use App\Http\Controllers\ContractController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Import\CollaboratorImportController;
-use App\Http\Controllers\InventoryController;
-use App\Http\Controllers\ModuleController;
-use App\Http\Controllers\OvertimeController;
-use App\Http\Controllers\PdfReportController;
-use App\Http\Controllers\PerformanceController;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\ProvinceController;
-use App\Http\Controllers\ProvisionController;
-use App\Http\Controllers\SelectionController;
-use App\Http\Controllers\SelfManagementController;
-use App\Http\Controllers\StaffProviderController;
-use App\Http\Controllers\TrainingController;
-use App\Http\Controllers\WellnessController;
-use Illuminate\Support\Facades\Route;
-
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AreaController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CardsController;
+use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\CampusController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\AbsenceController;
+use App\Http\Controllers\PositionController;
+use App\Http\Controllers\OvertimeController;
+use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\TrainingController;
+use App\Http\Controllers\WellnessController;
+use App\Http\Controllers\ContractController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\PdfReportController;
+use App\Http\Controllers\ProvisionController;
+use App\Http\Controllers\CompaniesController;
+use App\Http\Controllers\SelectionController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PerformanceController;
+use App\Http\Controllers\RequisitionController;
+use App\Http\Controllers\UserCompanyController;
+use App\Http\Controllers\CollaboratorController;
+use App\Http\Controllers\StaffProviderController;
+use App\Http\Controllers\AbsenceStatusController;
+use App\Http\Controllers\SelfManagementController;
+use App\Http\Controllers\CollaboratorFamilyController;
+use App\Http\Controllers\CollaboratorDocumentController;
+use App\Http\Controllers\CollaboratorHomeVisitController;
+use App\Http\Controllers\CollaboratorBankAccountController;
+use App\Http\Controllers\Import\CollaboratorImportController;
+use App\Http\Controllers\CollaboratorSocialSecurityController;
+use App\Http\Controllers\CollaboratorMedicalExaminationController;
+use App\Http\Controllers\CollaboratorAcademicAchievementController;
+
 
 Route::get('/', function () {
     return view('front.welcome');
@@ -240,6 +241,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/modules/training', [TrainingController::class, 'index'])->name('training.index');
     Route::get('/modules/performance', [PerformanceController::class, 'index'])->name('performance.index');
     Route::get('/modules/provision', [ProvisionController::class, 'index'])->name('provision.index');
+
+    // SELECTION DATA
+    Route::post('/selection/collaborator-requisitions', [RequisitionController::class, 'store']);
 
     // ABSENCE DATA
     Route::get('/absences', [AbsenceController::class, 'getAbsences']);

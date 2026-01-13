@@ -13,6 +13,7 @@ class Collaborator extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'company_id',
         'staff_provider_id',
         'name',
@@ -44,6 +45,10 @@ class Collaborator extends Model
         'image_url',
         'is_active',
     ];
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 
     public function company()
     {
@@ -187,5 +192,36 @@ class Collaborator extends Model
     public function home_visits(): HasMany
     {
         return $this->hasMany(CollaboratorHomeVisit::class);
+    }
+
+    public function getIsProfileCompleteAttribute(): bool
+    {
+        // Lista de campos que consideras obligatorios para un perfil "completo".
+        // Estos son los que suelen faltar cuando se crea desde el usuario Admin.
+        $mandatoryFields = [
+            'staff_provider_id',
+            'document_type_id',
+            'document_number',
+            'expedition_date',
+            'name',
+            'first_surname',
+            'civil_status_type_id',
+            'sex_type_id',
+            'rh_type_id',
+            'birth_date',
+            'address',
+            'housing_tenure_id',
+            'stratum_type_id',
+            'email',
+            // Agrega aquí otros campos críticos según tu lógica de negocio
+        ];
+
+        foreach ($mandatoryFields as $field) {
+            if (empty($this->$field)) {
+                return false; // Si falta alguno, retorna falso
+            }
+        }
+
+        return true; // Si pasa todos, está completo
     }
 }

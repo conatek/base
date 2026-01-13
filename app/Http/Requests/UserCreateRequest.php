@@ -13,44 +13,41 @@ class UserCreateRequest extends FormRequest
 
     public function rules()
     {
-        // if($this->request->get('image') != "null"){
-        if($this->request->get('image') != null){
-            return [
-                'name' => 'required',
-                'email' => 'required|email|unique:users',
-                'company_id' => 'required',
-                'password' => 'required|min:8',
-                'image' => 'sometimes|image|mimes:jpeg,png,jpg|dimensions:max_width=200,max_height=200|max:100',
-                'roles' => 'required|array|min:1',
-            ];
-        } else {
-            return [
-                'name' => 'required',
-                'email' => 'required|email|unique:users',
-                'company_id' => 'required',
-                'password' => 'required|min:8',
-                'roles' => 'required|array|min:1',
-            ];
-        }
+        return [
+            // Datos Personales
+            'name'           => 'required|string|max:255',
+            'first_surname'  => 'required|string|max:255', // Nuevo campo obligatorio
+            'second_surname' => 'nullable|string|max:255', // Nuevo campo opcional
+            
+            // Datos de Cuenta
+            'email'          => 'required|email|unique:users,email',
+            'password'       => 'required|min:8',
+            'company_id'     => 'required|exists:companies,id',
+            'roles'          => 'required|array|min:1',
+            
+            // Imagen (Simplificado: si viene, debe cumplir reglas; si no, pasa)
+            'image'          => 'nullable|image|mimes:jpeg,png,jpg|dimensions:max_width=200,max_height=200|max:100',
+        ];
     }
 
     public function messages(): array
     {
         return [
-            'name.required' => 'El campo nombre es requerido.',
-            'email.required' => 'El campo email es requerido.',
-            'email.email' => 'El campo email no tiene el formato adecuado.',
-            'email.unique' => 'El email ya se encuentra registrado.',
-            'company_id.required' => 'El campo empresa es requerido.',
-            'password.required' => 'El campo contraseña es requerido.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'image.dimensions' => 'Las dimensiones maximas de imagen son 200 x 200',
-            'image.image' => 'El archivo debe ser una imagen.',
-            'image.mimes' => 'Formato de imagen no admitido (usar jpeg, jpg, png).',
-            'image.max' => 'El archivo excede el tamaño permitido (100KB).',
-            'roles.required' => 'Debe seleccionar al menos un rol.',
-            'roles.array' => 'Los roles deben ser un arreglo.',
-            'roles.min' => 'Debe seleccionar al menos un rol.',
+            'name.required'           => 'Los nombres son requeridos.',
+            'first_surname.required'  => 'El primer apellido es requerido.',
+            'email.required'          => 'El correo electrónico es requerido.',
+            'email.email'             => 'El formato del correo no es válido.',
+            'email.unique'            => 'Este correo ya está registrado en el sistema.',
+            'company_id.required'     => 'Debe asociar una empresa.',
+            'password.required'       => 'La contraseña es requerida.',
+            'password.min'            => 'La contraseña debe tener al menos 8 caracteres.',
+            'roles.required'          => 'Debe asignar al menos un rol.',
+            
+            // Mensajes de imagen
+            'image.dimensions'        => 'La imagen no debe superar 200x200 píxeles.',
+            'image.image'             => 'El archivo debe ser una imagen válida.',
+            'image.mimes'             => 'Solo se permiten formatos jpeg, jpg y png.',
+            'image.max'               => 'La imagen no debe pesar más de 100KB.',
         ];
     }
 }

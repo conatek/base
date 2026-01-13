@@ -16,6 +16,8 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'first_surname',
+        'second_surname',
         'email',
         'image_public_id',
         'image_url',
@@ -35,5 +37,10 @@ class User extends Authenticatable
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function collaborator()
+    {
+        return $this->hasOne(Collaborator::class);
     }
 }

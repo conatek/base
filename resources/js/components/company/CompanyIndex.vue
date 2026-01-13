@@ -152,33 +152,6 @@
                         </div>
                     </div>
                     <div v-if="companies !== null" class="row">
-                        <!-- <div v-for="company in paginatedData" :key="company.id" class="col-sm-12 col-md-12 col-lg-6 col-xl-4">
-                            <div class="card-profile mb-3">
-                                <div class="img-avatar">
-                                    <img v-if="company && company.logo_url" :src="company.logo_url" :alt="company.company_name">
-                                    <img v-else :src="'/images/default-profile.jpeg'" :alt="company ? company.company_name : 'Default profile'">
-                                </div>
-                                <div class="card-profile-text">
-                                    <div class="portada"></div>
-                                    <div class="title-total">
-                                        <div class="title text-truncate">Sector de la Empresa</div>
-                                        <div class="name-profile text-truncate" style="border-bottom: 1px dotted #127cb3; padding-bottom: 10px; margin-bottom: 10px;">{{ company ? company.company_name : '' }}</div>
-                                        <div class="email-profile text-truncate">{{ company ? company.email : '' }}</div>
-                                        <div class="cellphone-profile text-truncate">{{ company ? company.cellphone : '' }}</div>
-
-                                        <div class="actions">
-                                            <button v-if="company" @click="getCompany(company.id)"><i class="fa fa-eye"></i></button>
-                                            <button v-if="company" @click="editCompany(company.id)"><i class="fa fa-edit"></i></button>
-                                            <button v-if="company" @click="showDeleteAlert('deleteCompany', company.id)"><i class="fa fa-trash"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
-
-
-
-
                         <div v-for="company in paginatedData" :key="company.id" class="col-sm-12 col-md-6 col-xl-4 mb-4">
                             <div class="mh-company-card shadow-sm">
                                 <div class="mh-logo-header">
@@ -270,23 +243,30 @@
                     <div class="card-body">
                         <form @submit.prevent="storeUserAdmin" enctype="multipart/form-data">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="position-relative mb-3">
-                                        <label for="name" class="form-label">Nombre</label>
-                                        <input v-model="name" name="name" id="name" type="text" class="form-control" placeholder="Ingresa el nombre del ususario" autofocus>
+                                        <label for="name" class="form-label">Nombre(s)*</label>
+                                        <input v-model="name" name="name" id="name" type="text" class="form-control" placeholder="Ingresa el nombre" autofocus>
                                         <span v-if="errors && errors.name" class="error text-danger" for="name">{{ errors.name[0] }}</span>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="position-relative mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input v-model="email" name="email" id="email" type="email" class="form-control" placeholder="Ingresa el correo electrónico" autocomplete="new-password">
-                                        <span v-if="errors && errors.email" class="error text-danger" for="email">{{ errors.email[0] }}</span>
+                                        <label for="first_surname" class="form-label">Primer Apellido</label>
+                                        <input v-model="first_surname" name="first_surname" id="first_surname" type="text" class="form-control" placeholder="Ingresa el primer apellido" autofocus>
+                                        <span v-if="errors && errors.first_surname" class="error text-danger" for="first_surname">{{ errors.first_surname[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="position-relative mb-3">
+                                        <label for="second_surname" class="form-label">Segundo Apellido</label>
+                                        <input v-model="second_surname" name="second_surname" id="second_surname" type="text" class="form-control" placeholder="Ingresa el segundo apellido" autofocus>
+                                        <span v-if="errors && errors.second_surname" class="error text-danger" for="second_surname">{{ errors.second_surname[0] }}</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="position-relative mb-3">
                                         <label for="image" class="form-label">Imagen</label>
                                         <div class="input-group">
@@ -295,9 +275,16 @@
                                         <span v-if="errors && errors.image" class="error text-danger" for="image">{{ errors.image[0] }}</span>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="position-relative mb-3">
-                                        <label for="password" class="form-label">Contraseña</label>
+                                        <label for="email" class="form-label">Email*</label>
+                                        <input v-model="email" name="email" id="email" type="email" class="form-control" placeholder="Ingresa el correo electrónico" autocomplete="new-password">
+                                        <span v-if="errors && errors.email" class="error text-danger" for="email">{{ errors.email[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="position-relative mb-3">
+                                        <label for="password" class="form-label">Contraseña*</label>
                                         <input v-model="password" name="password" id="password" type="password" class="form-control" placeholder="Ingresa la contraseña solo si la deseas modificar" autocomplete="new-password">
                                         <span v-if="errors && errors.password" class="error text-danger" for="password">{{ errors.password[0] }}</span>
                                     </div>
@@ -311,23 +298,30 @@
                     <div class="card-body">
                         <form @submit.prevent="updateUserAdmin" enctype="multipart/form-data">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="position-relative mb-3">
-                                        <label for="name" class="form-label">Nombre</label>
+                                        <label for="name" class="form-label">Nombre(s)</label>
                                         <input v-model="user_admin.name" name="name" id="name" type="text" class="form-control" placeholder="Ingresa el nombre del ususario" autofocus>
                                         <span v-if="errors && errors.name" class="error text-danger" for="name">{{ errors.name[0] }}</span>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="position-relative mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input v-model="user_admin.email" name="email" id="email" type="email" class="form-control" placeholder="Ingresa el correo electrónico" autocomplete="new-password">
-                                        <span v-if="errors && errors.email" class="error text-danger" for="email">{{ errors.email[0] }}</span>
+                                        <label for="first_surname" class="form-label">Primer Apellido</label>
+                                        <input v-model="user_admin.first_surname" name="first_surname" id="first_surname" type="text" class="form-control" placeholder="Ingresa el primer apellido del usuario">
+                                        <span v-if="errors && errors.first_surname" class="error text-danger" for="first_surname">{{ errors.first_surname[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="position-relative mb-3">
+                                        <label for="second_surname" class="form-label">Segundo Apellido</label>
+                                        <input v-model="user_admin.second_surname" name="second_surname" id="second_surname" type="text" class="form-control" placeholder="Ingresa el segundo apellido del usuario">
+                                        <span v-if="errors && errors.second_surname" class="error text-danger" for="second_surname">{{ errors.second_surname[0] }}</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="position-relative mb-3">
                                         <label for="image" class="form-label">Imagen</label>
                                         <div class="input-group">
@@ -336,7 +330,14 @@
                                         <span v-if="errors && errors.image" class="error text-danger" for="image">{{ errors.image[0] }}</span>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
+                                    <div class="position-relative mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input v-model="user_admin.email" name="email" id="email" type="email" class="form-control" placeholder="Ingresa el correo electrónico" autocomplete="new-password">
+                                        <span v-if="errors && errors.email" class="error text-danger" for="email">{{ errors.email[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
                                     <div class="position-relative mb-3">
                                         <label for="password" class="form-label">Contraseña</label>
                                         <input v-model="password" name="password" id="password" type="password" class="form-control" placeholder="Ingresa la contraseña solo si la deseas modificar" autocomplete="new-password">
@@ -391,6 +392,8 @@ export default {
             filteredCompanies: [],
 
             name: '',
+            first_surname: '',
+            second_surname: '',
             email: '',
             image: null,
             password: null,
@@ -611,8 +614,10 @@ export default {
             let fd = new FormData()
 
             fd.append('company_id', this.selected_company.id)
-            fd.append('name', this.name)
-            fd.append('email', this.email)
+            fd.append('name', this.name || '')
+            fd.append('first_surname', this.first_surname || '')
+            fd.append('second_surname', this.second_surname || '')
+            fd.append('email', this.email || '')
             if (this.image) {
                 fd.append('image', this.image);
             }
@@ -655,8 +660,10 @@ export default {
             let fd = new FormData()
 
             fd.append('company_id', this.selected_company.id)
-            fd.append('name', this.user_admin.name)
-            fd.append('email', this.user_admin.email)
+            fd.append('name', this.user_admin.name || '')
+            fd.append('first_surname', this.user_admin.first_surname || '')
+            fd.append('second_surname', this.user_admin.second_surname || '')
+            fd.append('email', this.user_admin.email || '')
             if (this.image) {
                 fd.append('image', this.image);
             }

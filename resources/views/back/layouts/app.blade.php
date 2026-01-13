@@ -68,7 +68,7 @@
         {{-- scripts específicos --}}
         @yield('scripts')
 
-        <script>
+        {{-- <script>
             window.Laravel = {
                 isImpersonating: {{ session()->has('original_user_id') ? 'true' : 'false' }}
             };
@@ -82,6 +82,20 @@
                     permissions: {!! auth()->user()->getAllPermissions()->pluck('name')->toJson() !!},
                 @else
                     permissions: [],
+                @endif
+            };
+        </script> --}}
+
+        <script>
+            window.Laravel = {
+                // Propiedad 1: Impersonating
+                isImpersonating: {{ session()->has('original_user_id') ? 'true' : 'false' }},
+
+                // Propiedad 2: Permisos
+                @if(auth()->check())
+                    permissions: {!! auth()->user()->getAllPermissions()->pluck('name')->toJson() !!}
+                @else
+                    permissions: []
                 @endif
             };
         </script>

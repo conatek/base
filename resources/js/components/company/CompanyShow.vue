@@ -31,28 +31,6 @@
                 <div class="dropdown-menu-header">
                     <div class="dropdown-menu-header-inner" style="background-color: #127cb3;">
                         <div class="menu-header-image opacity-3" style="background-image: url('');"></div>
-                        <!-- <div class="menu-header-content btn-pane-right">
-                            <div class="avatar-icon-wrapper me-2 avatar-icon-xl">
-                                <div v-if="company && company.logo_url" class="avatar-icon rounded">
-                                    <img :src="company.logo_url" :alt="company.company_name">
-                                </div>
-                                <div v-else class="avatar-icon rounded">
-                                    <img :src="'/images/default-profile.jpeg'" :alt="company.company_name">
-                                </div>
-                            </div>
-                            <div>
-                                <h5 class="menu-header-title">{{ company.company_name }}</h5>
-                                <h6 class="menu-header-subtitle">Información complementaria</h6>
-                            </div>
-                            <div class="menu-header-btn-pane">
-                                <div v-if="isImpersonating" class="text-center">
-                                    <form @submit.prevent="returnToOriginalUser">
-                                        <button type="submit" class="btn btn-lg btn-mh-white m-2"><i class="fa fa-undo"></i> Volver a mi usuario</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div> -->
-
                         <div class="menu-header-content btn-pane-right d-flex align-items-center flex-wrap flex-sm-nowrap">
                             <div class="logo-adaptive-container me-3 mb-2 mb-sm-0">
                                 <div v-if="company && company.logo_url" class="logo-wrapper">
@@ -216,7 +194,7 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col-sm-12 col-lg-6">
                         <div class="main-card mb-3 card">
                             <div class="card-header">
@@ -330,7 +308,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div v-else-if="card_selected == 'campus'">
                 <div class="row">
@@ -1824,50 +1802,53 @@ export default {
         color: #333;
     }
 
-    /* Contenedor principal del logo */
+    /* 1. El Contenedor Blanco */
     .logo-adaptive-container {
         background: white;
-        padding: 8px;
+        padding: 5px;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        display: flex;
+        
+        /* Flexbox para ajustar el contenido */
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        /* Altura fija para mantener consistencia en el header */
+        
+        /* Altura fija IMPORTANTE */
         height: 80px; 
-        /* Ancho mínimo para logos 1:1 */
-        min-width: 80px; 
-        /* Ancho máximo para no ocupar toda la pantalla en móvil */
-        max-width: 240px; 
-        overflow: hidden;
+        
+        /* El ancho se adapta, pero ponemos límites lógicos */
+        width: auto;
+        min-width: 80px;   /* Mínimo un cuadrado */
+        max-width: 350px;  /* Máximo para banners largos */
+        
         transition: all 0.3s ease;
     }
 
-    /* Ajuste de la imagen */
-    .adaptive-logo {
-        max-height: 100%;
-        width: auto;
-        /* Evita que el logo se estire, mantiene proporción */
-        object-fit: contain; 
+    /* 2. El Div Intermedio (La clave que faltaba) */
+    .logo-wrapper {
+        height: 100%; /* Ocupa toda la altura del contenedor blanco */
+        width: auto;  /* Deja que el ancho fluya */
+        display: flex;
+        align-items: center;
     }
 
-    /* Responsividad para móviles */
+    /* 3. La Imagen */
+    .adaptive-logo {
+        /* !important es necesario para anular la clase 'img-fluid' de Bootstrap */
+        height: 100% !important; 
+        width: auto !important;  
+        
+        /* Asegura renderizado limpio */
+        object-fit: contain;
+        max-width: none; /* Permite que la imagen supere el ancho de su contenedor padre si es necesario */
+    }
+
+    /* Responsividad Móvil */
     @media (max-width: 576px) {
         .logo-adaptive-container {
-            height: 60px; /* Un poco más pequeño en móviles */
-            min-width: 60px;
-            max-width: 180px;
-            margin-right: 0 !important;
-            margin-bottom: 10px;
-        }
-        
-        .menu-header-content {
-            justify-content: center;
-            text-align: center;
-        }
-        
-        .text-start {
-            text-align: center !important;
+            height: 60px; /* Más bajo en móvil */
+            max-width: 100%; /* Que no se salga de la pantalla */
         }
     }
 </style>

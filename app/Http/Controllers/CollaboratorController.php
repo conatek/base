@@ -28,6 +28,7 @@ use App\Models\HousingTenure;
 use App\Models\ContractType;
 use App\Models\AbsenceSubtype;
 use App\Models\CivilStatusType;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MedicalExaminationType;
@@ -51,29 +52,46 @@ class CollaboratorController extends Controller
         })->except(['index']);
     }
 
-    // public function getCollaborators() {
-    //     $results = [];
-
+    // public function getCollaborators()
+    // {
+    //     // dd('getCollaborators');
     //     $user = Auth::user();
+    //     $today = now()->toDateString();
 
-    //     $user_company_id = $user->company_id;
-    //     $collaborators = Collaborator::where('company_id', $user_company_id)->orderBy('created_at', 'desc')->with('position')->get();
+    //     $collaborators = Collaborator::where('company_id', $user->company_id)
+    //         ->with('position') // tu relación actual
+    //         ->withCount([
+    //             // Cuenta cuántos contratos vigentes hay hoy
+    //             'contracts as has_active_contract' => function ($q) use ($today) {
+    //                 $q->whereDate('contract_start_date', '<=', $today)
+    //                 ->where(function ($qq) use ($today) {
+    //                     $qq->whereNull('contract_end_date')
+    //                         ->orWhereDate('contract_end_date', '>=', $today);
+    //                 });
+    //             },
+    //         ])
+    //         ->orderByDesc('created_at')
+    //         ->get()
+    //         // Convertimos el count (0/1/...) a booleano y con el nombre camelCase pedido:
+    //         ->map(function ($c) {
+    //             $c->hasActiveContract = (bool) $c->has_active_contract;
+    //             unset($c->has_active_contract); // opcional: oculta el count original
+    //             return $c;
+    //         });
 
-    //     $results['collaborators'] = $collaborators;
-
-    //     return $results;
+    //     return [
+    //         'collaborators' => $collaborators,
+    //     ];
     // }
 
     public function getCollaborators()
     {
-        // dd('getCollaborators');
         $user = Auth::user();
         $today = now()->toDateString();
 
         $collaborators = Collaborator::where('company_id', $user->company_id)
-            ->with('position') // tu relación actual
+            ->with('position')
             ->withCount([
-                // Cuenta cuántos contratos vigentes hay hoy
                 'contracts as has_active_contract' => function ($q) use ($today) {
                     $q->whereDate('contract_start_date', '<=', $today)
                     ->where(function ($qq) use ($today) {
@@ -84,10 +102,17 @@ class CollaboratorController extends Controller
             ])
             ->orderByDesc('created_at')
             ->get()
-            // Convertimos el count (0/1/...) a booleano y con el nombre camelCase pedido:
             ->map(function ($c) {
+                // Tu lógica existente de contratos
                 $c->hasActiveContract = (bool) $c->has_active_contract;
-                unset($c->has_active_contract); // opcional: oculta el count original
+                unset($c->has_active_contract);
+                
+                // --- NUEVA LÓGICA ---
+                // Inyectamos el resultado del Accessor en el objeto JSON
+                // Laravel snake_casea el accessor automáticamente al serializar si se usa append,
+                // pero aquí lo estamos asignando explícitamente para control total.
+                $c->isProfileComplete = $c->is_profile_complete; 
+                
                 return $c;
             });
 
@@ -99,7 +124,6 @@ class CollaboratorController extends Controller
     public function getCollaboratorsData() {
         $results = [];
 
-        // $user = auth()->user();
         $user = Auth::user();
 
         $user_company_id = $user->company_id;
@@ -367,65 +391,144 @@ class CollaboratorController extends Controller
         return $result;
     }
 
+    // public function update(CollaboratorEditRequest $request, Collaborator $collaborator)
+    // {
+    //     try {
+    //         // 1. Obtenemos datos validados (limpieza automática)
+    //         $data = $request->validated();
+
+    //         // 2. Company ID (generalmente no se actualiza, pero si es necesario, se deja)
+    //         $data['company_id'] = Auth::user()->company_id;
+
+    //         // 3. Lógica de Extranjero
+    //         if ($request->boolean('is_foreigner')) {
+    //             $data['birth_province_id'] = null;
+    //             $data['birth_city_id'] = null;
+    //             $data['is_foreigner'] = 1;
+    //         } else {
+    //             $data['is_foreigner'] = 0;
+    //         }
+
+    //         // 4. Manejo de Imagen
+    //         if ($request->hasFile('image')) {
+    //             // A. Borrar imagen anterior de Cloudinary si existe
+    //             if ($collaborator->image_public_id) {
+    //                 Cloudinary::destroy($collaborator->image_public_id);
+    //             }
+
+    //             // B. Subir nueva imagen
+    //             $file = $request->file('image');
+    //             $company_id = Auth::user()->company_id;
+    //             $environment = config('app.env', 'local'); // Uso correcto de config
+
+    //             $cloudinary_object = Cloudinary::upload($file->getRealPath(), [
+    //                 'folder' => "mh/{$environment}/{$company_id}/collaborators"
+    //             ]);
+
+    //             $data['image_public_id'] = $cloudinary_object->getPublicId();
+    //             $data['image_url'] = $cloudinary_object->getSecurePath();
+    //         }
+
+    //         // IMPORTANTE: Quitamos el objeto 'image' binario del array para que no rompa el SQL
+    //         unset($data['image']);
+
+    //         // NOTA: Si NO se subió imagen, $data no tiene las llaves 'image_url' ni 'image_public_id',
+    //         // por lo que el método update() de Eloquent simplemente no tocará esas columnas en la BD.
+    //         // Esto es mucho más limpio que asignar manualmente $old_url.
+
+    //         // 5. Actualizar
+    //         $collaborator->update($data);
+
+    //         return response()->json([
+    //             'message' => 'Colaborador actualizado exitosamente!',
+    //             'collaborator' => $collaborator
+    //         ]);
+
+    //     } catch (\Exception $e) {
+    //         Log::error("Error actualizando colaborador ID {$collaborator->id}: " . $e->getMessage());
+
+    //         return response()->json([
+    //             'message' => 'Hubo un error al actualizar el colaborador.'
+    //             // 'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
     public function update(CollaboratorEditRequest $request, Collaborator $collaborator)
     {
+        // dd($request->all());
         try {
-            // 1. Obtenemos datos validados (limpieza automática)
-            $data = $request->validated();
+            // Envolvemos todo en una transacción
+            return DB::transaction(function () use ($request, $collaborator) {
+                
+                // 1. Obtener datos validados
+                $data = $request->validated();
+                // dd($data);
+                $data['company_id'] = Auth::user()->company_id;
 
-            // 2. Company ID (generalmente no se actualiza, pero si es necesario, se deja)
-            $data['company_id'] = Auth::user()->company_id;
-
-            // 3. Lógica de Extranjero
-            if ($request->boolean('is_foreigner')) {
-                $data['birth_province_id'] = null;
-                $data['birth_city_id'] = null;
-                $data['is_foreigner'] = 1;
-            } else {
-                $data['is_foreigner'] = 0;
-            }
-
-            // 4. Manejo de Imagen
-            if ($request->hasFile('image')) {
-                // A. Borrar imagen anterior de Cloudinary si existe
-                if ($collaborator->image_public_id) {
-                    Cloudinary::destroy($collaborator->image_public_id);
+                // 2. Lógica de Extranjero
+                if ($request->boolean('is_foreigner')) {
+                    $data['birth_province_id'] = null;
+                    $data['birth_city_id'] = null;
+                    $data['is_foreigner'] = 1;
+                } else {
+                    $data['is_foreigner'] = 0;
                 }
 
-                // B. Subir nueva imagen
-                $file = $request->file('image');
-                $company_id = Auth::user()->company_id;
-                $environment = config('app.env', 'local'); // Uso correcto de config
+                // 3. Manejo de Imagen
+                if ($request->hasFile('image')) {
+                    if ($collaborator->image_public_id) {
+                        Cloudinary::destroy($collaborator->image_public_id);
+                    }
 
-                $cloudinary_object = Cloudinary::upload($file->getRealPath(), [
-                    'folder' => "mh/{$environment}/{$company_id}/collaborators"
+                    $file = $request->file('image');
+                    $company_id = Auth::user()->company_id;
+                    $environment = config('app.env', 'local');
+
+                    $cloudinary_object = Cloudinary::upload($file->getRealPath(), [
+                        'folder' => "mh/{$environment}/{$company_id}/collaborators"
+                    ]);
+
+                    $data['image_public_id'] = $cloudinary_object->getPublicId();
+                    $data['image_url'] = $cloudinary_object->getSecurePath();
+                    
+                    // NOTA: Si quisieras sincronizar la imagen también con el User, este sería el lugar.
+                    // Pero generalmente User y Colaborador pueden tener fotos distintas (una formal, otra perfil).
+                    // Si decides sincronizar, guarda estos valores en variables para usarlos abajo.
+                }
+                unset($data['image']);
+
+                // 4. Actualizar COLABORADOR
+                // dd($data);
+                $collaborator->update($data);
+
+                // 5. SINCRONIZAR USUARIO ASOCIADO (NUEVA LÓGICA)
+                // Verificamos si el colaborador tiene un usuario vinculado
+                if ($collaborator->user) {
+                    // Preparamos solo los datos de identidad que queremos reflejar
+                    $userDataToSync = [
+                        'name'           => $data['name'],
+                        'first_surname'  => $data['first_surname'],
+                        'second_surname' => $data['second_surname'] ?? null,
+                        'email'          => $data['email'],
+                    ];
+                    
+                    // Actualizamos el usuario
+                    $collaborator->user->update($userDataToSync);
+                }
+
+                return response()->json([
+                    'message' => 'Colaborador actualizado exitosamente!',
+                    'collaborator' => $collaborator
                 ]);
 
-                $data['image_public_id'] = $cloudinary_object->getPublicId();
-                $data['image_url'] = $cloudinary_object->getSecurePath();
-            }
-
-            // IMPORTANTE: Quitamos el objeto 'image' binario del array para que no rompa el SQL
-            unset($data['image']);
-
-            // NOTA: Si NO se subió imagen, $data no tiene las llaves 'image_url' ni 'image_public_id',
-            // por lo que el método update() de Eloquent simplemente no tocará esas columnas en la BD.
-            // Esto es mucho más limpio que asignar manualmente $old_url.
-
-            // 5. Actualizar
-            $collaborator->update($data);
-
-            return response()->json([
-                'message' => 'Colaborador actualizado exitosamente!',
-                'collaborator' => $collaborator
-            ]);
+            }); // Fin de la transacción
 
         } catch (\Exception $e) {
             Log::error("Error actualizando colaborador ID {$collaborator->id}: " . $e->getMessage());
 
             return response()->json([
                 'message' => 'Hubo un error al actualizar el colaborador.'
-                // 'error' => $e->getMessage()
             ], 500);
         }
     }

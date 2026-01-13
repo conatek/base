@@ -620,6 +620,11 @@ export default {
                 this.appendIfNotEmpty(formData, 'email', this.email);
                 formData.append('_method', 'PUT');
 
+                // console.log('FormData a enviar:');
+                // for (let pair of formData.entries()) {
+                //     console.log(`${pair[0]}: ${pair[1]}`);
+                // }
+
                 // 3. Enviamos la petición de Axios
                 axios.post(`/collaborators/${this.collaborator.id}`, formData).then(
                     (res) => {
