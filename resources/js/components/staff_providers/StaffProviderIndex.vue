@@ -58,6 +58,44 @@
                 </div>
             </div>
         </div>
+        <div v-if="selected_provider == null && add_provider == false && edit_provider == false" class="row mb-3">
+            <div class="col-md-12">
+                <div class="main-card card">
+                    <div class="card-header">
+                        <!-- <i class="header-icon lnr-license icon-gradient bg-plum-plate"> </i> -->
+                        Resumen de Personal por Proveedor
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre del Proveedor</th>
+                                        <th>Tipo</th>
+                                        <th class="text-center">Cantidad de Colaboradores</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="provider in providersWithCount" :key="'summary-' + provider.id">
+                                        <td>{{ provider.name }}</td>
+                                        <td>{{ provider.provider_type ? provider.provider_type.type : 'N/A' }}</td>
+                                        <td class="text-center">
+                                            <span class="badge rounded-pill"
+                                                :class="provider.collaborators_count > 0 ? 'bg-primary' : 'bg-secondary'">
+                                                {{ provider.collaborators_count }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="providersWithCount.length === 0">
+                                        <td colspan="3" class="text-center text-muted">No hay proveedores registrados.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div v-if="selected_provider == null && add_provider == false && edit_provider == false" class="main-card mb-3 card">
             <div class="card-body table-responsive">
                 <vue-good-table
@@ -373,6 +411,7 @@ export default {
         return {
             is_loading: false,
             providers: [],
+            collaborators: [],
 
             selected_provider: null,
             add_provider: false,
@@ -401,6 +440,7 @@ export default {
     },
     mounted() {
         this.getProviders();
+        this.getCollaborators();
     },
     watch: {
         providers: {
@@ -429,6 +469,20 @@ export default {
     computed: {
         filteredProviderTypes() {
             return this.provider_types?.filter(pt => pt && pt.id !== 1) || [];
+        },
+        providersWithCount() {
+            if (!this.providers.length) return [];
+
+            // Mapeamos los proveedores para agregarles el conteo
+            return this.providers.map(provider => {
+                // Filtramos los colaboradores que tengan el staff_provider_id igual al id del proveedor actual
+                const count = this.collaborators.filter(c => c.staff_provider_id === provider.id).length;
+
+                return {
+                    ...provider, // Mantiene todas las propiedades originales (nombre, id, etc.)
+                    collaborators_count: count // Agrega la nueva propiedad con el conteo
+                };
+            });
         }
     },
     methods: {
@@ -457,6 +511,20 @@ export default {
         changeProvince(province) {
             this.getCities(province);
             this.city_id = '';
+        },
+        getCollaborators() {
+             // Verificamos que company_id exista antes de llamar
+            if(!this.company_id) return;
+
+            axios.get(`/collaborators/${this.company_id}`)
+                .then(response => {
+                    // Ajusta según la estructura exacta de tu respuesta.
+                    // Si tu API retorna { collaborators: [...] }, úsalo así:
+                    this.collaborators = response.data.collaborators || response.data;
+                })
+                .catch(error => {
+                    console.error("Error fetching collaborators:", error);
+                })
         },
         getCities(province) {
             let dataSend = {

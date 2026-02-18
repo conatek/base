@@ -13,20 +13,18 @@ class UserEditRequest extends FormRequest
 
     public function rules()
     {
+        // Obtenemos el ID del usuario de la ruta
+        $userId = $this->route('user') ? $this->route('user')->id : null;
+
         return [
-            // Datos Personales
             'name'           => 'required|string|max:255',
-            'first_surname'  => 'required|string|max:255', // Nuevo campo obligatorio
-            'second_surname' => 'nullable|string|max:255', // Nuevo campo opcional
-            
-            // Datos de Cuenta
-            'email'          => 'required|email|unique:users,email',
+            'first_surname'  => 'required|string|max:255',
+            'second_surname' => 'nullable|string|max:255',
+            'email'          => 'required|email|unique:users,email,' . $userId,
             'password'       => 'nullable|min:8',
             'company_id'     => 'required|exists:companies,id',
             'roles'          => 'required|array|min:1',
-            
-            // Imagen (Simplificado: si viene, debe cumplir reglas; si no, pasa)
-            'image'          => 'nullable|image|mimes:jpeg,png,jpg|dimensions:max_width=200,max_height=200|max:100',
+            'image'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ];
     }
 
@@ -34,19 +32,25 @@ class UserEditRequest extends FormRequest
     {
         return [
             'name.required'           => 'Los nombres son requeridos.',
+            'name.string'             => 'Los nombres deben ser texto.',
+            'name.max'                => 'Los nombres no pueden exceder los 255 caracteres.',
             'first_surname.required'  => 'El primer apellido es requerido.',
+            'first_surname.string'    => 'El primer apellido debe ser texto.',
+            'first_surname.max'       => 'El primer apellido no puede exceder los 255 caracteres.',
+            'second_surname.string'   => 'El segundo apellido debe ser texto.',
+            'second_surname.max'      => 'El segundo apellido no puede exceder los 255 caracteres.',
             'email.required'          => 'El correo electrónico es requerido.',
             'email.email'             => 'El formato del correo no es válido.',
             'email.unique'            => 'Este correo ya está registrado en el sistema.',
-            'company_id.required'     => 'Debe asociar una empresa.',
             'password.min'            => 'La contraseña debe tener al menos 8 caracteres.',
+            'company_id.required'     => 'Debe asociar una empresa.',
+            'company_id.exists'       => 'La empresa seleccionada no es válida.',
             'roles.required'          => 'Debe asignar al menos un rol.',
-            
-            // Mensajes de imagen
-            'image.dimensions'        => 'La imagen no debe superar 200x200 píxeles.',
+            'roles.array'             => 'Los roles deben ser un arreglo válido.',
+            'roles.min'               => 'Debe asignar al menos un rol.',
             'image.image'             => 'El archivo debe ser una imagen válida.',
             'image.mimes'             => 'Solo se permiten formatos jpeg, jpg y png.',
-            'image.max'               => 'La imagen no debe pesar más de 100KB.',
+            'image.max'               => 'La imagen no debe pesar más de 2048KB.',
         ];
     }
 }

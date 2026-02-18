@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <div v-if="origin === 'created'" class="message-success mb-3">
+        <!-- <div v-if="origin === 'created'" class="message-success mb-3">
             <div class="content d-flex align-items-start p-2"><p class="mb-0">Usuario creado exitosamente</p></div>
         </div>
         <div v-if="origin === 'updated'" class="message-success mb-3">
@@ -54,7 +54,7 @@
         </div>
         <div v-if="origin === 'deleted'" class="message-success mb-3">
             <div class="content d-flex align-items-start p-2"><p class="mb-0">Usuario eliminado exitosamente</p></div>
-        </div>
+        </div> -->
 
         <div v-if="selected_user == null && add_user == false && edit_user == false" class="main-card mb-3 card">
             <div class="card-body table-responsive">
@@ -120,23 +120,38 @@
              <div class="card-body">
                 <form @submit.prevent="storeUser" enctype="multipart/form-data">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="position-relative mb-3">
-                                <label for="name" class="form-label">Nombre</label>
-                                <input v-model="name" name="name" id="name" type="text" class="form-control" placeholder="Ingresa el nombre del ususario" autofocus>
-                                <span v-if="errors && errors.name" class="error text-danger" for="name">{{ errors.name[0] }}</span>
+                                <label for="name" class="form-label">Nombres</label>
+                                <input v-model="name" id="name" type="text" class="form-control" placeholder="Nombres">
+                                <span v-if="errors && errors.name" class="error text-danger">{{ errors.name[0] }}</span>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <div class="position-relative mb-3">
+                                <label for="first_surname" class="form-label">Primer Apellido</label>
+                                <input v-model="first_surname" id="first_surname" type="text" class="form-control" placeholder="Primer Apellido">
+                                <span v-if="errors && errors.first_surname" class="error text-danger">{{ errors.first_surname[0] }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="position-relative mb-3">
+                                <label for="second_surname" class="form-label">Segundo Apellido</label>
+                                <input v-model="second_surname" id="second_surname" type="text" class="form-control" placeholder="Segundo Apellido (Opcional)">
+                                <span v-if="errors && errors.second_surname" class="error text-danger">{{ errors.second_surname[0] }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
                             <div class="position-relative mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input v-model="email" name="email" id="email" type="email" class="form-control" placeholder="Ingresa el correo electrónico" autocomplete="new-password">
                                 <span v-if="errors && errors.email" class="error text-danger" for="email">{{ errors.email[0] }}</span>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="position-relative mb-3">
                                 <label for="image" class="form-label">Imagen</label>
                                 <input
@@ -169,7 +184,7 @@
                                 <span v-if="errors && errors.image" class="error text-danger" for="image">{{ errors.image[0] }}</span>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="position-relative mb-3">
                                 <label for="password" class="form-label">Contraseña</label>
                                 <input v-model="password" name="password" id="password" type="password" class="form-control" placeholder="Ingresa la contraseña" autocomplete="new-password">
@@ -219,23 +234,37 @@
                 <div class="card-body">
                     <form @submit.prevent="updateUser" enctype="multipart/form-data">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="position-relative mb-3">
-                                    <label for="name" class="form-label">Nombre</label>
-                                    <input v-model="name" name="name" id="name" type="text" class="form-control" autofocus>
-                                    <span v-if="errors && errors.name" class="error text-danger" for="name">{{ errors.name[0] }}</span>
+                                    <label for="name" class="form-label">Nombres</label>
+                                    <input v-model="name" type="text" class="form-control" placeholder="Ingrese nombres" autofocus>
+                                    <span v-if="errors?.name" class="error text-danger">{{ errors.name[0] }}</span>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="position-relative mb-3">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input v-model="email" name="email" id="email" type="email" class="form-control">
-                                    <span v-if="errors && errors.email" class="error text-danger" for="email">{{ errors.email[0] }}</span>
+                                    <label for="first_surname" class="form-label">Primer Apellido</label>
+                                    <input v-model="first_surname" type="text" class="form-control" placeholder="Ingrese primer apellido">
+                                    <span v-if="errors?.first_surname" class="error text-danger">{{ errors.first_surname[0] }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="position-relative mb-3">
+                                    <label for="second_surname" class="form-label">Segundo Apellido</label>
+                                    <input v-model="second_surname" type="text" class="form-control" placeholder="Ingrese segundo apellido">
                                 </div>
                             </div>
                         </div>
+
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <div class="position-relative mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input v-model="email" name="email" id="email" type="email" class="form-control" placeholder="Ingrese email">
+                                    <span v-if="errors && errors.email" class="error text-danger" for="email">{{ errors.email[0] }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
                                 <div class="position-relative mb-3">
                                     <label for="image" class="form-label">Imagen</label>
                                     <input
@@ -268,7 +297,7 @@
                                     <span v-if="errors && errors.image" class="error text-danger" for="image">{{ errors.image[0] }}</span>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="position-relative mb-3">
                                     <label for="password" class="form-label">Contraseña</label>
                                     <input v-model="password" name="password" id="password" type="password" class="form-control" placeholder="Ingrese la contraseña solo si desea modificar">
@@ -329,6 +358,8 @@ export default {
                 'Admin': 3
             },
             name: '',
+            first_surname: '',
+            second_surname: '',
             email: '',
 
             // Variables de Imagen
@@ -337,11 +368,11 @@ export default {
 
             password: null,
             errors: null,
-            message: '',
-            successfully_created_message: false,
-            successfully_updated_message: false,
-            successfully_deleted_message: false,
-            origin: '',
+            // message: '',
+            // successfully_created_message: false,
+            // successfully_updated_message: false,
+            // successfully_deleted_message: false,
+            // origin: '',
 
             // Nuevas propiedades
             columns: [],
@@ -349,7 +380,7 @@ export default {
         };
     },
     mounted() {
-        this.getOrigin()
+        // this.getOrigin()
         this.getUsers();
     },
     watch: {
@@ -365,7 +396,8 @@ export default {
             handler() {
                 if(this.users.length > 0) {
                     this.columns = [
-                        { label: 'Nombre', field: 'name' },
+                        // Cambiamos 'name' por 'full_name' que creamos en el controlador
+                        { label: 'Nombre Completo', field: 'full_name' },
                         { label: 'Email', field: 'email' },
                         { label: 'Roles', field: 'roles', sortable: false },
                         { label: 'Acciones', field: 'actions', sortable: false, tdClass: 'align-right', thClass: 'align-right' },
@@ -435,28 +467,28 @@ export default {
             }
             });
         },
-        getMessage(msg) {
-            if(msg != '' && msg != null) {
-                this.message = msg
-            }
+        // getMessage(msg) {
+        //     if(msg != '' && msg != null) {
+        //         this.message = msg
+        //     }
 
-            setTimeout(() => {
-                this.message = ''
-                this.successfully_created_message = false
-                this.successfully_updated_message = false
-                this.successfully_deleted_message = false
-            }, 3000)
-        },
-        getOrigin() {
-            const origin = localStorage.getItem('origin');
-            if (origin !== null) {
-                this.origin = origin;
-                localStorage.removeItem('origin');
-            }
-            setTimeout(() => {
-                this.origin = '';
-            }, 3000);
-        },
+        //     setTimeout(() => {
+        //         this.message = ''
+        //         this.successfully_created_message = false
+        //         this.successfully_updated_message = false
+        //         this.successfully_deleted_message = false
+        //     }, 3000)
+        // },
+        // getOrigin() {
+        //     const origin = localStorage.getItem('origin');
+        //     if (origin !== null) {
+        //         this.origin = origin;
+        //         localStorage.removeItem('origin');
+        //     }
+        //     setTimeout(() => {
+        //         this.origin = '';
+        //     }, 3000);
+        // },
         returnToList() {
             this.selected_user = null
             this.add_user = false
@@ -484,6 +516,8 @@ export default {
             this.edit_user = false;
 
             this.name = '';
+            this.first_surname = ''; // <--- LIMPIAR
+            this.second_surname = ''; // <--- LIMPIAR
             this.email = '';
             this.image = null;
             this.image_src = null;
@@ -500,6 +534,8 @@ export default {
             const sendRequest = (formData) => {
                 this.appendIfNotEmpty(formData, 'company_id', this.company_id);
                 this.appendIfNotEmpty(formData, 'name', this.name);
+                this.appendIfNotEmpty(formData, 'first_surname', this.first_surname);
+                this.appendIfNotEmpty(formData, 'second_surname', this.second_surname ? this.second_surname : '');
                 this.appendIfNotEmpty(formData, 'email', this.email);
                 this.appendIfNotEmpty(formData, 'password', this.password);
 
@@ -509,22 +545,41 @@ export default {
 
                 axios.post('/users', formData).then(
                     (res) => {
-                        localStorage.setItem('origin', 'created');
-                        this.successfully_created_message = true
-                        this.successfully_updated_message = false
-                        this.successfully_deleted_message = false
-                        this.getMessage(res.data.message)
+                        this.$swal.fire({
+                            icon: 'success',
+                            title: '¡Usuario Creado!',
+                            text: 'El usuario ha sido registrado exitosamente.',
+                            confirmButtonColor: '#127cb3', // Color de referencia
+                            timer: 2000
+                        });
+
+                        // this.getMessage(res.data.message)
                         this.getUsers();
                         this.returnToList();
                         this.errors = null
-                    }).catch(
-                    (error) => {
-                        if(error && error.response && error.response.data && error.response.data.errors) {
-                            this.errors = error.response.data.errors
+                    }).catch((error) => {
+                        // ERROR
+                        if (error.response && error.response.status === 422) {
+                            // Errores de validación
+                            this.errors = error.response.data.errors;
+                            this.$swal.fire({
+                                icon: 'error',
+                                title: 'Datos incompletos',
+                                text: 'Por favor revisa el formulario, hay campos obligatorios pendientes o inválidos.',
+                                confirmButtonColor: '#d33'
+                            });
+                        } else {
+                            // Otros errores
+                            console.error(error);
+                            this.$swal.fire({
+                                icon: 'error',
+                                title: 'Error del servidor',
+                                text: error.response?.data?.message || 'Ocurrió un error inesperado.'
+                            });
                         }
                     }).finally(() => {
-                        this.is_loading = false; // DESACTIVAR AQUÍ
-                    })
+                        this.is_loading = false; // Desactivar loading
+                    });
             };
 
             // Lógica del Cropper
@@ -557,84 +612,92 @@ export default {
             const targetRoleLevel = Math.min(...user.roles.map(r => this.rolePriority[r.name] || 99));
             return currentRoleLevel < targetRoleLevel;
         },
-        editUser(user) {
-            this.selected_user = this.users.find(u => u.id === user);
+        editUser(userId) { // Nota: Tu template pasa el ID, no el objeto entero en el click
+            this.selected_user = this.users.find(u => u.id === userId);
             this.add_user = false;
             this.edit_user = true;
 
             this.image = null;
             this.image_src = null;
 
+            // Cargar datos locales antes de la petición para UX rápida
             this.name = this.selected_user.name;
+            this.first_surname = this.selected_user.first_surname; // <--- CARGAR
+            this.second_surname = this.selected_user.second_surname; // <--- CARGAR
             this.email = this.selected_user.email;
 
-            axios.get(`/users/${user}/edit`).then(
-                (res) => {
-                    this.userData = res.data.user;
-                    this.errors = null;
-                }).catch(
-                (error) => {
-                    if(error && error.response && error.response.data && error.response.data.errors) {
-                        this.errors = error.response.data.errors
-                    }
-                })
+            // Petición para datos frescos (opcional si ya tienes todo en selected_user)
+            axios.get(`/users/${userId}/edit`).then((res) => {
+                this.userData = res.data.user;
+                // Asegurar integridad con la BD
+                this.name = this.userData.name;
+                this.first_surname = this.userData.first_surname;
+                this.second_surname = this.userData.second_surname;
+                this.email = this.userData.email;
+                this.errors = null;
+            }).catch((error) => { /* ... */ });
         },
 
         updateUser() {
-            this.is_loading = true; // ACTIVAR AL INICIO
-            let fd = new FormData()
+            this.is_loading = true;
+            let fd = new FormData();
 
             const sendRequest = (formData) => {
                 this.appendIfNotEmpty(formData, 'company_id', this.company_id);
                 this.appendIfNotEmpty(formData, 'name', this.name);
+                this.appendIfNotEmpty(formData, 'first_surname', this.first_surname);
+                // this.appendIfNotEmpty(formData, 'second_surname', this.second_surname);
+                formData.append('second_surname', this.second_surname ? this.second_surname : '');
+                // this.appendIfNotEmpty(formData, 'second_surname', this.second_surname ? this.second_surname : '');
                 this.appendIfNotEmpty(formData, 'email', this.email);
-                this.appendIfNotEmpty(formData, 'password', this.password);
+                if (this.password) formData.append('password', this.password);
 
-                this.selected_roles.forEach((role, index) => {
-                    formData.append(`roles[${index}]`, role);
-                });
-                
-                formData.append('_method', 'PUT')
+                this.selected_roles.forEach((role, i) => formData.append(`roles[${i}]`, role));
+                formData.append('_method', 'PUT');
 
-                axios.post(`/users/${this.selected_user.id}`, formData).then(
-                    (res) => {
-                        localStorage.setItem('origin', 'updated');
-                        this.successfully_created_message = false
-                        this.successfully_updated_message = true
-                        this.successfully_deleted_message = false
+                axios.post(`/users/${this.selected_user.id}`, formData)
+                    .then((res) => {
+                        this.$swal.fire({
+                            icon: 'success',
+                            title: '¡Actualizado!',
+                            text: 'La información del usuario ha sido modificada correctamente.',
+                            confirmButtonColor: '#127cb3',
+                            timer: 2000
+                        });
 
-                        this.getMessage(res.data.message)
                         this.getUsers();
                         this.returnToList();
-                        this.errors = null
-                    }).catch(
-                    (error) => {
-                        if(error && error.response && error.response.data && error.response.data.errors) {
-                            this.errors = error.response.data.errors
+                        this.errors = null;
+                    }).catch((error) => {
+                        // ERROR
+                        if (error.response && error.response.status === 422) {
+                            this.errors = error.response.data.errors;
+                            this.$swal.fire({
+                                icon: 'error',
+                                title: 'Datos incompletos',
+                                text: 'Por favor revisa el formulario, hay campos obligatorios pendientes.',
+                                confirmButtonColor: '#d33'
+                            });
+                        } else {
+                            console.error(error);
+                            this.$swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: error.response?.data?.message || 'Error al actualizar el usuario.'
+                            });
                         }
                     }).finally(() => {
-                        this.is_loading = false; // DESACTIVAR AQUÍ
-                    })
+                        this.is_loading = false;
+                    });
             };
 
-            // Lógica del Cropper (reutilizada)
+            // Lógica del Cropper idéntica a storeUser...
             if (this.$refs.cropperRef && this.image_src) {
                 const { canvas } = this.$refs.cropperRef.getResult();
-                if (canvas) {
-                    const resizedCanvas = document.createElement('canvas');
-                    resizedCanvas.width = 300;
-                    resizedCanvas.height = 300;
-                    const ctx = resizedCanvas.getContext('2d');
-                    ctx.drawImage(canvas, 0, 0, 300, 300);
-
-                    resizedCanvas.toBlob((blob) => {
-                        fd.append('image', blob, 'profile_300x300.png');
-                        sendRequest(fd);
-                    }, 'image/png');
-                } else {
-                     if (this.image) fd.append('image', this.image);
+                canvas.toBlob((blob) => {
+                    fd.append('image', blob, 'profile.png');
                     sendRequest(fd);
-                }
+                }, 'image/png');
             } else {
                 sendRequest(fd);
             }

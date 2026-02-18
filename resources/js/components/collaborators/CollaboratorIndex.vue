@@ -74,7 +74,7 @@
                             type="text" class="form-control">
                     </div>
                 </div>
-    
+
                 <div class="col-sm-12 col-md-6 col-lg-4">
                     <div class="input-group mb-3">
                         <div class="input-group-text"><i class="fa fa-user-tag"></i></div>
@@ -85,7 +85,7 @@
                         </select>
                     </div>
                 </div>
-    
+
                 <div class="col-sm-12 col-md-6 col-lg-4">
                     <div class="input-group mb-3">
                         <div class="input-group-text"><i class="fa fa-file-contract"></i></div>
@@ -206,8 +206,8 @@
                 </nav>
             </div>
             <div v-else>
-                <empty-state 
-                    icon="collaborators" 
+                <empty-state
+                    icon="collaborators"
                     message="No hay colaboradores registrados aún."
                 ></empty-state>
             </div>
@@ -622,42 +622,84 @@ export default {
                         this.is_loading = false; // DESACTIVAR
                     })
         },
-        deactivateCollaborator(id) {
-            axios.put(`/collaborators/${id}/deactivate`).then(
-                (res) => {
-                    localStorage.setItem('origin', 'deactivate');
-                    // Nota: Aquí llamas a this.collaborators = this.getCollaborators(),
-                    // pero getCollaborators no retorna nada (es void), actualiza el estado internamente.
-                    // Lo correcto es simplemente llamar a la función:
-                    this.getCollaborators();
+        // deactivateCollaborator(id) {
+        //     axios.put(`/collaborators/${id}/deactivate`).then(
+        //         (res) => {
+        //             localStorage.setItem('origin', 'deactivate');
 
-                    let url = `/collaborators`
-                    // window.location.href = url
-                    this.errors = null
-                }).catch(
-                    (error) => {
-                        if (error && error.response && error.response.data && error.response.data.errors) {
-                            this.errors = error.response.data.errors
-                        }
-                    })
+        //             this.getCollaborators();
+
+        //             let url = `/collaborators`
+        //             this.errors = null
+        //         }).catch(
+        //             (error) => {
+        //                 if (error && error.response && error.response.data && error.response.data.errors) {
+        //                     this.errors = error.response.data.errors
+        //                 }
+        //             })
+        // },
+        // activateCollaborator(id) {
+        //     axios.put(`/collaborators/${id}/activate`).then(
+        //         (res) => {
+        //             localStorage.setItem('origin', 'activate');
+
+        //             this.getCollaborators();
+
+        //             let url = `/collaborators`
+        //             this.errors = null
+        //         }).catch(
+        //             (error) => {
+        //                 if (error && error.response && error.response.data && error.response.data.errors) {
+        //                     this.errors = error.response.data.errors
+        //                 }
+        //             })
+        // },
+
+        deactivateCollaborator(id) {
+            axios.put(`/collaborators/${id}/deactivate`)
+                .then((res) => {
+                    // BUSCAR Y ACTUALIZAR LOCALMENTE
+                    // Encontramos el índice del colaborador en el array
+                    const index = this.collaborators.findIndex(collaborator => collaborator.id === id);
+
+                    // Si existe, actualizamos su propiedad is_active directamente
+                    if (index !== -1) {
+                        // Vue detectará este cambio y actualizará la card específica
+                        this.collaborators[index].is_active = 0;
+                    }
+
+                    // Ya no necesitas llamar a getCollaborators()
+                    // this.getCollaborators();
+
+                    localStorage.setItem('origin', 'deactivate');
+                    this.errors = null;
+                })
+                .catch((error) => {
+                    if (error?.response?.data?.errors) {
+                        this.errors = error.response.data.errors;
+                    }
+                });
         },
         activateCollaborator(id) {
-            axios.put(`/collaborators/${id}/activate`).then(
-                (res) => {
+            axios.put(`/collaborators/${id}/activate`)
+                .then((res) => {
+                    // BUSCAR Y ACTUALIZAR LOCALMENTE
+                    const index = this.collaborators.findIndex(collaborator => collaborator.id === id);
+
+                    if (index !== -1) {
+                        this.collaborators[index].is_active = 1;
+                    }
+
+                    // this.getCollaborators(); // Comentado para evitar la recarga innecesaria
+
                     localStorage.setItem('origin', 'activate');
-
-                    // Mismo caso que arriba, solo llamar a la función
-                    this.getCollaborators();
-
-                    let url = `/collaborators`
-                    // window.location.href = url
-                    this.errors = null
-                }).catch(
-                    (error) => {
-                        if (error && error.response && error.response.data && error.response.data.errors) {
-                            this.errors = error.response.data.errors
-                        }
-                    })
+                    this.errors = null;
+                })
+                .catch((error) => {
+                    if (error?.response?.data?.errors) {
+                        this.errors = error.response.data.errors;
+                    }
+                });
         },
         hasCurrentContract(id) {
             return this.collaborators.some(c => c.id === id && c.current_contract);

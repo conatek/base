@@ -11,32 +11,26 @@
                         Procesos de Selección
                     </div>
                 </div>
-                <div class="page-title-actions">
+                <!-- <div class="page-title-actions">
                     <button @click="addRequisition()" class="btn btn-mh-dark-blue me-3">
                         <i class="fa fa-plus"></i>
                         Agregar
                     </button>
-                </div>
+                </div> -->
             </div>
         </div>
 
-        <div class="row">
-            <div>
-                <collaborator-requisition-create
-                    :requisition_types="requisition_types"
-                    :collaborators="collaborators"
-                    :campuses="campuses"
-                    :areas="areas"
-                    :positions="positions"
-                    :reasons="reasons"
-                    :statuses="statuses"
-                    :sources="sources"
-                ></collaborator-requisition-create>
-            </div>
-        </div>
-
-
-
+        <requisition-index
+            :requisitions="requisitions"
+            :requisition_types="requisition_types"
+            :collaborators="collaborators"
+            :campuses="campuses"
+            :areas="areas"
+            :positions="positions"
+            :reasons="reasons"
+            :statuses="statuses"
+            :sources="sources"
+        ></requisition-index>
     </div>
 </template>
 
@@ -66,6 +60,9 @@ export default {
             default: null,
         },
         sources: {
+            default: null,
+        },
+        requisitions: {
             default: null,
         },
     },

@@ -7,20 +7,25 @@ use Illuminate\Support\Facades\Artisan;
 
 class ClearAllCache extends Command
 {
-    protected $signature = 'cache:clearAll';
+    // Cambié el nombre a 'refresh' porque realmente estás regenerando
+    protected $signature = 'cache:refresh';
 
-    protected $description = 'Limpiar cache de todo el sistema';
+    protected $description = 'Limpiar y regenerar la caché para producción';
 
     public function handle()
     {
-        Artisan::call('cache:clear');
-        Artisan::call('route:cache');
-        Artisan::call('route:clear');
-        Artisan::call('view:clear');
-        Artisan::call('config:cache');
-        Artisan::call('optimize:clear');
+        $this->info('>> Limpiando cachés antiguas...');
+        $this->call('optimize:clear'); // Primero borramos todo
 
-        echo ">> caché eliminada con éxito\n";
+        $this->info('>> Generando nuevas cachés...');
+        $this->call('config:cache'); // Importante para producción
+        $this->call('route:cache');  // Importante para producción
+        $this->call('view:cache');   // Opcional, pre-compila vistas blade
+
+        // optimize incuye varias optimizaciones del core
+        // $this->call('optimize');
+
+        $this->info('>> ¡Sistema optimizado y regenerado!');
 
         return Command::SUCCESS;
     }

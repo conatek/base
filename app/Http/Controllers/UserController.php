@@ -32,30 +32,23 @@ class UserController extends Controller
     }
 
     public function getUsers() {
-        $results = [];
-
         $user = Auth::user();
-
         $company_id = $user->company_id;
-        $users = User::where('company_id', $company_id)->with(['roles'])->get();
-        $users_data = [];
 
-        // dd($users->roles);
+        // Obtenemos usuarios con roles
+        $users = User::where('company_id', $company_id)
+                    ->with(['roles'])
+                    ->get();
 
-        foreach ($users as $user) {
-            $data = [];
+        // Transformamos la colección para agregar el nombre completo concatenado
+        $users->transform(function ($user) {
+            $user->full_name = trim("{$user->name} {$user->first_surname} {$user->second_surname}");
+            return $user;
+        });
 
-            $data['id'] = $user->id;
-            $data['name'] = $user->name;
-            $data['email'] = $user->email;
-
-            array_push($users_data, $data);
-        }
-
-        // $results['users'] = $users_data;
-        $results['users'] = $users;
-
-        return $results;
+        return response()->json([
+            'users' => $users
+        ]);
     }
 
     public function getUserAdmin($company_id)
@@ -99,8 +92,8 @@ class UserController extends Controller
         return view('back.users.create', compact('companies', 'roles'));
     }
 
-    // public function store(UserCreateRequest $request)
-    public function store(Request $request)
+    public function store(UserCreateRequest $request)
+    // public function store(Request $request)
     {
         // Las validaciones se realizan en UserCreateRequest
 
@@ -182,10 +175,10 @@ class UserController extends Controller
     {
         try {
             return DB::transaction(function () use ($request, $user) {
-                
+
                 // 1. Preparar datos básicos
                 $data = $request->only('name', 'first_surname', 'second_surname', 'email', 'company_id');
-                
+
                 // 2. Manejo de Contraseña (solo si se envía)
                 if ($request->filled('password')) {
                     $data['password'] = bcrypt($request->input('password'));
@@ -197,21 +190,21 @@ class UserController extends Controller
                     if ($user->image_public_id) {
                         Cloudinary::destroy($user->image_public_id);
                     }
-                    
+
                     $file = $request->file('image');
                     $cloudinary_object = Cloudinary::upload($file->getRealPath(), [
                         'folder' => 'mh/' . env("APP_ENV", "local") . '/' . $request->company_id . '/users'
                     ]);
-                    
+
                     $data['image_public_id'] = $cloudinary_object->getPublicId();
                     $data['image_url'] = $cloudinary_object->getSecurePath();
                 }
-                // Nota: Si no hay imagen nueva, no tocamos esos campos, User::update respeta los valores actuales 
+                // Nota: Si no hay imagen nueva, no tocamos esos campos, User::update respeta los valores actuales
                 // a menos que los pases explícitamente como null.
 
                 // 4. Actualizar USUARIO
                 $user->update($data);
-                
+
                 // 5. Actualizar ROLES
                 $user->syncRoles($request->input('roles', []));
 

@@ -42,7 +42,7 @@ const components = {
 
     // MODULOS DE ADMINISTRACION - SELECCION
     'selection-index': defineAsyncComponent(() => import('./components/modules/selection/Selection.vue')),
-    'collaborator-requisition-create': defineAsyncComponent(() => import('./components/modules/selection/CollaboratorRequisitionCreate.vue')),
+    'requisition-index': defineAsyncComponent(() => import('./components/modules/selection/RequisitionIndex.vue')),
 
     // MODULOS DE ADMINISTRACION - AUSENTISMO
     'absence-index': defineAsyncComponent(() => import('./components/modules/Absence.vue')),

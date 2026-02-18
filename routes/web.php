@@ -243,7 +243,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/modules/provision', [ProvisionController::class, 'index'])->name('provision.index');
 
     // SELECTION DATA
+    Route::get('/selection/collaborator-requisitions', [RequisitionController::class, 'index']);
     Route::post('/selection/collaborator-requisitions', [RequisitionController::class, 'store']);
+    Route::put('/selection/collaborator-requisitions/{id}', [RequisitionController::class, 'update']);
+    Route::put('/requisitions/{id}/approve', [RequisitionController::class, 'approve']);
+    Route::put('/requisitions/{id}/cancel', [RequisitionController::class, 'cancel']);
 
     // ABSENCE DATA
     Route::get('/absences', [AbsenceController::class, 'getAbsences']);
