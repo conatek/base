@@ -38,7 +38,7 @@ class RequisitionController extends Controller
 
         // Lógica de Roles (Gestión vs Solicitante)
         // 3: Admin, 4: Analyst, 7: Approver
-        $managementRoles = [3, 4, 7];
+        $managementRoles = [1, 3, 4, 7];
 
         // Verificamos si tiene roles de gestión usando la relación directa (más eficiente)
         $isManager = $user->roles()->whereIn('id', $managementRoles)->exists();
