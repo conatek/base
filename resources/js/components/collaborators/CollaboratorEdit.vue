@@ -628,8 +628,7 @@ export default {
                 // 3. Enviamos la petición de Axios
                 axios.post(`/collaborators/${this.collaborator.id}`, formData).then(
                     (res) => {
-                        localStorage.setItem('origin', 'updated');
-                        window.location.href = '/collaborators';
+                        this.$emit('saved');
                         this.errors = null;
                     }).catch(
                     (error) => {

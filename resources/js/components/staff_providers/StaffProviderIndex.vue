@@ -397,12 +397,6 @@ export default {
         VueGoodTable,
     },
     props: {
-        provider_types: {
-            default: null,
-        },
-        provinces: {
-            default: null,
-        },
         company_id: {
             default: null,
         },
@@ -412,6 +406,8 @@ export default {
             is_loading: false,
             providers: [],
             collaborators: [],
+            provider_types: null,
+            provinces: null,
 
             selected_provider: null,
             add_provider: false,
@@ -441,6 +437,7 @@ export default {
     mounted() {
         this.getProviders();
         this.getCollaborators();
+        this.fetchFormData();
     },
     watch: {
         providers: {
@@ -555,6 +552,12 @@ export default {
             this.edit_provider = false
 
             // providersDatatable();
+        },
+        fetchFormData() {
+            axios.get('/staff-providers').then((res) => {
+                this.provider_types = res.data.provider_types || [];
+                this.provinces = res.data.provinces || [];
+            }).catch(() => {});
         },
         getProviders() {
             axios.get(`/providers-data/${this.company_id}`).then(

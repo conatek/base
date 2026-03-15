@@ -1,7 +1,10 @@
 import './bootstrap';
 
-import {createApp} from 'vue';
-import components from '@/components';
+import { createApp } from 'vue';
+import router from '@/router';
+import auth from '@/store/auth';
+import App from '@/components/App.vue';
+import components from './components';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
@@ -20,18 +23,20 @@ import './assets/css/custom-vue-good-tables.css';
 import './assets/css/custom.css';
 import './assets/css/message.css';
 
-const app = createApp({});
+const app = createApp(App);
 
-app.config.globalProperties.$can = (permissionName) => {
-    const permissions = window.Laravel?.permissions || [];
-    return permissions.includes(permissionName);
+// Registrar todos los componentes globales
+Object.entries(components).forEach(([name, component]) => {
+    app.component(name, component);
+});
+
+// $can() lee del store reactivo — funciona de forma reactiva
+app.config.globalProperties.$can = function (permissionName) {
+    return auth.permissions.includes(permissionName);
 };
 
+app.use(router);
 app.use(VueSweetalert2);
-
-Object.keys(components).forEach(key => {
-    app.component(key, components[key]);
-});
 
 library.add(fas);
 library.add(far);

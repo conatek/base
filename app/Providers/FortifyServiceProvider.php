@@ -42,32 +42,13 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
 
-        Fortify::loginView(function () {
-            return view('auth.login');
-        });
-
-        Fortify::registerView(function () {
-            return view('auth.register');
-        });
-
-        Fortify::requestPasswordResetLinkView(function () {
-            return view('auth.passwords.email');
-        });
-
-        Fortify::resetPasswordView(function ($request) {
-            return view('auth.passwords.reset', ['request' => $request]);
-        });
-
-        Fortify::verifyEmailView(function () {
-            return view('auth.verify');
-        });
-
-        Fortify::confirmPasswordView(function () {
-            return view('auth.passwords.confirm');
-        });
-
-        Fortify::twoFactorChallengeView(function () {
-            return view('auth.two-factor-challenge');
-        });
+        // Todas las vistas de auth sirven el SPA — Vue Router maneja la presentación
+        Fortify::loginView(fn () => view('spa'));
+        Fortify::registerView(fn () => view('spa'));
+        Fortify::requestPasswordResetLinkView(fn () => view('spa'));
+        Fortify::resetPasswordView(fn () => view('spa'));
+        Fortify::verifyEmailView(fn () => view('spa'));
+        Fortify::confirmPasswordView(fn () => view('spa'));
+        Fortify::twoFactorChallengeView(fn () => view('spa'));
     }
 }

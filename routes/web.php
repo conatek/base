@@ -40,14 +40,26 @@ use App\Http\Controllers\Import\CollaboratorImportController;
 use App\Http\Controllers\CollaboratorSocialSecurityController;
 use App\Http\Controllers\CollaboratorMedicalExaminationController;
 use App\Http\Controllers\CollaboratorAcademicAchievementController;
+use App\Http\Controllers\Api\MeController;
 
 
-Route::get('/', function () {
-    return view('front.welcome');
-})->name('start');
+// ─── Rutas nombradas para el SPA ─────────────────────────────────────────────
+Route::get('/', fn () => view('spa'))->name('start');
+Route::get('/home', fn () => view('spa'))->name('home');
+Route::get('/roles', fn () => view('spa'))->name('roles.index');
+Route::get('/users', fn () => view('spa'))->name('users.index');
+Route::get('/company/{id?}', fn () => view('spa'))->name('company.show');
+Route::get('/modules/selection', fn () => view('spa'));
+Route::get('/modules/provision', fn () => view('spa'))->name('provision.index');
+Route::get('/modules/training', fn () => view('spa'))->name('training.index');
+Route::get('/modules/performance', fn () => view('spa'))->name('performance.index');
+Route::get('/modules/wellness', fn () => view('spa'))->name('wellness.index');
+Route::get('/self-management/profile', fn () => view('spa'))->name('self-management.profile');
+Route::get('/tools/overtime', fn () => view('spa'))->name('overtime.index');
+Route::get('/tools/inventory', fn () => view('spa'))->name('inventory.index');
+Route::get('/tools/cards', fn () => view('spa'))->name('cards.index');
 
-// Ruta para actuar como otro usuario
-// Route::middleware(['auth', 'can:login-as'])->post('/login-as/{user}', function (User $user) {
+// ─── Impersonación ───────────────────────────────────────────────────────────
 Route::middleware(['auth'])->post('/login-as/{user}', function (User $user) {
     $roles = Auth::user()->roles->pluck('name')->map(fn($r) => strtolower($r))->toArray();
 
@@ -64,7 +76,6 @@ Route::middleware(['auth'])->post('/login-as/{user}', function (User $user) {
     ]);
 });
 
-// Ruta para volver al usuario original
 Route::middleware(['auth'])->post('/return-to-original-user', function () {
     $originalUserId = Session::pull('original_user_id');
 
@@ -78,31 +89,31 @@ Route::middleware(['auth'])->post('/return-to-original-user', function () {
     ]);
 });
 
-Route::group(['middleware' => 'auth'], function () {
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+// ─── API interna (sesión web) ─────────────────────────────────────────────────
+Route::middleware('auth')->get('/api/me', MeController::class);
 
-    // Route::post('/login-as/{user_id}', [UserController::class, 'loginAs']);
+// ─── Rutas autenticadas ───────────────────────────────────────────────────────
+Route::group(['middleware' => 'auth'], function () {
+
+    // USERS DATA (JSON)
     Route::get('/users-data/{company_id}', [UserController::class, 'getUsers']);
     Route::get('/users/{company_id}/admin', [UserController::class, 'getUserAdmin']);
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
-    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
-    // COMPANIES
+    // COMPANIES AJAX ENDPOINTS (usados por CompanyIndex.vue internamente)
     Route::get('/companies', [CompaniesController::class, 'index'])->name('companies.index');
-    Route::get('/companies/create', [CompaniesController::class, 'create'])->name('companies.create');
-    Route::post('/companies', [CompaniesController::class, 'store'])->name('companies.store');
-    Route::get('/companies/{company}', [CompaniesController::class, 'show'])->name('companies.show');
-    Route::get('/companies/{company}/edit', [CompaniesController::class, 'edit'])->name('companies.edit');
-    Route::put('/companies/{company}', [CompaniesController::class, 'update'])->name('companies.update');
-    Route::delete('/companies/{company}/destroy', [CompaniesController::class, 'destroy'])->name('companies.destroy');
+    Route::get('/companies/create', [CompaniesController::class, 'create']);
+    Route::get('/companies/{company}/edit', [CompaniesController::class, 'edit']);
+    Route::get('/companies/{company}', [CompaniesController::class, 'show']);
 
-    // COMPANY DATA
-    Route::get('/company', [CompanyController::class, 'companyShow'])->name('company.show');
+    // COLLABORATORS AJAX ENDPOINTS (usados por CollaboratorIndex.vue internamente)
+    Route::get('/collaborators-data', [CollaboratorController::class, 'create']);
+    Route::get('/collaborators/{collaborator}/show', [CollaboratorController::class, 'show']);
+    Route::get('/collaborators/{collaborator}/edit', [CollaboratorController::class, 'edit']);
+
+    // COMPANIES DATA (JSON)
     Route::get('/contracts-data/{company_id}', [CompanyController::class, 'getContracts']);
     Route::get('/gender-data/{company_id}', [CompanyController::class, 'getGenderData']);
     Route::get('/civil-status-data/{company_id}', [CompanyController::class, 'getCivilStatusData']);
@@ -112,64 +123,48 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/length-service-data/{company_id}', [CompanyController::class, 'getLengthServiceData']);
     Route::get('/get-next-birthdays/{company_id}', [CompanyController::class, 'getNextBirthdays']);
     Route::get('/get-expiring-contracts/{company_id}', [CompanyController::class, 'getExpiringContracts']);
+    Route::post('/companies', [CompaniesController::class, 'store'])->name('companies.store');
+    Route::put('/companies/{company}', [CompaniesController::class, 'update'])->name('companies.update');
+    Route::delete('/companies/{company}/destroy', [CompaniesController::class, 'destroy'])->name('companies.destroy');
 
-    // AREAS DATA
+    // AREAS DATA (JSON)
     Route::get('/areas-data/{company_id}', [AreaController::class, 'getAreas']);
     Route::get('/areas-data/{campus_id}/campus', [AreaController::class, 'getAreasByCampus']);
-    Route::get('/areas', [AreaController::class, 'index'])->name('areas.index');
-    Route::get('/areas/create', [AreaController::class, 'create'])->name('areas.create');
     Route::post('/areas', [AreaController::class, 'store'])->name('areas.store');
-    Route::get('/areas/{area}', [AreaController::class, 'show'])->name('areas.show');
-    Route::get('/areas/{area}/edit', [AreaController::class, 'edit'])->name('areas.edit');
     Route::put('/areas/{area}', [AreaController::class, 'update'])->name('areas.update');
     Route::delete('/area-data-delete/{area}', [AreaController::class, 'destroy']);
 
-    // POSITIONS DATA
+    // POSITIONS DATA (JSON)
     Route::get('/positions-data/{company_id}', [PositionController::class, 'getPositions']);
-    Route::get('/positions', [PositionController::class, 'index'])->name('positions.index');
-    Route::get('/positions/create', [PositionController::class, 'create'])->name('positions.create');
     Route::post('/positions', [PositionController::class, 'store'])->name('positions.store');
-    Route::get('/positions/{position}', [PositionController::class, 'show'])->name('positions.show');
-    Route::get('/positions/{position}/edit', [PositionController::class, 'edit'])->name('positions.edit');
     Route::put('/positions/{position}', [PositionController::class, 'update'])->name('positions.update');
     Route::delete('/position-data-delete/{position}', [PositionController::class, 'destroy']);
 
-    // CAMPUSES DATA
+    // CAMPUSES DATA (JSON)
     Route::get('/campus-data/{company_id}', [CampusController::class, 'getCampuses']);
-    Route::get('/campuses', [CampusController::class, 'index'])->name('campuses.index');
-    Route::get('/campuses/create', [CampusController::class, 'create']);
     Route::post('/campuses', [CampusController::class, 'store']);
-    Route::get('/campuses/{campus}', [CampusController::class, 'show']);
-    Route::get('/campuses/{campus}/edit', [CampusController::class, 'edit']);
     Route::put('/campuses/{campus}', [CampusController::class, 'update']);
     Route::delete('/campus-data-delete/{campus}', [CampusController::class, 'destroy']);
 
-    // COLLABORATORS DATA
+    // COLLABORATORS DATA (JSON)
+    Route::get('/collaborators', [CollaboratorController::class, 'index'])->name('collaborators.index');
     Route::get('/collaborators/{company_id}', [CollaboratorController::class, 'getCollaborators']);
     Route::get('/collaborators-data/{company_id}', [CollaboratorController::class, 'getCollaboratorsData']);
-    Route::get('/collaborators', [CollaboratorController::class, 'index'])->name('collaborators.index');
-    Route::get('/collaborators-data', [CollaboratorController::class, 'create'])->name('collaborators.create');
     Route::post('/collaborators', [CollaboratorController::class, 'store'])->name('collaborators.store');
-    // Route::get('/collaborators/{collaborator}-{message?}', [CollaboratorController::class, 'show'])->name('collaborators.show');
-    Route::get('/collaborators/{collaborator}/show', [CollaboratorController::class, 'show'])->name('collaborators.show');
-    Route::get('/collaborators/{collaborator}/edit', [CollaboratorController::class, 'edit'])->name('collaborators.edit');
     Route::put('/collaborators/{collaborator}', [CollaboratorController::class, 'update'])->name('collaborators.update');
     Route::delete('/collaborators/{collaborator}/destroy', [CollaboratorController::class, 'destroy'])->name('collaborators.destroy');
     Route::put('/collaborators/{collaborator}/deactivate', [CollaboratorController::class, 'deactivate'])->name('collaborators.deactivate');
     Route::put('/collaborators/{collaborator}/activate', [CollaboratorController::class, 'activate'])->name('collaborators.activate');
 
-    // CONTRACTUAL INFORMATION
+    // CONTRACTUAL INFORMATION (JSON)
     Route::get('/contracts/{collaborator_id}', [ContractController::class, 'getContracts']);
     Route::get('/contractual-information', [ContractController::class, 'getContractualInformation']);
     Route::get('/contractual-information/{collaborator_id}', [ContractController::class, 'getActiveContractByCollaborator']);
-    // Route::get('/contractual-information/{collaborator_id}', [ContractController::class, 'getContractualInformationByCollaborator']);
-    // Route::post('/collaborators/{collaborator}/contractual-information', [ContractController::class, 'store']);
-    // Route::put('/collaborators/{collaborator}/contractual-information', [ContractController::class, 'update']);
     Route::post('/contracts/{collaborator}', [ContractController::class, 'store']);
     Route::put('/contracts/{contract}', [ContractController::class, 'update']);
     Route::delete('/contracts/{contract}', [ContractController::class, 'destroy']);
 
-    // SOCIAL SECURITY
+    // SOCIAL SECURITY (JSON + downloads)
     Route::get('/social-security-information', [CollaboratorSocialSecurityController::class, 'getSocialSecurityInformation']);
     Route::get('/social-security-information/{collaborator_id}', [CollaboratorSocialSecurityController::class, 'getSocialSecurityByCollaborator']);
     Route::post('/social-security-information', [CollaboratorSocialSecurityController::class, 'store']);
@@ -179,7 +174,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::put('/social-security-information/{social_security_id}', [CollaboratorSocialSecurityController::class, 'update']);
     Route::delete('/social-security-information/{social_security_id}', [CollaboratorSocialSecurityController::class, 'destroy']);
 
-    // BANK INFORMATION
+    // BANK INFORMATION (JSON + downloads)
     Route::get('/bank-account-information', [CollaboratorBankAccountController::class, 'getBankAccountInformation']);
     Route::get('/bank-account-information/{collaborator_id}', [CollaboratorBankAccountController::class, 'getBankAccountByCollaborator']);
     Route::post('/bank-account-information', [CollaboratorBankAccountController::class, 'store']);
@@ -187,69 +182,68 @@ Route::group(['middleware' => 'auth'], function () {
     Route::put('/bank-account-information/{bank_account}', [CollaboratorBankAccountController::class, 'update']);
     Route::delete('/bank-account-information/{bank_account}', [CollaboratorBankAccountController::class, 'destroy']);
 
-    // ROLES AND PERMISSIONS
-    Route::resource('permissions', PermissionController::class);
-    Route::resource('roles', RoleController::class);
+    // ROLES AND PERMISSIONS (JSON)
+    Route::post('/permissions', [PermissionController::class, 'store'])->name('permissions.store');
+    Route::put('/permissions/{permission}', [PermissionController::class, 'update'])->name('permissions.update');
+    Route::delete('/permissions/{permission}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
+    Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+    Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+    Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
     Route::get('/get-roles-and-permissions', [RoleController::class, 'getRolesAndPermissionsData']);
     Route::get('/get-roles', [RoleController::class, 'getRolesData']);
     Route::post('/toggle-permission', [RoleController::class, 'togglePermission']);
 
-    // PROVINCES AND CITIES
+    // PROVINCES AND CITIES (JSON)
     Route::post('/get-cities', [ProvinceController::class, 'getCities'])->name('get_cities');
 
-    // RELATIVE DATA
+    // RELATIVE DATA (JSON)
     Route::get('/relative-data/{collaborator_id}', [CollaboratorFamilyController::class, 'show']);
     Route::post('/relative-data', [CollaboratorFamilyController::class, 'store']);
     Route::put('/relative-data-update/{relative_data}', [CollaboratorFamilyController::class, 'update']);
     Route::delete('/relative-data-delete/{relative_data}', [CollaboratorFamilyController::class, 'destroy']);
 
-    // ACADEMIC DATA
+    // ACADEMIC DATA (JSON + downloads)
     Route::get('/academic-data/{collaborator_id}', [CollaboratorAcademicAchievementController::class, 'show']);
     Route::post('/academic-data', [CollaboratorAcademicAchievementController::class, 'store']);
     Route::put('/academic-data-update/{academic_data}', [CollaboratorAcademicAchievementController::class, 'update']);
     Route::get('/download-academic-certificate/{academic_data_id}', [CollaboratorAcademicAchievementController::class, 'downloadCertificate']);
     Route::delete('/academic-data-delete/{academic_data}', [CollaboratorAcademicAchievementController::class, 'destroy']);
 
-    // MEDICAL EXAMINATION DATA
+    // MEDICAL EXAMINATION DATA (JSON + downloads)
     Route::get('/medical-examination-data/{collaborator_id}', [CollaboratorMedicalExaminationController::class, 'show']);
     Route::post('/medical-examination-data', [CollaboratorMedicalExaminationController::class, 'store']);
     Route::put('/medical-examination-data-update/{medical_examination_data}', [CollaboratorMedicalExaminationController::class, 'update']);
     Route::get('/download-medical-examination-result/{medical_examination_data}', [CollaboratorMedicalExaminationController::class, 'downloadResult']);
     Route::delete('/medical-examination-data-delete/{medical_examination_data}', [CollaboratorMedicalExaminationController::class, 'destroy']);
 
-    // HOME VISIT DATA
+    // HOME VISIT DATA (JSON + downloads)
     Route::get('/home-visit-data/{collaborator_id}', [CollaboratorHomeVisitController::class, 'show']);
     Route::post('/home-visit-data', [CollaboratorHomeVisitController::class, 'store']);
     Route::put('/home-visit-data-update/{home_visit_data}', [CollaboratorHomeVisitController::class, 'update']);
     Route::get('/download-home-visit-report/{home_visit_data}', [CollaboratorHomeVisitController::class, 'downloadReport']);
     Route::delete('/home-visit-data-delete/{home_visit_data}', [CollaboratorHomeVisitController::class, 'destroy']);
 
-    // DOCUMENT DATA
+    // DOCUMENT DATA (JSON + downloads)
     Route::get('/document-data/{collaborator_id}', [CollaboratorDocumentController::class, 'show']);
     Route::post('/document-data', [CollaboratorDocumentController::class, 'store']);
     Route::put('/document-data-update/{document_data}', [CollaboratorDocumentController::class, 'update']);
     Route::get('/download-document/{document_data}', [CollaboratorDocumentController::class, 'downloadDocument']);
     Route::delete('/document-data-delete/{document_data}', [CollaboratorDocumentController::class, 'destroy']);
 
-    // LOAD COLLABORATORS
-
-
-    // MODULES
-    Route::get('/modules/wellness', [WellnessController::class, 'index'])->name('wellness.index');
+    // SELECTION FORM DATA (JSON)
     Route::get('/modules/selection', [SelectionController::class, 'index'])->name('selection.index');
-    Route::get('/modules/absence', [AbsenceController::class, 'index'])->name('absence.index');
-    Route::get('/modules/training', [TrainingController::class, 'index'])->name('training.index');
-    Route::get('/modules/performance', [PerformanceController::class, 'index'])->name('performance.index');
-    Route::get('/modules/provision', [ProvisionController::class, 'index'])->name('provision.index');
 
-    // SELECTION DATA
+    // SELECTION DATA (JSON)
     Route::get('/selection/collaborator-requisitions', [RequisitionController::class, 'index']);
     Route::post('/selection/collaborator-requisitions', [RequisitionController::class, 'store']);
     Route::put('/selection/collaborator-requisitions/{id}', [RequisitionController::class, 'update']);
     Route::put('/requisitions/{id}/approve', [RequisitionController::class, 'approve']);
     Route::put('/requisitions/{id}/cancel', [RequisitionController::class, 'cancel']);
 
-    // ABSENCE DATA
+    // ABSENCE FORM DATA (JSON)
+    Route::get('/modules/absence', [AbsenceController::class, 'index'])->name('absence.index');
+
+    // ABSENCE DATA (JSON + downloads)
     Route::get('/absences', [AbsenceController::class, 'getAbsences']);
     Route::get('/absences/area/{area_id}', [AbsenceController::class, 'getAbsencesByArea']);
     Route::get('/absences/classification/{code}', [AbsenceController::class, 'getDiseaseClassificationByCode']);
@@ -260,16 +254,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::delete('/absences/{collaborator_id}/{absence}/destroy', [AbsenceController::class, 'destroy']);
     Route::get('/absence/{absence_id}/download', [AbsenceController::class, 'downloadAbsenceSupport']);
 
-    // ABSENCE STATUS
+    // ABSENCE STATUS (JSON + downloads)
     Route::put('/absence-status/{absence_status_id}/update', [AbsenceStatusController::class, 'update']);
     Route::get('/absence-status/{absence_id}/download', [AbsenceStatusController::class, 'downloadAbsenceSupport']);
 
-    // TOOLS
-    Route::get('/tools/overtime', [OvertimeController::class, 'index'])->name('overtime.index');
-    Route::get('/tools/inventory', [InventoryController::class, 'index'])->name('inventory.index');
-    Route::get('/tools/cards', [CardsController::class, 'index'])->name('cards.index');
-
-    // MODULES DATA
+    // MODULES DATA (JSON)
     Route::get('/get-modules', [ModuleController::class, 'getModulesData']);
     Route::post('/modules', [ModuleController::class, 'store'])->name('modules.store');
     Route::put('/modules/{module}', [ModuleController::class, 'update'])->name('modules.update');
@@ -278,17 +267,19 @@ Route::group(['middleware' => 'auth'], function () {
     // COLLABORATOR IMPORT
     Route::post('/collaborators/import', [CollaboratorImportController::class, 'import']);
 
-    // PDF REPORTS
+    // PDF REPORTS (downloads — se mantienen como rutas de servidor)
     Route::get('/report/collaborators', [PdfReportController::class, 'downloadReportCollaborators']);
     Route::get('/report/collaborator/{collaborator}', [PdfReportController::class, 'downloadIndividualReport']);
 
-    // SELF MANAGEMENT
-    Route::get('/self-management/profile', [SelfManagementController::class, 'profile'])->name('self-management.profile');
-
-    // PROVIDERS
-    Route::get('/providers-data/{company_id}', [StaffProviderController::class, 'getProvidersData']);
+    // PROVIDERS DATA (JSON)
     Route::get('/staff-providers', [StaffProviderController::class, 'index'])->name('staff-providers.index');
+    Route::get('/providers-data/{company_id}', [StaffProviderController::class, 'getProvidersData']);
     Route::post('/staff-providers', [StaffProviderController::class, 'store'])->name('staff-providers.store');
     Route::put('/staff-providers/{provider}', [StaffProviderController::class, 'update'])->name('staff-providers.update');
     Route::delete('/staff-providers/{provider}', [StaffProviderController::class, 'destroy'])->name('staff-providers.destroy');
 });
+
+// ─── Catch-all SPA — debe ser la última ruta ─────────────────────────────────
+// Sirve el SPA para cualquier ruta GET no capturada arriba.
+// Vue Router se encarga de la navegación del lado del cliente.
+Route::get('/{any}', fn () => view('spa'))->where('any', '.*');

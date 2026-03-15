@@ -40,7 +40,11 @@ class CompaniesController extends Controller
             ->orderBy('updated_at', 'desc')
             ->get();
 
-        return view('back.companies.index', compact('companies'));
+        if (request()->ajax()) {
+            return response()->json($companies);
+        }
+
+        return view('spa');
     }
 
     public function create()
@@ -150,6 +154,7 @@ class CompaniesController extends Controller
         $identification_type = DocumentType::where('id', $company->identification_type_id)->first();
         $province = Province::where('id', $company->province_id)->first();
         $city = City::where('id', $company->city_id)->first();
+        $provinces = Province::all()->sortBy('name')->values();
 
         $result['company'] = $company;
         $result['company_type'] = $company_type;
@@ -157,6 +162,7 @@ class CompaniesController extends Controller
         $result['identification_type'] = $identification_type;
         $result['province'] = $province;
         $result['city'] = $city;
+        $result['provinces'] = $provinces;
 
         return $result;
     }

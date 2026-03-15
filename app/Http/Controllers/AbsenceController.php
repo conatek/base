@@ -26,7 +26,11 @@ class AbsenceController extends Controller
         $absence_subtypes = AbsenceSubtype::all();
         $absence_status_types = AbsenceStatusType::all();
 
-        return view('back.modules.absence.index', compact('eps', 'campuses', 'absence_types', 'absence_subtypes', 'absence_status_types'));
+        if (request()->ajax()) {
+            return response()->json(compact('eps', 'campuses', 'absence_types', 'absence_subtypes', 'absence_status_types'));
+        }
+
+        return view('spa');
     }
 
     public function getAbsences()

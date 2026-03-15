@@ -751,26 +751,14 @@ export default {
         Doughnut,
         VueGoodTable,
     },
-    props: {
-        eps: {
-            default: null,
-        },
-        campuses: {
-            default: null,
-        },
-        absence_types: {
-            default: null,
-        },
-        absence_subtypes: {
-            default: null,
-        },
-        absence_status_types: {
-            default: null,
-        },
-    },
     data() {
         return {
             is_loading: false,
+            eps: [],
+            campuses: [],
+            absence_types: [],
+            absence_subtypes: [],
+            absence_status_types: [],
             areas: null,
             area_id: '',
             campus_id: '',
@@ -941,8 +929,10 @@ export default {
         };
     },
     mounted() {
+        this.fetchFormData().then(() => {
+            this.selectedAbsenceType = this.absence_types.find(item => item.id === 1);
+        });
         this.getAbsences();
-        this.selectedAbsenceType = this.absence_types.find(item => item.id === 1);
     },
     watch: {
         absences: {
@@ -997,6 +987,15 @@ export default {
         },
     },
     methods: {
+        fetchFormData() {
+            return axios.get('/modules/absence').then((res) => {
+                this.eps = res.data.eps || [];
+                this.campuses = res.data.campuses || [];
+                this.absence_types = res.data.absence_types || [];
+                this.absence_subtypes = res.data.absence_subtypes || [];
+                this.absence_status_types = res.data.absence_status_types || [];
+            }).catch(() => {});
+        },
         selectSupportFile() {
             this.$refs.supportFileInput.click();
         },

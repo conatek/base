@@ -152,13 +152,14 @@ class CollaboratorController extends Controller
 
         $user = Auth::user();
         $company = Company::where('id', $user->company_id)->first();
-        // $collaborators = Collaborator::where('company_id', $company->id)->orderBy('created_at', 'desc')->with('position')->get();
         $absence_types = AbsenceType::all();
         $absence_subtypes = AbsenceSubtype::all();
-        // $staff_providers = StaffProvider::all();
 
-        // return view('back.collaborators.index', compact('company', 'collaborators', 'absence_types', 'absence_subtypes'));
-        return view('back.collaborators.index', compact('company', 'absence_types', 'absence_subtypes'));
+        if (request()->ajax()) {
+            return response()->json(compact('absence_types', 'absence_subtypes'));
+        }
+
+        return view('spa');
     }
 
     public function create()

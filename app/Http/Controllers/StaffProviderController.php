@@ -15,11 +15,14 @@ class StaffProviderController extends Controller
     public function index()
     {
         $provider_types = ProviderType::all();
-        // $provider_types = ProviderType::where('id', '!=', 1)->get();
         $provinces = Province::all();
         $company_id = Auth::user()->company_id;
 
-        return view('back.staff_providers.index', compact('company_id', 'provinces', 'provider_types'));
+        if (request()->ajax()) {
+            return response()->json(compact('provider_types', 'provinces', 'company_id'));
+        }
+
+        return view('spa');
     }
 
     public function getProvidersData($company_id)

@@ -347,6 +347,7 @@ export default {
         return {
             is_loading: false,
             users: [],
+            fetchedRoles: [],
             selected_user: null,
             add_user: false,
             edit_user: false,
@@ -380,8 +381,8 @@ export default {
         };
     },
     mounted() {
-        // this.getOrigin()
         this.getUsers();
+        this.fetchRolesData();
     },
     watch: {
         userData: {
@@ -427,7 +428,8 @@ export default {
                 default:
                     exclude = [];
             }
-            return this.roles.filter(role => !exclude.includes(role.name));
+            const allRoles = this.roles || this.fetchedRoles;
+            return allRoles.filter(role => !exclude.includes(role.name));
         }
     },
     methods: {
@@ -497,6 +499,11 @@ export default {
             // Limpiar variables de imagen
             this.image = null
             this.image_src = null
+        },
+        fetchRolesData() {
+            axios.get('/get-roles').then((res) => {
+                this.fetchedRoles = res.data.roles || [];
+            }).catch(() => {});
         },
         getUsers() {
             axios.get(`/users-data/${this.company_id}`).then(

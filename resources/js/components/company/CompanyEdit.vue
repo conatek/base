@@ -534,8 +534,7 @@ export default {
                 formData.append('is_active', isActive);
 
                 axios.post(`/companies/${this.company.id}`, formData).then((res) => {
-                    localStorage.setItem('origin', 'updated');
-                    window.location.href = '/companies';
+                    this.$emit('saved');
                 }).catch((error) => {
                     if (error?.response?.data?.errors) {
                         this.errors = error.response.data.errors;

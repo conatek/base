@@ -234,7 +234,8 @@
                 :sex_types="selectsDataCreate.sex_types" :civil_status_types="selectsDataCreate.civil_status_types"
                 :rh_types="selectsDataCreate.rh_types" :stratum_types="selectsDataCreate.stratum_types"
                 :housing_tenure_types="selectsDataCreate.housing_tenure_types" :provinces="selectsDataCreate.provinces"
-                :staff_providers="selectsDataCreate.staff_providers"></collaborator-create>
+                :staff_providers="selectsDataCreate.staff_providers"
+                @saved="onCollaboratorSaved('created')"></collaborator-create>
         </div>
         <div v-else-if="viewState === 'edit' && collaboratorDataEdit">
             <collaborator-edit :collaborator="selected_collaborator"
@@ -243,7 +244,8 @@
                 :stratum_types="collaboratorDataEdit.stratum_types"
                 :housing_tenure_types="collaboratorDataEdit.housing_tenure_types"
                 :provinces="collaboratorDataEdit.provinces"
-                :staff_providers="collaboratorDataEdit.staff_providers"></collaborator-edit>
+                :staff_providers="collaboratorDataEdit.staff_providers"
+                @saved="onCollaboratorSaved('updated')"></collaborator-edit>
         </div>
         <div v-else-if="viewState === 'absence'">
             <collaborator-absence :collaborator="selected_collaborator" :absence_types="absence_types"
@@ -270,17 +272,13 @@ export default {
         company_id: {
             default: null,
         },
-        absence_types: {
-            default: null,
-        },
-        absence_subtypes: {
-            default: null,
-        },
     },
     data() {
         return {
             is_loading: false,
             collaborators: [],
+            absence_types: null,
+            absence_subtypes: null,
 
             message: '',
 
@@ -383,8 +381,8 @@ export default {
     },
     mounted() {
         this.getOrigin()
-
         this.getCollaborators()
+        this.fetchAbsenceTypes()
         this.getTotalPages(this.collaborators)
         this.getPageData(1)
     },
@@ -605,13 +603,14 @@ export default {
                     })
         },
         deleteCollaborator(id) {
-            this.is_loading = true; // ACTIVAR
-            let url = ''
+            this.is_loading = true;
             axios.delete(`/collaborators/${id}/destroy`).then(
                 (res) => {
-                    localStorage.setItem('origin', 'deleted');
-                    url = `/collaborators`
-                    window.location.href = url
+                    this.collaborators = this.collaborators.filter(c => c.id !== id);
+                    this.getTotalPages(this.collaborators);
+                    this.getPageData(1);
+                    this.origin = 'deleted';
+                    setTimeout(() => { this.origin = ''; }, 3000);
                     this.errors = null
                 }).catch(
                     (error) => {
@@ -619,8 +618,20 @@ export default {
                             this.errors = error.response.data.errors
                         }
                     }).finally(() => {
-                        this.is_loading = false; // DESACTIVAR
+                        this.is_loading = false;
                     })
+        },
+        onCollaboratorSaved(originValue) {
+            this.returnToList();
+            this.getCollaborators();
+            this.origin = originValue;
+            setTimeout(() => { this.origin = ''; }, 3000);
+        },
+        fetchAbsenceTypes() {
+            axios.get('/collaborators').then((res) => {
+                this.absence_types = res.data.absence_types || [];
+                this.absence_subtypes = res.data.absence_subtypes || [];
+            }).catch(() => {});
         },
         // deactivateCollaborator(id) {
         //     axios.put(`/collaborators/${id}/deactivate`).then(

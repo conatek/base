@@ -3,96 +3,100 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
         $user = User::create([
-            'company_id' => 1,
-            'name' => 'Antonio Contreras',
-            'email' => 'conatekpro@gmail.com',
-            'password' => bcrypt('29405014'),
+            'company_id'     => 1,
+            'name'           => 'Antonio',
+            'first_surname'  => 'Contreras',
+            'email'          => 'conatekpro@gmail.com',
+            'password'       => bcrypt('29405014'),
         ]);
         $user->assignRole('Master');
 
-        $user_master_test_conatek = User::create([
-            'company_id' => 1,
-            'name' => 'Test Master',
-            'email' => 'master@test.com',
-            'password' => bcrypt('29405014'),
+        $user_master = User::create([
+            'company_id'     => 1,
+            'name'           => 'Test',
+            'first_surname'  => 'Master',
+            'email'          => 'master@test.com',
+            'password'       => bcrypt('29405014'),
         ]);
-        $user_master_test_conatek->assignRole('Master');
+        $user_master->assignRole('Master');
 
-        $user_super_test_conatek = User::create([
-            'company_id' => 1,
-            'name' => 'Test Super',
-            'email' => 'super@test.com',
-            'password' => bcrypt('29405014'),
+        $user_super = User::create([
+            'company_id'     => 1,
+            'name'           => 'Test',
+            'first_surname'  => 'Super',
+            'email'          => 'super@test.com',
+            'password'       => bcrypt('29405014'),
         ]);
-        $user_super_test_conatek->assignRole('Super');
+        $user_super->assignRole('Super');
 
-        $user_admin_test_conatek = User::create([
-            'company_id' => 1,
-            'name' => 'Test Admin',
-            'email' => 'admin@test.com',
-            'password' => bcrypt('29405014'),
+        $user_admin = User::create([
+            'company_id'     => 1,
+            'name'           => 'Test',
+            'first_surname'  => 'Admin',
+            'email'          => 'admin@test.com',
+            'password'       => bcrypt('29405014'),
         ]);
-        $user_admin_test_conatek->assignRole('Admin');
+        $user_admin->assignRole('Admin');
 
-        $user_analyst_test_conatek = User::create([
-            'company_id' => 1,
-            'name' => 'Test Analyst',
-            'email' => 'analyst@test.com',
-            'password' => bcrypt('29405014'),
+        $user_analyst = User::create([
+            'company_id'     => 1,
+            'name'           => 'Test',
+            'first_surname'  => 'Analyst',
+            'email'          => 'analyst@test.com',
+            'password'       => bcrypt('29405014'),
         ]);
-        $user_analyst_test_conatek->assignRole('Analyst');
+        $user_analyst->assignRole('Analyst');
 
-        $user_collaborator_test_conatek = User::create([
-            'company_id' => 1,
-            'name' => 'Test Collaborator',
-            'email' => 'collaborator@test.com',
-            'password' => bcrypt('29405014'),
+        $user_collaborator = User::create([
+            'company_id'     => 1,
+            'name'           => 'Test',
+            'first_surname'  => 'Collaborator',
+            'email'          => 'collaborator@test.com',
+            'password'       => bcrypt('29405014'),
         ]);
-        $user_collaborator_test_conatek->assignRole('Collaborator');
+        $user_collaborator->assignRole('Collaborator');
 
-        $user_requester_test_conatek = User::create([
-            'company_id' => 1,
-            'name' => 'Test Requester',
-            'email' => 'requester@test.com',
-            'password' => bcrypt('29405014'),
+        $user_requester = User::create([
+            'company_id'     => 1,
+            'name'           => 'Test',
+            'first_surname'  => 'Requester',
+            'email'          => 'requester@test.com',
+            'password'       => bcrypt('29405014'),
         ]);
-        $user_requester_test_conatek->assignRole('Requester');
+        $user_requester->assignRole('Requester');
 
-        $user_approver_test_conatek = User::create([
-            'company_id' => 1,
-            'name' => 'Test Approver',
-            'email' => 'approver@test.com',
-            'password' => bcrypt('29405014'),
+        $user_approver = User::create([
+            'company_id'     => 1,
+            'name'           => 'Test',
+            'first_surname'  => 'Approver',
+            'email'          => 'approver@test.com',
+            'password'       => bcrypt('29405014'),
         ]);
-        $user_approver_test_conatek->assignRole('Approver');
+        $user_approver->assignRole('Approver');
 
-        $user_admin_guest_test_mh = User::create([
-            'company_id' => 2,
-            'name' => 'MH Admin',
-            'email' => 'mh_admin@test.com',
-            'password' => bcrypt('29405014'),
+        $user_mh_admin = User::create([
+            'company_id'     => 2,
+            'name'           => 'MH',
+            'first_surname'  => 'Admin',
+            'email'          => 'mh_admin@test.com',
+            'password'       => bcrypt('29405014'),
         ]);
-        $user_admin_guest_test_mh->assignRole('Admin');
+        $user_mh_admin->assignRole('Admin');
 
-        $user_guest_test_mh = User::create([
-            'company_id' => 2,
-            'name' => 'MH Collaborator',
-            'email' => 'mh_collaborator@test.com',
-            'password' => bcrypt('29405014'),
+        $user_mh_collaborator = User::create([
+            'company_id'     => 2,
+            'name'           => 'MH',
+            'first_surname'  => 'Collaborator',
+            'email'          => 'mh_collaborator@test.com',
+            'password'       => bcrypt('29405014'),
         ]);
-        $user_guest_test_mh->assignRole('Collaborator');
+        $user_mh_collaborator->assignRole('Collaborator');
     }
 }

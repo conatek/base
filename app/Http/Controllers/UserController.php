@@ -79,8 +79,7 @@ class UserController extends Controller
         $roles = Role::all();
 
 
-        // return view('back.users.index', compact('current_user_roles', 'company_id', 'users', 'roles'));
-        return view('back.users.index', compact('current_user_id', 'current_user_roles', 'company_id', 'roles'));
+        return view('spa');
 
     }
 

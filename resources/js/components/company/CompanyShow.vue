@@ -26,6 +26,10 @@
                 </div> -->
             </div>
         </div>
+        <div v-if="!company" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+        <template v-else>
         <div>
             <div class="card-shadow-primary profile-responsive card-border mb-3 card">
                 <div class="dropdown-menu-header">
@@ -1055,6 +1059,7 @@
                 </div>
             </div>
         </div>
+        </template>
     </div>
 </template>
 
@@ -1062,17 +1067,19 @@
 
 export default {
     props: {
-        company: { default: null, },
-        provinces: { default: null, },
-        company_type: { default: null, },
-        industry_type: { default: null, },
-        identification_type: { default: null, },
-        province: { default: null, },
-        city: { default: null, },
+        company_id: { default: null, },
     },
     data() {
         return {
             is_loading: false,
+
+            company: null,
+            provinces: [],
+            company_type: null,
+            industry_type: null,
+            identification_type: null,
+            province: null,
+            city: null,
             card_selected: 'general',
             message: '',
 
@@ -1137,14 +1144,28 @@ export default {
         }
     },
     mounted () {
-        this.getContractsData(this.company.id)
-
-        this.getCampusesData(this.company.id)
-        this.getAreasData(this.company.id)
-        this.getPositionsData(this.company.id)
-        this.getCollaboratorsData(this.company.id)
+        this.fetchCompanyData()
     },
     methods: {
+        fetchCompanyData() {
+            axios.get(`/companies/${this.company_id}`).then((res) => {
+                this.company = res.data.company
+                this.company_type = res.data.company_type
+                this.industry_type = res.data.industry_type
+                this.identification_type = res.data.identification_type
+                this.province = res.data.province
+                this.city = res.data.city
+                this.provinces = res.data.provinces
+
+                this.getContractsData(this.company.id)
+                this.getCampusesData(this.company.id)
+                this.getAreasData(this.company.id)
+                this.getPositionsData(this.company.id)
+                this.getCollaboratorsData(this.company.id)
+            }).catch(() => {
+                console.error('Error al cargar datos de la empresa')
+            })
+        },
         showDeleteAlert(action, item, index) {
             // Ver ejemplos en: https://sweetalert2.github.io/#examples
             this.$swal({

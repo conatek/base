@@ -20,63 +20,13 @@
             </div>
         </div>
 
-        <requisition-index
-            :requisitions="requisitions"
-            :requisition_types="requisition_types"
-            :collaborators="collaborators"
-            :campuses="campuses"
-            :areas="areas"
-            :positions="positions"
-            :reasons="reasons"
-            :statuses="statuses"
-            :sources="sources"
-        ></requisition-index>
+        <requisition-index></requisition-index>
     </div>
 </template>
 
 <script>
 export default {
     name: 'Selection',
-    props: {
-        requisition_types: {
-            default: null,
-        },
-        collaborators: {
-            default: null,
-        },
-        campuses: {
-            default: null,
-        },
-        areas: {
-            default: null,
-        },
-        positions: {
-            default: null,
-        },
-        reasons: {
-            default: null,
-        },
-        statuses: {
-            default: null,
-        },
-        sources: {
-            default: null,
-        },
-        requisitions: {
-            default: null,
-        },
-    },
-    data() {
-        return {
-            // Your component data here
-        };
-    },
-    mounted() {
-        // Lifecycle hook
-    },
-    methods: {
-        // Your component methods here
-    },
 };
 </script>
 

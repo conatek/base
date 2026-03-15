@@ -1,5 +1,11 @@
 <template>
     <div>
+        <div v-if="!company" class="d-flex justify-content-center align-items-center p-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+        <template v-else>
         <div v-if="origin == 'updated'" class="mbg-3 alert alert-success alert-dismissible fade show" role="alert">
             <span class="pe-2">
                 <i class="fa fa-star"></i>
@@ -348,6 +354,7 @@
                 </div>
             </div>
         </div>
+        </template>
     </div>
 </template>
 
@@ -355,15 +362,17 @@
 
 export default {
     props: {
-        company: { default: null, },
-        company_type: { default: null, },
-        industry_type: { default: null, },
-        identification_type: { default: null, },
-        province: { default: null, },
-        city: { default: null, },
+        company_id: { default: null, },
     },
     data() {
         return {
+            company: null,
+            company_type: null,
+            industry_type: null,
+            identification_type: null,
+            province: null,
+            city: null,
+
             card_selected: 'general',
             message: '',
 
@@ -430,17 +439,28 @@ export default {
     },
     mounted () {
         this.getOrigin()
-
-        this.getContractsData(this.company.id)
-
-        this.getCampusesData(this.company.id)
-        this.getAreasData(this.company.id)
-        this.getPositionsData(this.company.id)
-        this.getCollaboratorsData(this.company.id)
-
-        this.getUserAdmin()
+        this.fetchCompanyData()
     },
     methods: {
+        fetchCompanyData() {
+            axios.get(`/companies/${this.company_id}`).then((res) => {
+                this.company = res.data.company;
+                this.company_type = res.data.company_type;
+                this.industry_type = res.data.industry_type;
+                this.identification_type = res.data.identification_type;
+                this.province = res.data.province;
+                this.city = res.data.city;
+
+                this.getContractsData(this.company.id);
+                this.getCampusesData(this.company.id);
+                this.getAreasData(this.company.id);
+                this.getPositionsData(this.company.id);
+                this.getCollaboratorsData(this.company.id);
+                this.getUserAdmin();
+            }).catch((error) => {
+                console.error('Error al cargar datos de la empresa', error);
+            });
+        },
         showDeleteAlert(action, item, index) {
             // Ver ejemplos en: https://sweetalert2.github.io/#examples
             this.$swal({

@@ -28,6 +28,10 @@ class SelectionController extends Controller
         $sources = SelectionSource::all();
         $requisition_types = CollaboratorRequisitionType::all();
 
-        return view('back.modules.selection.index', compact('requisition_types', 'collaborators', 'campuses', 'areas', 'positions', 'reasons', 'statuses', 'sources'));
+        if (request()->ajax()) {
+            return response()->json(compact('requisition_types', 'collaborators', 'campuses', 'areas', 'positions', 'reasons', 'statuses', 'sources'));
+        }
+
+        return view('spa');
     }
 }

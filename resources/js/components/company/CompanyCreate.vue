@@ -537,8 +537,7 @@ export default {
                 formData.append('youtube', this.youtube);
 
                 axios.post('/companies', formData).then((res) => {
-                    localStorage.setItem('origin', 'created');
-                    window.location.href = `/companies`;
+                    this.$emit('saved');
                 }).catch((error) => {
                     if (error?.response?.data?.errors) {
                         this.errors = error.response.data.errors;

@@ -91,10 +91,10 @@ class RequisitionController extends Controller
                 ], 422);
             }
 
-            $initialStatus = VacancyStatus::where('name', 'Pendiente de Aprobación')->first();
+            $initialStatus = VacancyStatus::where('name', 'En espera de aprobación')->first();
 
             if (!$initialStatus) {
-                throw new \Exception('El estado "Pendiente de Aprobación" no está configurado en el sistema.');
+                throw new \Exception('El estado "En espera de aprobación" no está configurado en el sistema.');
             }
 
             // 2. Crear la Requisición utilizando asignación masiva o manual corregida
@@ -148,7 +148,7 @@ class RequisitionController extends Controller
             $requisition = CollaboratorRequisition::findOrFail($id);
 
             // Validación de seguridad: Solo permitir editar si está "Pendiente"
-            if ($requisition->vacancy_status_id != 1) {
+            if ($requisition->vacancy_status_id != 5) {
                 return response()->json(['message' => 'Solo se pueden editar requisiciones pendientes de aprobación.'], 422);
             }
 
@@ -198,14 +198,14 @@ class RequisitionController extends Controller
                 return response()->json(['message' => 'Usuario sin perfil de colaborador asociado.'], 403);
             }
 
-            if ($requisition->vacancy_status_id != 1) {
+            if ($requisition->vacancy_status_id != 5) {
                 return response()->json(['message' => 'La requisición no está en estado pendiente.'], 422);
             }
 
             $requisition->approved_by_id = $collaborator->id;
             $requisition->approved_at = Carbon::now();
             $requisition->approval_reason = $request->input('observation');
-            $requisition->vacancy_status_id = 2;
+            $requisition->vacancy_status_id = 1; // Abierta
 
             $requisition->save();
 
@@ -239,14 +239,14 @@ class RequisitionController extends Controller
                 return response()->json(['message' => 'Usuario sin perfil de colaborador asociado.'], 403);
             }
 
-            if ($requisition->vacancy_status_id == 5) {
+            if ($requisition->vacancy_status_id == 4) {
                 return response()->json(['message' => 'La requisición ya se encuentra cancelada.'], 422);
             }
 
             $requisition->cancelled_by_id = $collaborator->id;
             $requisition->cancelled_at = Carbon::now();
             $requisition->cancellation_reason = $request->input('observation');
-            $requisition->vacancy_status_id = 5;
+            $requisition->vacancy_status_id = 4; // Cancelada
 
             $requisition->save();
 

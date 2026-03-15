@@ -121,11 +121,9 @@ export default {
                 'email': this.email,
             }
 
-            let url = ''
             axios.put(`/campuses/${this.campus_id}`, dataSend).then(
                 (res) => {
-                    url = `/campuses/${res.data.campus}`
-                    window.location.href = url;
+                    this.$emit('saved', res.data.campus);
                 }).catch(
                 (error) => {
                     console.log(error)

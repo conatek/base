@@ -211,12 +211,7 @@
                         @loadCollaborators="loadCollaborators"
                         @addUserAdmin="addUserAdmin"
                         @editUserAdmin="editUserAdmin"
-                        :company="selected_company"
-                        :company_type="companyData && companyData.company_type ? companyData.company_type : ''"
-                        :industry_type="companyData && companyData.industry_type ? companyData.industry_type : ''"
-                        :identification_type="companyData && companyData.identification_type ? companyData.identification_type : ''"
-                        :province="companyData && companyData.province ? companyData.province : ''"
-                        :city="companyData && companyData.city ? companyData.city : ''"
+                        :company_id="selected_company.id"
                     ></company-detail>
                 </div>
                 <div v-if="selected_company == null && add_company == true && edit_company == false && load_collaborators == false && add_user_admin == false && edit_user_admin == false">
@@ -225,6 +220,7 @@
                         :document_types="selectsDataCreate.document_types"
                         :provinces="selectsDataCreate.provinces"
                         :industry_types="selectsDataCreate.industry_types"
+                        @saved="onCompanySaved('created')"
                     ></company-create>
                 </div>
                 <div v-if="selected_company != null && add_company == false && edit_company == true && load_collaborators == false && add_user_admin == false && edit_user_admin == false">
@@ -234,6 +230,7 @@
                         :document_types="companyDataEdit && companyDataEdit.document_types ? companyDataEdit.document_types : []"
                         :provinces="companyDataEdit && companyDataEdit.provinces ? companyDataEdit.provinces : []"
                         :industry_types="companyDataEdit && companyDataEdit.industry_types ? companyDataEdit.industry_types : []"
+                        @saved="onCompanySaved('updated')"
                     ></company-edit>
                 </div>
                 <div v-if="selected_company != null && add_company == false && edit_company == false && load_collaborators == true && add_user_admin == false && edit_user_admin == false">
@@ -360,14 +357,11 @@
 import { add } from 'lodash'
 
 export default {
-    props: {
-        companies: {
-            default: null,
-        },
-    },
     data() {
         return {
             loading: 0,
+
+            companies: null,
 
             message: '',
 
@@ -405,11 +399,18 @@ export default {
     },
     mounted () {
         this.getOrigin()
-
-        this.getTotalPages(this.companies)
-        this.getPageData(1)
+        this.getCompanies()
     },
     methods: {
+        getCompanies() {
+            axios.get('/companies').then((res) => {
+                this.companies = res.data;
+                this.getTotalPages(this.companies);
+                this.getPageData(1);
+            }).catch((error) => {
+                console.error('Error al obtener empresas', error);
+            });
+        },
         showDeleteAlert(action, item) {
             // Ver ejemplos en: https://sweetalert2.github.io/#examples
             this.$swal({
@@ -456,6 +457,12 @@ export default {
             this.load_collaborators = false
             this.add_user_admin = false;
             this.edit_user_admin = false;
+        },
+        onCompanySaved(originValue) {
+            this.returnToList();
+            this.getCompanies();
+            this.origin = originValue;
+            setTimeout(() => { this.origin = ''; }, 3000);
         },
         getOrigin() {
             const origin = localStorage.getItem('origin');
@@ -694,22 +701,17 @@ export default {
                 })
         },
         deleteCompany(id){
-            // console.log('Eliminar empresa: ' + id);
-
-            let url = ''
             axios.delete(`/companies/${id}/destroy`).then(
                 (res) => {
-                    localStorage.setItem('origin', 'deleted');
-
-                    // this.getMessage(res.data.message)
-
-                    url = `/companies`
-                    window.location.href = url
+                    this.companies = this.companies.filter(c => c.id !== id);
+                    this.getTotalPages(this.companies);
+                    this.getPageData(1);
+                    this.origin = 'deleted';
+                    setTimeout(() => { this.origin = ''; }, 3000);
                     this.errors = null
                 }).catch(
                 (error) => {
                     if(error && error.response && error.response.data && error.response.data.errors) {
-                        // console.log(error.response.data.errors)
                         this.errors = error.response.data.errors
                     }
                 })

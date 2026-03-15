@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button @click="createRequisition" v-if="this.$can('requisition_create') && !showForm" class="btn btn-primary mb-3">
+        <button @click="createRequisition" v-if="!showForm" class="btn btn-primary mb-3">
             <i class="fa fa-plus me-2"></i> Agregar
         </button>
 
@@ -42,8 +42,7 @@
                 >
                     <template #table-row="props">
                         <span v-if="props.column.field === 'actions'">
-                            <button v-if="this.$can('requisition_show')"
-                                    @click="showRequisition(props.row)"
+                            <button @click="showRequisition(props.row)"
                                     type="button"
                                     class="btn btn-sm btn-warning me-1 btn-action"
                                     data-bs-toggle="modal" data-bs-target=".requisition-detail-modal"
@@ -51,23 +50,20 @@
                                 <i class="fa fa-eye"></i>
                             </button>
 
-                            <template v-if="props.row.vacancy_status_id === 1">
-                                <button v-if="this.$can('requisition_edit')"
-                                        @click="editRequisition(props.row)"
+                            <template v-if="props.row.vacancy_status_id === 5">
+                                <button @click="editRequisition(props.row)"
                                         type="button"
                                         class="btn btn-sm btn-info me-1 text-white btn-action"
                                         title="Editar">
                                     <i class="fa fa-edit"></i>
                                 </button>
-                                <button v-if="this.$can('requisition_approve')"
-                                        @click="approveRequisition(props.row)"
+                                <button @click="approveRequisition(props.row)"
                                         type="button"
                                         class="btn btn-sm btn-success me-1 btn-action"
                                         title="Aprobar">
                                     <i class="fa fa-check"></i>
                                 </button>
-                                <button  v-if="this.$can('requisition_cancel')"
-                                        @click="cancelRequisition(props.row)"
+                                <button @click="cancelRequisition(props.row)"
                                         type="button"
                                         class="btn btn-sm btn-danger btn-action"
                                         title="Cancelar">
@@ -107,11 +103,11 @@
                                         <div class="value">
                                             <span class="badge"
                                                 :class="{
-                                                    'bg-warning text-dark': selected_requisition.vacancy_status_id === 1,
-                                                    'bg-success': selected_requisition.vacancy_status_id === 2,
-                                                    'bg-info text-dark': selected_requisition.vacancy_status_id === 3,
-                                                    'bg-secondary': selected_requisition.vacancy_status_id === 4,
-                                                    'bg-danger': selected_requisition.vacancy_status_id === 5
+                                                    'bg-success': selected_requisition.vacancy_status_id === 1,
+                                                    'bg-info text-dark': selected_requisition.vacancy_status_id === 2,
+                                                    'bg-secondary': selected_requisition.vacancy_status_id === 3,
+                                                    'bg-danger': selected_requisition.vacancy_status_id === 4,
+                                                    'bg-warning text-dark': selected_requisition.vacancy_status_id === 5
                                                 }">
                                                 {{ selected_requisition.vacancy_status?.name }}
                                             </span>
@@ -371,19 +367,17 @@ export default {
     components: {
         VueGoodTable
     },
-    props: {
-        requisition_types: { default: () => [] },
-        collaborators: { default: () => [] },
-        campuses: { default: () => [] },
-        areas: { default: () => [] },
-        positions: { default: () => [] },
-        reasons: { default: () => [] },
-    },
-
     data() {
         return {
             isLoading: false,
             showForm: false,
+
+            requisition_types: [],
+            collaborators: [],
+            campuses: [],
+            areas: [],
+            positions: [],
+            reasons: [],
             isEditing: false,
             editingId: null,
             errors: {},
@@ -431,6 +425,7 @@ export default {
         }
     },
     mounted() {
+        this.fetchFormData();
         this.getRequisitions();
         this.columns = [
             {
@@ -481,6 +476,18 @@ export default {
         }
     },
     methods: {
+        fetchFormData() {
+            axios.get('/modules/selection').then((res) => {
+                this.requisition_types = res.data.requisition_types;
+                this.collaborators     = res.data.collaborators;
+                this.campuses          = res.data.campuses;
+                this.areas             = res.data.areas;
+                this.positions         = res.data.positions;
+                this.reasons           = res.data.reasons;
+            }).catch(() => {
+                console.error('Error al cargar datos del formulario de selección');
+            });
+        },
         showRequisition(requisition) {
             this.selected_requisition = requisition;
 
